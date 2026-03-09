@@ -252,10 +252,10 @@ export default function ClientDetailPage() {
 
   return (
     <div className="space-y-6 page-fade-in">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" onClick={() => router.back()}><ArrowLeft className="h-4 w-4" /></Button>
-        <div className="flex-1">
-          <h1 className="font-serif text-2xl text-sage-800">
+      <div className="flex items-center gap-3 sm:gap-4">
+        <Button variant="ghost" size="sm" onClick={() => router.back()} className="min-h-[44px] min-w-[44px] px-2 flex-shrink-0"><ArrowLeft className="h-4 w-4" /></Button>
+        <div className="flex-1 min-w-0">
+          <h1 className="font-serif text-xl sm:text-2xl text-sage-800 truncate">
             {client.parentClient && (
               <Link href={`/dashboard/clients/${client.parentClient.id}`} className="text-sage-800/40 hover:text-sage-600 transition-colors">
                 {client.parentClient.name} ›{" "}
@@ -268,7 +268,8 @@ export default function ClientDetailPage() {
             <p className="text-sm text-sage-500">{client.branches.length} sucursales</p>
           )}
         </div>
-        <div className="flex gap-2">
+        {/* Desktop buttons */}
+        <div className="hidden sm:flex gap-2">
           <Link href={`/dashboard/pickups/new?clientId=${client.id}`}>
             <Button variant="outline" size="sm">
               <Truck className="h-4 w-4 mr-1" /> Registrar retiro
@@ -286,6 +287,34 @@ export default function ClientDetailPage() {
           <Button variant="outline" size="sm" onClick={startEditing}>
             <Pencil className="h-4 w-4 mr-1" /> Editar
           </Button>
+        </div>
+        {/* Mobile dropdown */}
+        <div className="sm:hidden">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="min-h-[44px] min-w-[44px] px-2">
+                <MoreHorizontal className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-52">
+              <DropdownMenuItem asChild>
+                <Link href={`/dashboard/pickups/new?clientId=${client.id}`} className="flex items-center gap-2">
+                  <Truck className="h-4 w-4" /> Registrar retiro
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/dashboard/certificates/new?clientId=${client.id}`} className="flex items-center gap-2">
+                  <FileCheck className="h-4 w-4" /> Crear certificado
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleGeneratePortal} disabled={generatingPortal}>
+                <ExternalLink className="h-4 w-4 mr-2" /> Portal del cliente
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={startEditing}>
+                <Pencil className="h-4 w-4 mr-2" /> Editar datos
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -306,23 +335,23 @@ export default function ClientDetailPage() {
         </div>
       )}
 
-      <div className="grid sm:grid-cols-4 gap-4">
-        <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-5 text-center">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-4 sm:p-5 text-center">
           <p className="text-2xl font-serif text-sage-500">{displayKg.toLocaleString("es-CL")}</p>
           <p className="text-xs text-sage-800/40">kg reciclados</p>
           {hasBranches && <p className="text-[10px] text-sage-800/25 mt-1">consolidado</p>}
         </div>
-        <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-5 text-center">
+        <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-4 sm:p-5 text-center">
           <p className="text-2xl font-serif text-sage-500">{displayCo2.toLocaleString("es-CL")}</p>
           <p className="text-xs text-sage-800/40">kg CO₂ evitado</p>
           {hasBranches && <p className="text-[10px] text-sage-800/25 mt-1">consolidado</p>}
         </div>
-        <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-5 text-center">
+        <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-4 sm:p-5 text-center">
           <p className="text-2xl font-serif text-sage-500">{pickups.length}</p>
           <p className="text-xs text-sage-800/40">retiros</p>
           {hasBranches && <p className="text-[10px] text-sage-800/25 mt-1">consolidado</p>}
         </div>
-        <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-5 text-center">
+        <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-4 sm:p-5 text-center">
           <p className="text-2xl font-serif text-sage-500">{displayCerts}</p>
           <p className="text-xs text-sage-800/40">certificados</p>
           {hasBranches && <p className="text-[10px] text-sage-800/25 mt-1">consolidado</p>}
