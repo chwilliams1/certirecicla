@@ -278,7 +278,7 @@ export default function PortalPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-6">
           {[
             { icon: Package, label: "Total reciclado", value: formatNumber(Math.round(kpis.totalKg)), unit: "kilogramos", accent: "from-emerald-500 to-green-600" },
-            { icon: Leaf, label: "CO\u2082 evitado", value: kpis.totalCo2.toFixed(2), unit: "toneladas de CO\u2082", accent: "from-teal-500 to-cyan-600" },
+            { icon: Leaf, label: "CO₂ evitado", value: kpis.totalCo2.toFixed(2), unit: "toneladas de CO₂", accent: "from-teal-500 to-cyan-600" },
             { icon: Truck, label: "Retiros realizados", value: String(kpis.totalPickups), unit: "retiros totales", accent: "from-green-500 to-emerald-600" },
           ].map((kpi) => (
             <div key={kpi.label} className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow p-5 md:p-6 border border-[#eae8e3]">
@@ -351,7 +351,7 @@ export default function PortalPage() {
               <div className="w-7 h-7 rounded-lg bg-[#e8f0e9] flex items-center justify-center">
                 <Calendar className="w-4 h-4 text-[#4a7c59]" />
               </div>
-              <h3 className="font-semibold text-[#1a1a1a]">CO\u2082 evitado por mes (kg)</h3>
+              <h3 className="font-semibold text-[#1a1a1a]">CO₂ evitado por mes (kg)</h3>
             </div>
             {monthlyCo2.length > 0 ? (
               <ResponsiveContainer width="100%" height={250}>
@@ -373,7 +373,7 @@ export default function PortalPage() {
                   />
                   <YAxis tick={{ fontSize: 11, fill: "#8a8a8a" }} />
                   <Tooltip
-                    formatter={(value) => [`${value} kg CO\u2082`, "Evitado"]}
+                    formatter={(value) => [`${value} kg CO₂`, "Evitado"]}
                     labelFormatter={(label) => {
                       const [y, m] = String(label).split("-");
                       const months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
