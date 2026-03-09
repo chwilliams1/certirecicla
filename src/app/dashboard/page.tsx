@@ -193,7 +193,7 @@ export default function DashboardPage() {
           <RotatingEquivalence equivalences={equivItems} />
         </div>
         <div className="hidden sm:block flex-1" />
-        <div className="flex gap-2 flex-shrink-0 flex-wrap justify-center sm:justify-end">
+        <div data-tour="quick-actions" className="flex gap-2 flex-shrink-0 flex-wrap justify-center sm:justify-end">
           {[
             { href: "/dashboard/upload", icon: Upload, label: "Subir datos" },
             { href: "/dashboard/certificates/new", icon: FileCheck, label: "Crear certificado" },

@@ -378,16 +378,7 @@ export default function CertificateDetailPage() {
         {/* Green left accent bar */}
         <div className="absolute top-0 left-0 bottom-0 w-2 bg-[#5a7d5e]" />
 
-        {/* Watermark */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
-          {isDraft ? (
-            <span className="text-[5rem] font-bold text-red-600/[0.08] -rotate-45 whitespace-nowrap select-none">BORRADOR</span>
-          ) : (
-            <span className="text-[4rem] font-bold text-sage-800/[0.04] -rotate-45 whitespace-nowrap select-none">{cert.uniqueCode}</span>
-          )}
-        </div>
-
-        <div className="p-8 pl-10 relative">
+        <div className="p-8 pl-10">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
             <div className="flex items-center gap-3">
@@ -603,6 +594,15 @@ export default function CertificateDetailPage() {
           <span>Emitido: {new Date(cert.createdAt).toLocaleDateString("es-CL")}</span>
           <span>Verificar en: certirecicla.cl/verify/{cert.uniqueCode}</span>
           {cert.company.sanitaryResolution && <span>Res. Sanitaria: {cert.company.sanitaryResolution}</span>}
+        </div>
+
+        {/* Watermark */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden" style={{ zIndex: 60 }}>
+          {isDraft ? (
+            <span className="text-[5rem] font-bold text-red-600/[0.15] -rotate-45 whitespace-nowrap select-none">BORRADOR</span>
+          ) : (
+            <span className="text-[4rem] font-bold text-sage-800/[0.04] -rotate-45 whitespace-nowrap select-none">{cert.uniqueCode}</span>
+          )}
         </div>
       </div>
 

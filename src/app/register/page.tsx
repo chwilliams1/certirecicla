@@ -16,6 +16,9 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [rut, setRut] = useState("");
+  const [companyEmail, setCompanyEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -27,7 +30,7 @@ export default function RegisterPage() {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password, companyName }),
+      body: JSON.stringify({ name, email, password, companyName, rut, companyEmail, phone }),
     });
 
     const data = await res.json();
@@ -48,7 +51,7 @@ export default function RegisterPage() {
     if (result?.error) {
       router.push("/login");
     } else {
-      router.push("/dashboard");
+      router.push("/dashboard?tour=1");
     }
   }
 
@@ -65,7 +68,7 @@ export default function RegisterPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="companyName">Nombre de tu empresa</Label>
+              <Label htmlFor="companyName">Razón social</Label>
               <Input
                 id="companyName"
                 type="text"
@@ -75,6 +78,42 @@ export default function RegisterPage() {
                 required
               />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="rut">RUT de la empresa</Label>
+              <Input
+                id="rut"
+                type="text"
+                placeholder="Ej: 76.123.456-7"
+                value={rut}
+                onChange={(e) => setRut(e.target.value)}
+                required
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="companyEmail">Correo empresa</Label>
+                <Input
+                  id="companyEmail"
+                  type="email"
+                  placeholder="contacto@empresa.cl"
+                  value={companyEmail}
+                  onChange={(e) => setCompanyEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Teléfono</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="+56 9 1234 5678"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+            <hr className="my-2" />
             <div className="space-y-2">
               <Label htmlFor="name">Tu nombre</Label>
               <Input

@@ -17,18 +17,19 @@ import {
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { NotificationBell } from "@/components/notification-bell";
+import { ProductTour } from "@/components/product-tour";
 import { useState, useEffect } from "react";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/dashboard/clients", label: "Clientes", icon: Users },
-  { href: "/dashboard/pickups", label: "Retiros", icon: Truck },
-  { href: "/dashboard/certificates", label: "Certificados", icon: FileCheck },
-  { href: "/dashboard/reports", label: "Reportes", icon: FileBarChart },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, tourId: "nav-dashboard" },
+  { href: "/dashboard/clients", label: "Clientes", icon: Users, tourId: "nav-clients" },
+  { href: "/dashboard/pickups", label: "Retiros", icon: Truck, tourId: "nav-pickups" },
+  { href: "/dashboard/certificates", label: "Certificados", icon: FileCheck, tourId: "nav-certificates" },
+  { href: "/dashboard/reports", label: "Reportes", icon: FileBarChart, tourId: "nav-reports" },
 ];
 
 const secondaryNavItems = [
-  { href: "/dashboard/settings", label: "Configuración", icon: Settings },
+  { href: "/dashboard/settings", label: "Configuración", icon: Settings, tourId: "nav-settings" },
 ];
 
 function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
@@ -58,6 +59,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           return (
             <Link key={item.href} href={item.href} onClick={onNavigate}>
               <div
+                data-tour={item.tourId}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-sm transition-all ${
                   isActive
                     ? "bg-sage-500/[0.08] text-sage-500 font-semibold nav-active-bar"
@@ -76,6 +78,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           return (
             <Link key={item.href} href={item.href} onClick={onNavigate}>
               <div
+                data-tour={item.tourId}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-sm transition-all ${
                   isActive
                     ? "bg-sage-500/[0.08] text-sage-500 font-semibold nav-active-bar"
@@ -155,6 +158,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <main className="flex-1 overflow-auto lg:pt-0 pt-14">
         <div className="p-4 sm:p-6 lg:p-8 max-w-7xl">{children}</div>
       </main>
+
+      <ProductTour />
     </div>
   );
 }

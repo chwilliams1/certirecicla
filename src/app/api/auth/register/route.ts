@@ -4,9 +4,9 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { name, email, password, companyName } = body;
+  const { name, email, password, companyName, rut, companyEmail, phone } = body;
 
-  if (!name || !email || !password || !companyName) {
+  if (!name || !email || !password || !companyName || !rut || !companyEmail || !phone) {
     return NextResponse.json(
       { error: "Todos los campos son obligatorios" },
       { status: 400 }
@@ -36,6 +36,9 @@ export async function POST(req: NextRequest) {
   const company = await prisma.company.create({
     data: {
       name: companyName,
+      rut,
+      email: companyEmail,
+      phone,
       plan: "trial",
       trialEndsAt,
       users: {

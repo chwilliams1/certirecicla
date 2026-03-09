@@ -267,13 +267,6 @@ export function CertificatePDFDocument({ data, qrDataUrl }: Props) {
         {/* Green accent bar */}
         <View style={styles.accentBar} />
 
-        {/* Watermark */}
-        {data.status === "draft" ? (
-          <Text style={[styles.watermark, { color: "#cc0000", opacity: 0.08, fontSize: 64 }]}>BORRADOR</Text>
-        ) : (
-          <Text style={styles.watermark}>{data.uniqueCode}</Text>
-        )}
-
         <View style={styles.content}>
           {/* Header */}
           <View style={styles.header}>
@@ -418,6 +411,13 @@ export function CertificatePDFDocument({ data, qrDataUrl }: Props) {
             {data.sanitaryResolution && <Text>Res. Sanitaria: {data.sanitaryResolution}</Text>}
           </View>
         </View>
+
+        {/* Watermark — rendered last so it appears on top of all content */}
+        {data.status === "draft" ? (
+          <Text style={[styles.watermark, { color: "#cc0000", opacity: 0.15, fontSize: 72 }]}>BORRADOR</Text>
+        ) : (
+          <Text style={[styles.watermark, { opacity: 0.04 }]}>{data.uniqueCode}</Text>
+        )}
       </Page>
     </Document>
   );
