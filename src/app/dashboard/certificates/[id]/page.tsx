@@ -315,7 +315,7 @@ export default function CertificateDetailPage() {
             </Button>
           )}
           {/* Draft: Publicar y enviar (acción principal) */}
-          {isDraft && !editing && cert.client?.email && (
+          {isDraft && !editing && (
             <Button onClick={() => openSendDialog("publishAndSend")} size="sm">
               <Mail className="h-4 w-4 mr-1" />
               Publicar y enviar
@@ -341,14 +341,14 @@ export default function CertificateDetailPage() {
             </Button>
           )}
           {/* Published (not sent): Enviar */}
-          {!editing && cert.status === "published" && cert.client?.email && (
+          {!editing && cert.status === "published" && (
             <Button size="sm" onClick={() => openSendDialog("send")}>
               <Mail className="h-4 w-4 mr-1" />
               Enviar
             </Button>
           )}
           {/* Sent: Reenviar */}
-          {!editing && cert.status === "sent" && cert.client?.email && (
+          {!editing && cert.status === "sent" && (
             <Button variant="outline" size="sm" onClick={() => openSendDialog("send")}>
               <Mail className="h-4 w-4 mr-1" />
               Reenviar

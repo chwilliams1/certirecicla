@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, FileCheck, Download, Plus, Mail, Loader2, Check, MoreVertical, Send, Pencil } from "lucide-react";
+import { Search, FileCheck, Download, Plus, Mail, Check, MoreVertical, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -53,9 +53,6 @@ export default function CertificatesPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [loading, setLoading] = useState(true);
-  const [selectedCerts, setSelectedCerts] = useState<Set<string>>(new Set());
-  const [bulkSending, setBulkSending] = useState(false);
-  const [bulkProgress, setBulkProgress] = useState(0);
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [sendDialogCert, setSendDialogCert] = useState<Certificate | null>(null);
   const [sendMode, setSendMode] = useState<"send" | "publishAndSend">("send");
@@ -109,45 +106,6 @@ export default function CertificatesPage() {
     a.download = `${safeName}.pdf`;
     a.click();
     URL.revokeObjectURL(url);
-  }
-
-  function toggleCert(id: string) {
-    setSelectedCerts((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }
-
-  function isSendable(cert: Certificate) {
-    return (cert.status === "draft" || cert.status === "published") && !!cert.client?.email;
-  }
-
-  async function handleBulkSend() {
-    const toSend = Array.from(selectedCerts);
-    if (toSend.length === 0) return;
-    setBulkSending(true);
-    setBulkProgress(0);
-
-    for (let i = 0; i < toSend.length; i++) {
-      try {
-        await fetch("/api/email/send", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ certificateId: toSend[i] }),
-        });
-        setCertificates((prev) =>
-          prev.map((c) => c.id === toSend[i] ? { ...c, status: "sent" } : c)
-        );
-      } catch {
-        // Continue with remaining
-      }
-      setBulkProgress(i + 1);
-    }
-
-    setSelectedCerts(new Set());
-    setBulkSending(false);
   }
 
   const filtered = certificates.filter(
@@ -207,18 +165,8 @@ export default function CertificatesPage() {
       ) : (
         <div className="space-y-3">
           {filtered.map((cert) => (
-            <div key={cert.id} className={`bg-sand-50 border rounded-[14px] p-4 sm:p-5 card-hover ${selectedCerts.has(cert.id) ? "border-sage-400 ring-1 ring-sage-200" : "border-sand-300"}`}>
+            <div key={cert.id} className="bg-sand-50 border border-sand-300 rounded-[14px] p-4 sm:p-5 card-hover">
               <div className="flex items-start sm:items-center gap-3 sm:gap-4">
-                {isSendable(cert) && (
-                  <button
-                    onClick={() => toggleCert(cert.id)}
-                    className={`h-6 w-6 sm:h-5 sm:w-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-all mt-1 sm:mt-0 ${
-                      selectedCerts.has(cert.id) ? "bg-sage-500 border-sage-500" : "border-sand-300 hover:border-sage-300"
-                    }`}
-                  >
-                    {selectedCerts.has(cert.id) && <Check className="h-3 w-3 text-white" />}
-                  </button>
-                )}
                 <div className="h-10 w-10 rounded-full bg-sage-100 flex items-center justify-center flex-shrink-0 hidden sm:flex">
                   <FileCheck className="h-5 w-5 text-sage-500" />
                 </div>
@@ -263,19 +211,19 @@ export default function CertificatesPage() {
                         Publicar
                       </DropdownMenuItem>
                     )}
-                    {cert.status === "draft" && cert.client?.email && (
+                    {cert.status === "draft" && (
                       <DropdownMenuItem onClick={() => openSendDialog(cert, "publishAndSend")}>
                         <Mail className="h-4 w-4 mr-2" />
                         Publicar y enviar
                       </DropdownMenuItem>
                     )}
-                    {cert.status === "published" && cert.client?.email && (
+                    {cert.status === "published" && (
                       <DropdownMenuItem onClick={() => openSendDialog(cert, "send")}>
                         <Send className="h-4 w-4 mr-2" />
                         Enviar por email
                       </DropdownMenuItem>
                     )}
-                    {cert.status === "sent" && cert.client?.email && (
+                    {cert.status === "sent" && (
                       <DropdownMenuItem onClick={() => openSendDialog(cert, "send")}>
                         <Mail className="h-4 w-4 mr-2" />
                         Reenviar
@@ -318,41 +266,6 @@ export default function CertificatesPage() {
         />
       )}
 
-      {/* Floating action bar for bulk send */}
-      {selectedCerts.size > 0 && (
-        <div className="fixed bottom-6 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-30 bg-sage-800 text-white rounded-2xl shadow-xl px-4 sm:px-6 py-3 flex items-center gap-3 sm:gap-4 animate-in slide-in-from-bottom-4 duration-200">
-          <span className="text-sm">
-            {selectedCerts.size} {selectedCerts.size === 1 ? "certificado seleccionado" : "certificados seleccionados"}
-          </span>
-          <div className="w-px h-5 bg-white/20" />
-          <Button
-            size="sm"
-            variant="secondary"
-            onClick={() => setSelectedCerts(new Set())}
-            className="bg-white/10 hover:bg-white/20 text-white border-0"
-          >
-            Cancelar
-          </Button>
-          <Button
-            size="sm"
-            onClick={handleBulkSend}
-            disabled={bulkSending}
-            className="bg-white text-sage-800 hover:bg-white/90"
-          >
-            {bulkSending ? (
-              <>
-                <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
-                {bulkProgress}/{selectedCerts.size}
-              </>
-            ) : (
-              <>
-                <Mail className="h-3.5 w-3.5 mr-1.5" />
-                Publicar y enviar
-              </>
-            )}
-          </Button>
-        </div>
-      )}
     </div>
   );
 }
