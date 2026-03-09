@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, Search, Users, Upload, AlertTriangle } from "lucide-react";
+import { Plus, Search, Upload, AlertTriangle, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { PermissionGate } from "@/components/permission-gate";
 
 interface Client {
@@ -136,91 +135,14 @@ export default function ClientsPage() {
       )}
 
       {loading ? (
-        <div className="space-y-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-sand-50 border border-sand-300 rounded-[14px] p-6">
-              <div className="skeleton h-5 w-48 rounded mb-2" />
-              <div className="skeleton h-4 w-32 rounded" />
-            </div>
-          ))}
+        <div className="space-y-4">
+          <div className="skeleton h-12 w-full rounded-[14px]" />
+          <div className="skeleton h-64 w-full rounded-[14px]" />
         </div>
-      ) : (
-        <div className="space-y-3">
-          {filtered.map((client) => (
-            <div key={client.id} className="space-y-1">
-              {/* Parent / standalone client card */}
-              <Link href={`/dashboard/clients/${client.id}`}>
-                <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-4 sm:p-5 card-hover">
-                  <div className="flex items-center gap-3 sm:gap-4">
-                    <div className="h-10 w-10 rounded-full bg-sage-100 flex items-center justify-center flex-shrink-0">
-                      <Users className="h-5 w-5 text-sage-500" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className="font-medium text-sage-800 truncate">{client.name}</p>
-                        {(client.branches?.length ?? 0) > 0 && (
-                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                            {client.branches!.length} {client.branches!.length === 1 ? "sucursal" : "sucursales"}
-                          </Badge>
-                        )}
-                      </div>
-                      <p className="text-xs text-sage-800/40">
-                        {client.contactName && `${client.contactName} · `}
-                        {client.email || "Sin email"}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap mt-2 ml-[52px] sm:ml-[56px]">
-                    {hasIncompleteData(client) && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-600 border border-amber-200 whitespace-nowrap flex items-center gap-1">
-                        <AlertTriangle className="h-3 w-3" />
-                        {getMissingFields(client).join(", ")}
-                      </span>
-                    )}
-                    <Badge variant="secondary">
-                      {client.pickupCount + (client.branches?.reduce((s, b) => s + b.pickupCount, 0) || 0)} retiros
-                    </Badge>
-                    <Badge variant="outline">
-                      {client._count.certificates + (client.branches?.reduce((s, b) => s + b._count.certificates, 0) || 0)} certificados
-                    </Badge>
-                  </div>
-                </div>
-              </Link>
-
-              {/* Branch cards */}
-              {client.branches?.map((branch) => (
-                <Link key={branch.id} href={`/dashboard/clients/${branch.id}`}>
-                  <div className="ml-4 sm:ml-8 relative bg-sand-50 border border-sand-300 rounded-[14px] p-3 sm:p-4 card-hover">
-                    <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-4 border-t border-sand-300 hidden sm:block" />
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-sage-100/60 flex items-center justify-center flex-shrink-0">
-                        <Users className="h-4 w-4 text-sage-400" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-sage-800 truncate">{branch.name}</p>
-                        <p className="text-xs text-sage-800/40">
-                          {branch.contactName && `${branch.contactName} · `}
-                          {branch.email || "Sin email"}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 flex-wrap mt-2 ml-11">
-                      {hasIncompleteData(branch) && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-600 border border-amber-200 whitespace-nowrap flex items-center gap-1">
-                          <AlertTriangle className="h-3 w-3" />
-                          {getMissingFields(branch).join(", ")}
-                        </span>
-                      )}
-                      <Badge variant="secondary" className="text-xs">{branch.pickupCount} retiros</Badge>
-                      <Badge variant="outline" className="text-xs">{branch._count.certificates} certificados</Badge>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ))}
-          {filtered.length === 0 && !search && (
-            <div className="text-center py-12">
+      ) : filtered.length === 0 ? (
+        <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-12 text-center">
+          {!search ? (
+            <>
               <p className="text-3xl mb-3">🤝</p>
               <p className="text-sm text-sage-600">Tu red de reciclaje empieza aquí.</p>
               <p className="text-xs text-sage-800/40 mt-1">Agrega tu primer cliente para comenzar a medir impacto.</p>
@@ -229,17 +151,106 @@ export default function ClientsPage() {
                   <Plus className="h-4 w-4 mr-1" /> Agregar cliente
                 </Button>
               </Link>
-            </div>
-          )}
-          {filtered.length === 0 && search && (
-            <div className="text-center py-12">
+            </>
+          ) : (
+            <>
               <p className="text-3xl mb-3">🔍</p>
               <p className="text-sm text-sage-600">Nada por aquí con esos filtros.</p>
               <p className="text-xs text-sage-800/40 mt-1">Prueba ampliando la búsqueda.</p>
-            </div>
+            </>
           )}
+        </div>
+      ) : (
+        <div className="bg-sand-50 border border-sand-300 rounded-[14px] overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-sand-100">
+                  <th className="text-left py-3 px-3 sm:px-4 text-xs font-medium text-sage-800/40 uppercase tracking-wider">Cliente</th>
+                  <th className="text-left py-3 px-3 sm:px-4 text-xs font-medium text-sage-800/40 uppercase tracking-wider hidden md:table-cell">Contacto</th>
+                  <th className="text-left py-3 px-3 sm:px-4 text-xs font-medium text-sage-800/40 uppercase tracking-wider hidden sm:table-cell">Email</th>
+                  <th className="text-right py-3 px-3 sm:px-4 text-xs font-medium text-sage-800/40 uppercase tracking-wider">Retiros</th>
+                  <th className="text-right py-3 px-3 sm:px-4 text-xs font-medium text-sage-800/40 uppercase tracking-wider hidden sm:table-cell">Certificados</th>
+                  <th className="w-10 py-3 px-2"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((client) => (
+                  <ClientRows key={client.id} client={client} />
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>
+  );
+}
+
+function ClientRow({ client, isBranch }: { client: Client; isBranch?: boolean }) {
+  const totalRetiros = isBranch
+    ? client.pickupCount
+    : client.pickupCount + (client.branches?.reduce((s, b) => s + b.pickupCount, 0) || 0);
+  const totalCerts = isBranch
+    ? client._count.certificates
+    : client._count.certificates + (client.branches?.reduce((s, b) => s + b._count.certificates, 0) || 0);
+
+  return (
+    <tr className="border-t border-sand-200 hover:bg-white/50 transition-colors">
+      <td className="py-3 px-3 sm:px-4">
+        <Link href={`/dashboard/clients/${client.id}`} className="flex items-center gap-2">
+          {isBranch && <span className="text-sage-800/20 ml-4">└</span>}
+          <div className="h-6 w-6 rounded-full bg-sage-100 flex items-center justify-center flex-shrink-0">
+            <span className="text-[10px] font-medium text-sage-500">
+              {client.name.charAt(0)}
+            </span>
+          </div>
+          <div className="min-w-0">
+            <span className={`font-medium text-sage-800 truncate block ${isBranch ? "text-xs" : "text-sm"}`}>
+              {client.name}
+            </span>
+            {hasIncompleteData(client) && (
+              <span className="text-[10px] text-amber-600 flex items-center gap-0.5">
+                <AlertTriangle className="h-2.5 w-2.5" />
+                {getMissingFields(client).join(", ")}
+              </span>
+            )}
+          </div>
+          {!isBranch && (client.branches?.length ?? 0) > 0 && (
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sage-50 text-sage-500 border border-sage-200 whitespace-nowrap">
+              {client.branches!.length} suc.
+            </span>
+          )}
+        </Link>
+      </td>
+      <td className="py-3 px-3 sm:px-4 text-xs text-sage-800/60 hidden md:table-cell">
+        {client.contactName || "—"}
+      </td>
+      <td className="py-3 px-3 sm:px-4 text-xs text-sage-800/60 truncate max-w-[180px] hidden sm:table-cell">
+        {client.email || <span className="text-sage-800/30">Sin email</span>}
+      </td>
+      <td className="py-3 px-3 sm:px-4 text-right text-xs font-medium text-sage-800 tabular-nums">
+        {totalRetiros}
+      </td>
+      <td className="py-3 px-3 sm:px-4 text-right text-xs text-sage-500 tabular-nums hidden sm:table-cell">
+        {totalCerts}
+      </td>
+      <td className="py-3 px-2 text-center">
+        <Link href={`/dashboard/clients/${client.id}`}>
+          <ChevronRight className="h-4 w-4 text-sage-300" />
+        </Link>
+      </td>
+    </tr>
+  );
+}
+
+function ClientRows({ client }: { client: Client & { branches: Client[] } }) {
+  return (
+    <>
+      <ClientRow client={client} />
+      {client.branches?.map((branch) => (
+        <ClientRow key={branch.id} client={branch} isBranch />
+      ))}
+    </>
   );
 }
