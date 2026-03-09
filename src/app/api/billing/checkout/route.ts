@@ -62,10 +62,9 @@ export async function POST(req: NextRequest) {
       security_token: result.security_token,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Error desconocido";
-    console.error("Error al crear suscripcion en Reveniu:", message);
+    console.error("Error al crear suscripcion en Reveniu:", error);
     return NextResponse.json(
-      { error: "Error al crear la suscripcion", detail: message },
+      { error: "Error al crear la suscripcion" },
       { status: 500 }
     );
   }
