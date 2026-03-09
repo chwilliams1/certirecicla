@@ -1,6 +1,3 @@
-import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import Link from "next/link";
 import {
   Leaf,
@@ -18,9 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default async function Home() {
-  const session = await getServerSession(authOptions);
-  if (session) redirect("/dashboard");
+export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
