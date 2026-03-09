@@ -45,11 +45,13 @@ export async function createSubscription(
     method: "POST",
     body: JSON.stringify({
       plan_id: planId,
-      external_id: companyId,
       field_values: {
         email,
         name,
       },
+      extra_customer_fields: [
+        { name: "Company ID", tag_name: "company_id", content: companyId },
+      ],
     }),
   });
 }
