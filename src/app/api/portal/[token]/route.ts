@@ -75,6 +75,15 @@ export async function GET(
   }
   const equivalencies = calculateEquivalencies(totalCo2, customEq);
 
+  // Build pickups list (grouped by date + location)
+  const pickups = records.map((r) => ({
+    date: r.pickupDate.toISOString(),
+    material: r.material,
+    kg: r.quantityKg,
+    co2: r.co2Saved,
+    location: r.location || null,
+  }));
+
   return NextResponse.json({
     client: portalToken.client,
     company: { name: portalToken.company.name, logo: portalToken.company.logo },
@@ -91,5 +100,6 @@ export async function GET(
       .map(([month, co2]) => ({ month, co2: Math.round(co2) }))
       .sort((a, b) => a.month.localeCompare(b.month)),
     certificates,
+    pickups,
   });
 }
