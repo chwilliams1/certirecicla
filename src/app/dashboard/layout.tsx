@@ -19,6 +19,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { NotificationBell } from "@/components/notification-bell";
 import { ProductTour } from "@/components/product-tour";
 import { usePermissions } from "@/hooks/use-permissions";
+import { Clock, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 
 const navItems = [
@@ -130,37 +131,80 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
+function TrialTopBar() {
+  const [trialDays, setTrialDays] = useState<number | null>(null);
+  const [expired, setExpired] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/plan")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.plan === "trial") {
+          setTrialDays(d.trialDaysRemaining);
+          setExpired(d.trialExpired);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  if (trialDays === null && !expired) return null;
+
+  if (expired) {
+    return (
+      <div className="bg-red-600 text-white text-center py-1.5 px-4 text-xs sm:text-sm font-medium flex items-center justify-center gap-2">
+        <Clock className="h-3.5 w-3.5 flex-shrink-0" />
+        <span>Tu periodo de prueba ha terminado.</span>
+        <button className="underline hover:no-underline inline-flex items-center gap-0.5">
+          Seleccionar plan <ArrowRight className="h-3 w-3" />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-amber-500 text-white text-center py-1.5 px-4 text-xs sm:text-sm font-medium flex items-center justify-center gap-2">
+      <Clock className="h-3.5 w-3.5 flex-shrink-0" />
+      <span>Periodo de prueba: {trialDays} {trialDays === 1 ? "dia" : "dias"} restantes</span>
+      <button className="underline hover:no-underline inline-flex items-center gap-0.5">
+        Ver planes <ArrowRight className="h-3 w-3" />
+      </button>
+    </div>
+  );
+}
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-sand-100">
-      <aside className="hidden lg:block w-[228px] flex-shrink-0">
-        <Sidebar />
-      </aside>
+    <div className="flex flex-col h-screen bg-sand-100">
+      <TrialTopBar />
+      <div className="flex flex-1 overflow-hidden">
+        <aside className="hidden lg:block w-[228px] flex-shrink-0">
+          <Sidebar />
+        </aside>
 
-      <Sheet open={open} onOpenChange={setOpen}>
-        <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-sand-50 border-b border-sand-300 px-3 py-2.5 flex items-center gap-2">
-          <SheetTrigger asChild>
-            <button className="min-w-[44px] min-h-[44px] flex items-center justify-center text-sage-800/40 hover:text-sage-800 transition-colors rounded-lg">
-              <Menu className="h-5 w-5" strokeWidth={1.5} />
-            </button>
-          </SheetTrigger>
-          <div className="flex items-center gap-2 flex-1">
-            <Leaf className="h-5 w-5 text-sage-500 animate-breathe" strokeWidth={1.5} />
-            <span className="font-serif text-sage-800">CertiRecicla</span>
+        <Sheet open={open} onOpenChange={setOpen}>
+          <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-sand-50 border-b border-sand-300 px-3 py-2.5 flex items-center gap-2 trial-mobile-header">
+            <SheetTrigger asChild>
+              <button className="min-w-[44px] min-h-[44px] flex items-center justify-center text-sage-800/40 hover:text-sage-800 transition-colors rounded-lg">
+                <Menu className="h-5 w-5" strokeWidth={1.5} />
+              </button>
+            </SheetTrigger>
+            <div className="flex items-center gap-2 flex-1">
+              <Leaf className="h-5 w-5 text-sage-500 animate-breathe" strokeWidth={1.5} />
+              <span className="font-serif text-sage-800">CertiRecicla</span>
+            </div>
+            <NotificationBell />
           </div>
-          <NotificationBell />
-        </div>
-        <SheetContent side="left" className="p-0 w-[260px] sm:w-[228px] bg-sand-50 border-sand-300">
-          <Sidebar onNavigate={() => setOpen(false)} />
-        </SheetContent>
-      </Sheet>
+          <SheetContent side="left" className="p-0 w-[260px] sm:w-[228px] bg-sand-50 border-sand-300">
+            <Sidebar onNavigate={() => setOpen(false)} />
+          </SheetContent>
+        </Sheet>
 
-      <main className="flex-1 overflow-auto lg:pt-0 pt-14">
-        <div className="p-4 sm:p-6 lg:p-8 max-w-7xl">{children}</div>
-      </main>
-
+        <main className="flex-1 overflow-auto lg:pt-0 pt-14">
+          <div className="p-4 sm:p-6 lg:p-8 max-w-7xl">{children}</div>
+        </main>
+      </div>
       <ProductTour />
     </div>
   );
