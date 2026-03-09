@@ -41,22 +41,30 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const result = await createSubscription(
-    plan,
-    session.user.email!,
-    session.user.companyId
-  );
+  try {
+    const result = await createSubscription(
+      plan,
+      session.user.email!,
+      session.user.companyId
+    );
 
-  await prisma.company.update({
-    where: { id: session.user.companyId },
-    data: {
-      reveniuSubscriptionId: result.id,
-      subscriptionStatus: company?.subscriptionStatus === "active" ? "switching" : "none",
-    },
-  });
+    await prisma.company.update({
+      where: { id: session.user.companyId },
+      data: {
+        reveniuSubscriptionId: result.id,
+        subscriptionStatus: company?.subscriptionStatus === "active" ? "switching" : "none",
+      },
+    });
 
-  return NextResponse.json({
-    completion_url: result.completion_url,
-    security_token: result.security_token,
-  });
+    return NextResponse.json({
+      completion_url: result.completion_url,
+      security_token: result.security_token,
+    });
+  } catch (error) {
+    console.error("Error al crear suscripcion en Reveniu:", error);
+    return NextResponse.json(
+      { error: "Error al crear la suscripcion" },
+      { status: 500 }
+    );
+  }
 }

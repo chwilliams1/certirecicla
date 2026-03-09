@@ -40,12 +40,16 @@ export async function createSubscription(
   const planId = REVENIU_PLAN_MAP[planKey];
   if (!planId) throw new Error(`Plan desconocido: ${planKey}`);
 
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://certirecicla.com";
+
   return reveniuFetch("/subscriptions/", {
     method: "POST",
     body: JSON.stringify({
       plan_id: planId,
       email,
       metadata: { companyId },
+      return_url: `${APP_URL}/dashboard/billing?status=success`,
+      cancel_url: `${APP_URL}/dashboard/billing?status=failure`,
     }),
   });
 }
