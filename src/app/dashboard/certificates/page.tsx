@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, FileCheck, Download, Plus, Mail, Loader2, Check } from "lucide-react";
+import { Search, FileCheck, Download, Plus, Mail, Loader2, Check, MoreVertical, Send, Pencil } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import { SendCertificateDialog } from "@/components/send-certificate-dialog";
 
 interface Certificate {
   id: string;
@@ -20,12 +27,20 @@ interface Certificate {
   name: string;
   totalKg: number;
   totalCo2: number;
+  materials: string;
   status: string;
   periodStart: string;
   periodEnd: string;
   createdAt: string;
   client: { name: string; email: string | null; parentClient?: { name: string } | null };
+  company: { name: string };
 }
+
+const STATUS_LABELS: Record<string, string> = {
+  draft: "Borrador",
+  published: "Publicado",
+  sent: "Enviado",
+};
 
 const STATUS_STYLES: Record<string, string> = {
   draft: "bg-sand-200 text-sage-800/60",
@@ -41,6 +56,36 @@ export default function CertificatesPage() {
   const [selectedCerts, setSelectedCerts] = useState<Set<string>>(new Set());
   const [bulkSending, setBulkSending] = useState(false);
   const [bulkProgress, setBulkProgress] = useState(0);
+  const [sendDialogOpen, setSendDialogOpen] = useState(false);
+  const [sendDialogCert, setSendDialogCert] = useState<Certificate | null>(null);
+  const [sendMode, setSendMode] = useState<"send" | "publishAndSend">("send");
+
+  function openSendDialog(cert: Certificate, mode: "send" | "publishAndSend") {
+    setSendDialogCert(cert);
+    setSendMode(mode);
+    setSendDialogOpen(true);
+  }
+
+  function handleSendSuccess() {
+    if (sendDialogCert) {
+      setCertificates((prev) =>
+        prev.map((c) => c.id === sendDialogCert.id ? { ...c, status: "sent" } : c)
+      );
+    }
+  }
+
+  async function handlePublish(certId: string) {
+    const res = await fetch(`/api/certificates/${certId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "published" }),
+    });
+    if (res.ok) {
+      setCertificates((prev) =>
+        prev.map((c) => c.id === certId ? { ...c, status: "published" } : c)
+      );
+    }
+  }
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -187,7 +232,7 @@ export default function CertificatesPage() {
                         </>
                       )}
                     </p>
-                    <Badge className={STATUS_STYLES[cert.status] || ""}>{cert.status}</Badge>
+                    <Badge className={STATUS_STYLES[cert.status] || ""}>{STATUS_LABELS[cert.status] || cert.status}</Badge>
                   </div>
                   <p className="text-xs text-sage-800/40">
                     {cert.uniqueCode}
@@ -201,9 +246,43 @@ export default function CertificatesPage() {
                   <p className="text-sm font-medium text-sage-800">{cert.totalKg.toLocaleString("es-CL")} kg</p>
                   <p className="text-xs text-sage-500">{cert.totalCo2.toLocaleString("es-CL")} kg CO₂</p>
                 </div>
-                <Button variant="ghost" size="sm" onClick={() => handleDownloadPdf(cert.id, cert.name || cert.uniqueCode)} className="min-w-[44px] min-h-[44px]">
-                  <Download className="h-4 w-4" />
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="min-w-[44px] min-h-[44px]">
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => handleDownloadPdf(cert.id, cert.name || cert.uniqueCode)}>
+                      <Download className="h-4 w-4 mr-2" />
+                      Descargar PDF
+                    </DropdownMenuItem>
+                    {cert.status === "draft" && (
+                      <DropdownMenuItem onClick={() => handlePublish(cert.id)}>
+                        <Check className="h-4 w-4 mr-2" />
+                        Publicar
+                      </DropdownMenuItem>
+                    )}
+                    {cert.status === "draft" && cert.client?.email && (
+                      <DropdownMenuItem onClick={() => openSendDialog(cert, "publishAndSend")}>
+                        <Mail className="h-4 w-4 mr-2" />
+                        Publicar y enviar
+                      </DropdownMenuItem>
+                    )}
+                    {cert.status === "published" && cert.client?.email && (
+                      <DropdownMenuItem onClick={() => openSendDialog(cert, "send")}>
+                        <Send className="h-4 w-4 mr-2" />
+                        Enviar por email
+                      </DropdownMenuItem>
+                    )}
+                    {cert.status === "sent" && cert.client?.email && (
+                      <DropdownMenuItem onClick={() => openSendDialog(cert, "send")}>
+                        <Mail className="h-4 w-4 mr-2" />
+                        Reenviar
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           ))}
@@ -228,6 +307,17 @@ export default function CertificatesPage() {
           )}
         </div>
       )}
+      {/* Send email dialog */}
+      {sendDialogCert && (
+        <SendCertificateDialog
+          open={sendDialogOpen}
+          onOpenChange={setSendDialogOpen}
+          certificate={sendDialogCert as any}
+          mode={sendMode}
+          onSuccess={handleSendSuccess}
+        />
+      )}
+
       {/* Floating action bar for bulk send */}
       {selectedCerts.size > 0 && (
         <div className="fixed bottom-6 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-30 bg-sage-800 text-white rounded-2xl shadow-xl px-4 sm:px-6 py-3 flex items-center gap-3 sm:gap-4 animate-in slide-in-from-bottom-4 duration-200">
