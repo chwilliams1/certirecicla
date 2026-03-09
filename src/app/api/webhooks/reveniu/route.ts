@@ -6,10 +6,12 @@ import { getPlanConfig } from "@/lib/plans";
 export async function POST(req: NextRequest) {
   const secretKey = req.headers.get("Reveniu-Secret-Key");
   if (secretKey !== process.env.REVENIU_SECRET_KEY) {
+    console.error("Webhook auth failed. Received key:", secretKey?.slice(0, 8) + "...", "Expected:", process.env.REVENIU_SECRET_KEY?.slice(0, 8) + "...");
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const body = await req.json();
+  console.log("Webhook received:", JSON.stringify(body));
   const { event, subscription_id } = body;
 
   if (!subscription_id) {
