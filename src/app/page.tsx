@@ -9,7 +9,7 @@ import {
   Globe,
   ArrowRight,
   Check,
-  Zap,
+
   Target,
   TrendingUp,
 } from "lucide-react";
@@ -220,14 +220,6 @@ export default function Home() {
                   creacion automatica de clientes y calculo de CO&#x2082;.
                 </p>
               </div>
-              <div className="rounded-xl border bg-card p-6 card-hover">
-                <Zap className="mb-4 h-10 w-10 text-sage-500" />
-                <h3 className="mb-2 font-serif text-lg font-bold">Chatbot IA</h3>
-                <p className="text-sm text-muted-foreground">
-                  Emite certificados conversando con inteligencia artificial.
-                  Flujo guiado que simplifica el proceso.
-                </p>
-              </div>
             </div>
           </div>
         </section>
@@ -355,10 +347,6 @@ export default function Home() {
                   <li className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-sage-500 flex-shrink-0" />
                     Todo lo de Starter
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-sage-500 flex-shrink-0" />
-                    Chatbot IA para certificados
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-sage-500 flex-shrink-0" />

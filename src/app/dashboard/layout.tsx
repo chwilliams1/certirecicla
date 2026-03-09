@@ -7,7 +7,7 @@ import {
   LayoutDashboard,
   Users,
   FileCheck,
-  MessageSquare,
+
   Settings,
   Leaf,
   LogOut,
@@ -28,7 +28,6 @@ const navItems = [
 ];
 
 const secondaryNavItems = [
-  { href: "/dashboard/chatbot", label: "Chatbot IA", icon: MessageSquare },
   { href: "/dashboard/settings", label: "Configuración", icon: Settings },
 ];
 
