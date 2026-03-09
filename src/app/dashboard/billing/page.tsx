@@ -80,7 +80,7 @@ function BillingContent() {
 
       if (!res.ok) {
         const data = await res.json();
-        alert(data.error || "Error al iniciar el pago");
+        alert(data.detail ? `${data.error}: ${data.detail}` : data.error || "Error al iniciar el pago");
         return;
       }
 
