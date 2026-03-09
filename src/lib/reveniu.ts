@@ -1,4 +1,4 @@
-const REVENIU_API = "https://integration.reveniu.com/api/v1";
+const REVENIU_API = "https://production.reveniu.com/api/v1";
 const REVENIU_SECRET = process.env.REVENIU_SECRET_KEY;
 
 export const REVENIU_PLAN_MAP: Record<string, number> = {
