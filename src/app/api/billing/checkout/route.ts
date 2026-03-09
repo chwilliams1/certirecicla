@@ -45,6 +45,7 @@ export async function POST(req: NextRequest) {
     const result = await createSubscription(
       plan,
       session.user.email!,
+      session.user.name || session.user.email!,
       session.user.companyId
     );
 
