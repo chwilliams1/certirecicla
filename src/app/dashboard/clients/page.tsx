@@ -6,6 +6,7 @@ import { Plus, Search, Users, Upload, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { PermissionGate } from "@/components/permission-gate";
 
 interface Client {
   id: string;
@@ -95,12 +96,16 @@ export default function ClientsPage() {
           <p className="text-sm text-sage-800/40">{clients.length} clientes registrados</p>
         </div>
         <div className="flex gap-2">
-          <Link href="/dashboard/clients/upload">
-            <Button variant="outline"><Upload className="h-4 w-4 mr-1" /> Importar</Button>
-          </Link>
-          <Link href="/dashboard/clients/new">
-            <Button><Plus className="h-4 w-4 mr-1" /> Nuevo cliente</Button>
-          </Link>
+          <PermissionGate permission="clients:create">
+            <Link href="/dashboard/clients/upload">
+              <Button variant="outline"><Upload className="h-4 w-4 mr-1" /> Importar</Button>
+            </Link>
+          </PermissionGate>
+          <PermissionGate permission="clients:create">
+            <Link href="/dashboard/clients/new">
+              <Button><Plus className="h-4 w-4 mr-1" /> Nuevo cliente</Button>
+            </Link>
+          </PermissionGate>
         </div>
       </div>
 

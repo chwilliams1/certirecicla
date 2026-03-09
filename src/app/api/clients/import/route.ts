@@ -3,12 +3,16 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Anthropic from "@anthropic-ai/sdk";
+import { hasPermission } from "@/lib/roles";
 
 // POST /api/clients/import?action=analyze | import
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.companyId) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session.user.role, "clients:create")) {
+    return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
   }
 
   const action = new URL(req.url).searchParams.get("action");

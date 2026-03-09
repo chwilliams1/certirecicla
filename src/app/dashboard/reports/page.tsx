@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PermissionGate } from "@/components/permission-gate";
 
 interface ClientOption {
   id: string;
@@ -436,23 +437,25 @@ export default function ReportsPage() {
         )}
 
         {/* Generate button */}
-        <Button
-          onClick={handleGenerate}
-          disabled={!canGenerate}
-          className="w-full"
-        >
-          {loading ? (
-            <>
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Generando reporte...
-            </>
-          ) : (
-            <>
-              <Download className="h-4 w-4 mr-2" />
-              Generar Reporte
-            </>
-          )}
-        </Button>
+        <PermissionGate permission="reports:generate">
+          <Button
+            onClick={handleGenerate}
+            disabled={!canGenerate}
+            className="w-full"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Generando reporte...
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4 mr-2" />
+                Generar Reporte
+              </>
+            )}
+          </Button>
+        </PermissionGate>
       </div>
 
       {/* Info card */}

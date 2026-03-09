@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { hash } from "bcryptjs";
 import { hasPermission } from "@/lib/roles";
+import { checkUserLimit } from "@/lib/plans";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -30,6 +31,19 @@ export async function POST(req: NextRequest) {
   }
   if (!hasPermission(session.user.role, "users:manage")) {
     return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
+  }
+
+  // Check user limit based on plan
+  const company = await prisma.company.findUnique({
+    where: { id: session.user.companyId },
+    select: { plan: true },
+  });
+  const currentUserCount = await prisma.user.count({
+    where: { companyId: session.user.companyId },
+  });
+  const userLimitCheck = checkUserLimit(currentUserCount, company?.plan || "trial");
+  if (!userLimitCheck.allowed) {
+    return NextResponse.json({ error: userLimitCheck.reason }, { status: 403 });
   }
 
   const { name, email, password, role } = await req.json();

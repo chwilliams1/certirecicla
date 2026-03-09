@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { hasPermission } from "@/lib/roles";
 
 // POST /api/upload/check-new-clients
 // Receives client names from transformed data, returns which are new vs existing
@@ -9,6 +10,9 @@ export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.companyId) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session.user.role, "upload:data")) {
+    return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
   }
 
   const { clientNames } = (await req.json()) as { clientNames: string[] };

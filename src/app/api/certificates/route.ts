@@ -4,11 +4,15 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { checkCertificateLimit, isTrialExpired } from "@/lib/plans";
 import { generateCertCode } from "@/lib/generate-cert-code";
+import { hasPermission } from "@/lib/roles";
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.companyId) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session.user.role, "certificates:view")) {
+    return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
   }
 
   const { searchParams } = new URL(req.url);
@@ -42,6 +46,9 @@ export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.companyId) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session.user.role, "certificates:create")) {
+    return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
   }
 
   const body = await req.json();

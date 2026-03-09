@@ -3,11 +3,15 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { clientUpdateSchema } from "@/lib/validations";
+import { hasPermission } from "@/lib/roles";
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.companyId) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session.user.role, "clients:view")) {
+    return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
   }
 
   const client = await prisma.client.findFirst({
@@ -108,6 +112,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (!session?.user?.companyId) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
+  if (!hasPermission(session.user.role, "clients:edit")) {
+    return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
+  }
 
   const body = await req.json();
   const parsed = clientUpdateSchema.safeParse(body);
@@ -158,6 +165,9 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
   const session = await getServerSession(authOptions);
   if (!session?.user?.companyId) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session.user.role, "clients:delete")) {
+    return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
   }
 
   await prisma.client.updateMany({

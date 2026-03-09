@@ -3,11 +3,15 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { sendCertificateEmail } from "@/lib/email/send-certificate";
+import { hasPermission } from "@/lib/roles";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.companyId) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session.user.role, "certificates:send")) {
+    return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
   }
 
   const body = await req.json();

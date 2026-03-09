@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { VALID_MATERIALS } from "@/lib/co2-calculator";
+import { hasPermission } from "@/lib/roles";
 
 interface ColumnMapping {
   nombre_cliente: string | null;
@@ -58,6 +59,9 @@ export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.companyId) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session.user.role, "upload:data")) {
+    return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
   }
 
   const body = await req.json();

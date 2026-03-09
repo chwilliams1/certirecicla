@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ROLE_LABELS } from "@/lib/roles";
+import { getPlanConfig } from "@/lib/plans";
 
 interface User {
   id: string;
@@ -46,6 +47,7 @@ export default function UsersPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [companyPlan, setCompanyPlan] = useState<string>("trial");
 
   // New user form state
   const [newName, setNewName] = useState("");
@@ -53,8 +55,16 @@ export default function UsersPage() {
   const [newPassword, setNewPassword] = useState("");
   const [newRole, setNewRole] = useState("operator");
 
+  const planConfig = getPlanConfig(companyPlan);
+  const maxUsers = planConfig.maxUsers;
+  const atLimit = maxUsers !== -1 && users.length >= maxUsers;
+
   useEffect(() => {
     fetchUsers();
+    fetch("/api/settings")
+      .then((r) => r.json())
+      .then((d) => { if (d?.plan) setCompanyPlan(d.plan); })
+      .catch(() => {});
   }, []);
 
   async function fetchUsers() {
@@ -141,9 +151,24 @@ export default function UsersPage() {
           <h1 className="font-serif text-2xl text-sage-800">Usuarios</h1>
           <p className="text-sm text-sage-800/40">
             Gestiona el equipo de tu empresa
+            {!loading && (
+              <span className="ml-2 font-medium">
+                ({users.length}/{maxUsers === -1 ? "∞" : maxUsers})
+              </span>
+            )}
           </p>
         </div>
 
+        {atLimit ? (
+          <div className="text-right">
+            <Button disabled>
+              <Plus className="h-4 w-4 mr-1" /> Nuevo usuario
+            </Button>
+            <p className="text-xs text-amber-600 mt-1">
+              Limite alcanzado. Actualiza tu plan.
+            </p>
+          </div>
+        ) : (
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button>
@@ -226,6 +251,7 @@ export default function UsersPage() {
             </form>
           </DialogContent>
         </Dialog>
+        )}
       </div>
 
       {loading ? (

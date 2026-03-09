@@ -20,6 +20,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { SendCertificateDialog } from "@/components/send-certificate-dialog";
+import { PermissionGate } from "@/components/permission-gate";
 
 interface Certificate {
   id: string;
@@ -137,16 +138,20 @@ export default function CertificatesPage() {
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
           {certificates.some((c) => c.status === "draft") && (
-            <Button variant="outline" className="flex-1 sm:flex-initial" onClick={handleBulkPublish} disabled={bulkPublishing}>
-              {bulkPublishing ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Check className="h-4 w-4 mr-1.5" />}
-              Publicar todos
-            </Button>
+            <PermissionGate permission="certificates:create">
+              <Button variant="outline" className="flex-1 sm:flex-initial" onClick={handleBulkPublish} disabled={bulkPublishing}>
+                {bulkPublishing ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Check className="h-4 w-4 mr-1.5" />}
+                Publicar todos
+              </Button>
+            </PermissionGate>
           )}
-          <Link href="/dashboard/certificates/new" className="flex-1 sm:flex-initial">
-            <Button className="w-full">
-              <Plus className="h-4 w-4 mr-1.5" /> Crear certificado
-            </Button>
-          </Link>
+          <PermissionGate permission="certificates:create">
+            <Link href="/dashboard/certificates/new" className="flex-1 sm:flex-initial">
+              <Button className="w-full">
+                <Plus className="h-4 w-4 mr-1.5" /> Crear certificado
+              </Button>
+            </Link>
+          </PermissionGate>
         </div>
       </div>
 

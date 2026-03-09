@@ -4,11 +4,15 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { calculateCo2 } from "@/lib/co2-calculator";
 import { recordCreateSchema } from "@/lib/validations";
+import { hasPermission } from "@/lib/roles";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.companyId) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session.user.role, "pickups:view")) {
+    return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
   }
 
   const records = await prisma.recyclingRecord.findMany({

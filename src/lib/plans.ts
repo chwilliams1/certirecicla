@@ -6,6 +6,7 @@ export interface PlanConfig {
   priceClp: number;
   maxClients: number;
   maxCertificatesPerMonth: number; // -1 = unlimited
+  maxUsers: number; // -1 = unlimited
   multiUser: boolean;
   sinaderExport: boolean;
   description: string;
@@ -18,6 +19,7 @@ export const PLANS: Record<PlanType, PlanConfig> = {
     priceClp: 0,
     maxClients: 60,
     maxCertificatesPerMonth: -1,
+    maxUsers: 1,
     multiUser: false,
     sinaderExport: false,
     description: "14 dias gratis con plan Profesional completo",
@@ -28,6 +30,7 @@ export const PLANS: Record<PlanType, PlanConfig> = {
     priceClp: 19900,
     maxClients: 15,
     maxCertificatesPerMonth: 30,
+    maxUsers: 1,
     multiUser: false,
     sinaderExport: false,
     description: "Para gestoras que empiezan a digitalizar",
@@ -38,7 +41,8 @@ export const PLANS: Record<PlanType, PlanConfig> = {
     priceClp: 49900,
     maxClients: 60,
     maxCertificatesPerMonth: -1,
-    multiUser: false,
+    maxUsers: 3,
+    multiUser: true,
     sinaderExport: false,
     description: "Para gestoras con operacion activa",
   },
@@ -48,6 +52,7 @@ export const PLANS: Record<PlanType, PlanConfig> = {
     priceClp: 99900,
     maxClients: 200,
     maxCertificatesPerMonth: -1,
+    maxUsers: -1,
     multiUser: true,
     sinaderExport: true,
     description: "Para gestoras con alto volumen",
@@ -115,4 +120,23 @@ export function checkCertificateLimit(
     currentCount: currentMonthCertificates,
     limit: config.maxCertificatesPerMonth,
   };
+}
+
+export function checkUserLimit(
+  currentUsers: number,
+  plan: string
+): PlanLimitCheck {
+  const config = getPlanConfig(plan);
+  if (config.maxUsers === -1) {
+    return { allowed: true, currentCount: currentUsers, limit: -1 };
+  }
+  if (currentUsers >= config.maxUsers) {
+    return {
+      allowed: false,
+      reason: `Tu plan ${config.displayName} permite hasta ${config.maxUsers} usuario${config.maxUsers === 1 ? "" : "s"}. Actualiza tu plan para agregar mas.`,
+      currentCount: currentUsers,
+      limit: config.maxUsers,
+    };
+  }
+  return { allowed: true, currentCount: currentUsers, limit: config.maxUsers };
 }

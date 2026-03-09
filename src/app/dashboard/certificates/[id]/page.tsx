@@ -32,6 +32,7 @@ import { formatPeriod } from "@/lib/format-period";
 import { SendCertificateDialog } from "@/components/send-certificate-dialog";
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { PermissionGate } from "@/components/permission-gate";
 
 interface PickupDetail {
   date: string;
@@ -284,42 +285,48 @@ export default function CertificateDetailPage() {
         <div className="flex gap-2 flex-wrap">
           {/* Draft: Editar (con opción eliminar dentro del dropdown) */}
           {isDraft && !editing && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Pencil className="h-4 w-4 mr-1" /> Editar
-                  <ChevronDown className="h-3 w-3 ml-1" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={startEditing}>
-                  <Pencil className="h-4 w-4 mr-2" />
-                  Editar datos
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={handleDelete}
-                  disabled={deleting}
-                  className="text-red-600 focus:text-red-600"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Eliminar certificado
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <PermissionGate permission="certificates:create">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Pencil className="h-4 w-4 mr-1" /> Editar
+                    <ChevronDown className="h-3 w-3 ml-1" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={startEditing}>
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Editar datos
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className="text-red-600 focus:text-red-600"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Eliminar certificado
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </PermissionGate>
           )}
           {/* Draft: Publicar */}
           {isDraft && !editing && (
-            <Button variant="outline" size="sm" onClick={handlePublish} disabled={publishing}>
-              {publishing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4 mr-1" />}
-              Publicar
-            </Button>
+            <PermissionGate permission="certificates:create">
+              <Button variant="outline" size="sm" onClick={handlePublish} disabled={publishing}>
+                {publishing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4 mr-1" />}
+                Publicar
+              </Button>
+            </PermissionGate>
           )}
           {/* Draft: Publicar y enviar (acción principal) */}
           {isDraft && !editing && (
-            <Button onClick={() => openSendDialog("publishAndSend")} size="sm">
-              <Mail className="h-4 w-4 mr-1" />
-              Publicar y enviar
-            </Button>
+            <PermissionGate permission="certificates:send">
+              <Button onClick={() => openSendDialog("publishAndSend")} size="sm">
+                <Mail className="h-4 w-4 mr-1" />
+                Publicar y enviar
+              </Button>
+            </PermissionGate>
           )}
           {/* Editing mode */}
           {editing && (
@@ -335,24 +342,30 @@ export default function CertificateDetailPage() {
           )}
           {/* Published/Sent: Volver a borrador */}
           {!editing && !isDraft && (
-            <Button variant="outline" size="sm" onClick={handleRevertToDraft} disabled={publishing}>
-              {publishing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Pencil className="h-4 w-4 mr-1" />}
-              Volver a borrador
-            </Button>
+            <PermissionGate permission="certificates:create">
+              <Button variant="outline" size="sm" onClick={handleRevertToDraft} disabled={publishing}>
+                {publishing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Pencil className="h-4 w-4 mr-1" />}
+                Volver a borrador
+              </Button>
+            </PermissionGate>
           )}
           {/* Published (not sent): Enviar */}
           {!editing && cert.status === "published" && (
-            <Button size="sm" onClick={() => openSendDialog("send")}>
-              <Mail className="h-4 w-4 mr-1" />
-              Enviar
-            </Button>
+            <PermissionGate permission="certificates:send">
+              <Button size="sm" onClick={() => openSendDialog("send")}>
+                <Mail className="h-4 w-4 mr-1" />
+                Enviar
+              </Button>
+            </PermissionGate>
           )}
           {/* Sent: Reenviar */}
           {!editing && cert.status === "sent" && (
-            <Button variant="outline" size="sm" onClick={() => openSendDialog("send")}>
-              <Mail className="h-4 w-4 mr-1" />
-              Reenviar
-            </Button>
+            <PermissionGate permission="certificates:send">
+              <Button variant="outline" size="sm" onClick={() => openSendDialog("send")}>
+                <Mail className="h-4 w-4 mr-1" />
+                Reenviar
+              </Button>
+            </PermissionGate>
           )}
           {/* Siempre: PDF */}
           {!editing && (

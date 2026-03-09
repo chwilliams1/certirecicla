@@ -18,23 +18,25 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { NotificationBell } from "@/components/notification-bell";
 import { ProductTour } from "@/components/product-tour";
+import { usePermissions } from "@/hooks/use-permissions";
 import { useState, useEffect } from "react";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, tourId: "nav-dashboard" },
-  { href: "/dashboard/clients", label: "Clientes", icon: Users, tourId: "nav-clients" },
-  { href: "/dashboard/pickups", label: "Retiros", icon: Truck, tourId: "nav-pickups" },
-  { href: "/dashboard/certificates", label: "Certificados", icon: FileCheck, tourId: "nav-certificates" },
-  { href: "/dashboard/reports", label: "Reportes", icon: FileBarChart, tourId: "nav-reports" },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, tourId: "nav-dashboard", permission: "dashboard:view" as const },
+  { href: "/dashboard/clients", label: "Clientes", icon: Users, tourId: "nav-clients", permission: "clients:view" as const },
+  { href: "/dashboard/pickups", label: "Retiros", icon: Truck, tourId: "nav-pickups", permission: "pickups:view" as const },
+  { href: "/dashboard/certificates", label: "Certificados", icon: FileCheck, tourId: "nav-certificates", permission: "certificates:view" as const },
+  { href: "/dashboard/reports", label: "Reportes", icon: FileBarChart, tourId: "nav-reports", permission: "reports:view" as const },
 ];
 
 const secondaryNavItems = [
-  { href: "/dashboard/settings", label: "Configuración", icon: Settings, tourId: "nav-settings" },
+  { href: "/dashboard/settings", label: "Configuración", icon: Settings, tourId: "nav-settings", permission: "settings:view" as const },
 ];
 
 function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const { can } = usePermissions();
   const [impactKg, setImpactKg] = useState<number | null>(null);
 
   useEffect(() => {
@@ -54,7 +56,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       <nav className="flex-1 px-3 space-y-0.5">
-        {navItems.map((item) => {
+        {navItems.filter(item => can(item.permission)).map((item) => {
           const isActive = pathname === item.href;
           return (
             <Link key={item.href} href={item.href} onClick={onNavigate}>
@@ -73,7 +75,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           );
         })}
         <div className="border-t border-sand-200 my-2 mx-3" />
-        {secondaryNavItems.map((item) => {
+        {secondaryNavItems.filter(item => can(item.permission)).map((item) => {
           const isActive = pathname === item.href;
           return (
             <Link key={item.href} href={item.href} onClick={onNavigate}>

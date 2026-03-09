@@ -18,6 +18,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import { PermissionGate } from "@/components/permission-gate";
 
 const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
   none: { label: "Solo retiro", className: "bg-sand-100 text-sage-800/50 border-sand-300" },
@@ -284,9 +285,11 @@ export default function ClientDetailPage() {
             {generatingPortal ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <ExternalLink className="h-4 w-4 mr-1" />}
             Portal
           </Button>
-          <Button variant="outline" size="sm" onClick={startEditing}>
-            <Pencil className="h-4 w-4 mr-1" /> Editar
-          </Button>
+          <PermissionGate permission="clients:edit">
+            <Button variant="outline" size="sm" onClick={startEditing}>
+              <Pencil className="h-4 w-4 mr-1" /> Editar
+            </Button>
+          </PermissionGate>
         </div>
         {/* Mobile dropdown */}
         <div className="sm:hidden">
@@ -310,9 +313,11 @@ export default function ClientDetailPage() {
               <DropdownMenuItem onClick={handleGeneratePortal} disabled={generatingPortal}>
                 <ExternalLink className="h-4 w-4 mr-2" /> Portal del cliente
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={startEditing}>
-                <Pencil className="h-4 w-4 mr-2" /> Editar datos
-              </DropdownMenuItem>
+              <PermissionGate permission="clients:edit">
+                <DropdownMenuItem onClick={startEditing}>
+                  <Pencil className="h-4 w-4 mr-2" /> Editar datos
+                </DropdownMenuItem>
+              </PermissionGate>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -536,9 +541,11 @@ export default function ClientDetailPage() {
 
               {/* Actions */}
               <div className="flex gap-3">
-                <Button variant="destructive" size="sm" onClick={handleDelete}>
-                  <Trash2 className="h-4 w-4 mr-1" /> Desactivar
-                </Button>
+                <PermissionGate permission="clients:delete">
+                  <Button variant="destructive" size="sm" onClick={handleDelete}>
+                    <Trash2 className="h-4 w-4 mr-1" /> Desactivar
+                  </Button>
+                </PermissionGate>
                 <div className="flex-1" />
                 <Button variant="outline" onClick={() => setEditing(false)}>
                   <X className="h-4 w-4 mr-1" /> Cancelar

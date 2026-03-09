@@ -4,11 +4,15 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { clientCreateSchema } from "@/lib/validations";
 import { checkClientLimit, isTrialExpired } from "@/lib/plans";
+import { hasPermission } from "@/lib/roles";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.companyId) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session.user.role, "clients:view")) {
+    return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
   }
 
   const clients = await prisma.client.findMany({
@@ -54,6 +58,9 @@ export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.companyId) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session.user.role, "clients:create")) {
+    return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
   }
 
   const body = await req.json();

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { formatRut } from "@/lib/validations";
+import { PageGuard } from "@/components/permission-gate";
 
 interface CompanySettings {
   id: string;
@@ -75,6 +76,7 @@ export default function SettingsPage() {
   if (!settings) return null;
 
   return (
+    <PageGuard permission="settings:view">
     <div className="space-y-6 max-w-2xl">
       <div>
         <h1 className="font-serif text-2xl text-sage-800">Configuración</h1>
@@ -213,5 +215,6 @@ export default function SettingsPage() {
         </button>
       </div>
     </div>
+    </PageGuard>
   );
 }

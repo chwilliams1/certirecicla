@@ -27,6 +27,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import { PermissionGate } from "@/components/permission-gate";
 
 // Colores centralizados en src/lib/material-colors.ts
 
@@ -125,14 +126,18 @@ export default function PickupsPage() {
           <p className="text-sm text-sage-800/40">Historial completo de retiros de reciclaje</p>
         </div>
         <div className="flex gap-2">
-          <Link href="/dashboard/upload" className="flex-1 sm:flex-none">
-            <Button variant="outline" className="w-full sm:w-auto"><Upload className="h-4 w-4 mr-1" /> Subir Excel</Button>
-          </Link>
-          <Link href="/dashboard/pickups/new" className="flex-1 sm:flex-none">
-            <Button className="w-full sm:w-auto">
-              <Plus className="h-4 w-4 mr-1.5" /> Registrar retiro
-            </Button>
-          </Link>
+          <PermissionGate permission="pickups:create">
+            <Link href="/dashboard/upload" className="flex-1 sm:flex-none">
+              <Button variant="outline" className="w-full sm:w-auto"><Upload className="h-4 w-4 mr-1" /> Subir Excel</Button>
+            </Link>
+          </PermissionGate>
+          <PermissionGate permission="pickups:create">
+            <Link href="/dashboard/pickups/new" className="flex-1 sm:flex-none">
+              <Button className="w-full sm:w-auto">
+                <Plus className="h-4 w-4 mr-1.5" /> Registrar retiro
+              </Button>
+            </Link>
+          </PermissionGate>
         </div>
       </div>
 
