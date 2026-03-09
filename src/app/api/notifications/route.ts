@@ -49,34 +49,28 @@ export async function GET() {
   const inactiveClients: Array<{ id: string; name: string; lastPickup: string | null; daysSince: number }> = [];
 
   for (const client of activeClients) {
-    // Check parent client
-    const lastPickup = client.records[0]?.pickupDate;
-    if (!lastPickup || lastPickup < cutoffDate) {
-      const daysSince = lastPickup
-        ? Math.floor((Date.now() - lastPickup.getTime()) / (1000 * 60 * 60 * 24))
+    // Collect all pickup dates: parent's own + all branches'
+    const allPickupDates: Date[] = [];
+    if (client.records[0]?.pickupDate) allPickupDates.push(client.records[0].pickupDate);
+    for (const branch of client.branches) {
+      if (branch.records[0]?.pickupDate) allPickupDates.push(branch.records[0].pickupDate);
+    }
+
+    // Check parent client using the most recent pickup across parent + branches
+    const mostRecentPickup = allPickupDates.length > 0
+      ? allPickupDates.reduce((latest, d) => (d > latest ? d : latest))
+      : null;
+
+    if (!mostRecentPickup || mostRecentPickup < cutoffDate) {
+      const daysSince = mostRecentPickup
+        ? Math.floor((Date.now() - mostRecentPickup.getTime()) / (1000 * 60 * 60 * 24))
         : -1;
       inactiveClients.push({
         id: client.id,
         name: client.name,
-        lastPickup: lastPickup?.toISOString() || null,
+        lastPickup: mostRecentPickup?.toISOString() || null,
         daysSince,
       });
-    }
-
-    // Check branches
-    for (const branch of client.branches) {
-      const branchLastPickup = branch.records[0]?.pickupDate;
-      if (!branchLastPickup || branchLastPickup < cutoffDate) {
-        const daysSince = branchLastPickup
-          ? Math.floor((Date.now() - branchLastPickup.getTime()) / (1000 * 60 * 60 * 24))
-          : -1;
-        inactiveClients.push({
-          id: branch.id,
-          name: `${client.name} › ${branch.name}`,
-          lastPickup: branchLastPickup?.toISOString() || null,
-          daysSince,
-        });
-      }
     }
   }
 
