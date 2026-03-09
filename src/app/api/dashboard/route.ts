@@ -32,27 +32,52 @@ export async function GET() {
   const activeClients = allClients.filter((c) => !parentIds.has(c.id)).length;
   const certificatesCount = await prisma.certificate.count({ where: { companyId, createdAt: { gte: yearStart, lte: yearEnd } } });
 
-  // Previous year totals for YoY comparison
+  // Previous year totals for YoY comparison (same period: Jan 1 to today's date last year)
+  const now = new Date();
   const prevYearStart = new Date(`${currentYear - 1}-01-01T00:00:00.000Z`);
-  const prevYearEnd = new Date(`${currentYear - 1}-12-31T23:59:59.999Z`);
+  const prevYearSameDate = new Date(now);
+  prevYearSameDate.setFullYear(currentYear - 1);
   const prevYearAgg = await prisma.recyclingRecord.aggregate({
-    where: { companyId, pickupDate: { gte: prevYearStart, lte: prevYearEnd } },
+    where: { companyId, pickupDate: { gte: prevYearStart, lte: prevYearSameDate } },
     _sum: { quantityKg: true },
   });
   const prevYearKg = prevYearAgg._sum.quantityKg || 0;
 
-  const monthlyData: Record<string, number> = {};
-  const monthlyMaterialData: Record<string, Record<string, number>> = {};
   const materialDist: Record<string, number> = {};
 
   records.forEach((r) => {
+    materialDist[r.material] = (materialDist[r.material] || 0) + r.quantityKg;
+  });
+
+  // Last 12 months chart: fetch records spanning 12 months back from today
+  const twelveMonthsAgo = new Date(now);
+  twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11);
+  twelveMonthsAgo.setDate(1);
+  twelveMonthsAgo.setHours(0, 0, 0, 0);
+
+  const chartRecords = await prisma.recyclingRecord.findMany({
+    where: { companyId, pickupDate: { gte: twelveMonthsAgo } },
+    select: { pickupDate: true, co2Saved: true, quantityKg: true, material: true },
+  });
+
+  // Initialize all 12 months with 0
+  const monthlyData: Record<string, number> = {};
+  const monthlyMaterialData: Record<string, Record<string, number>> = {};
+  for (let i = 0; i < 12; i++) {
+    const d = new Date(now);
+    d.setMonth(d.getMonth() - (11 - i));
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    monthlyData[key] = 0;
+  }
+
+  chartRecords.forEach((r) => {
     const month = r.pickupDate.toISOString().slice(0, 7);
-    monthlyData[month] = (monthlyData[month] || 0) + r.co2Saved;
+    if (month in monthlyData) {
+      monthlyData[month] = (monthlyData[month] || 0) + r.co2Saved;
+    }
 
     if (!monthlyMaterialData[month]) monthlyMaterialData[month] = {};
     monthlyMaterialData[month][r.material] = (monthlyMaterialData[month][r.material] || 0) + r.quantityKg;
-
-    materialDist[r.material] = (materialDist[r.material] || 0) + r.quantityKg;
   });
 
   // Group records into pickups (by client + date + location)

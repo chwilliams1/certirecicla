@@ -119,17 +119,17 @@ export default function PickupsPage() {
   return (
     <div className="space-y-6 page-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-serif text-2xl text-sage-800">Retiros</h1>
           <p className="text-sm text-sage-800/40">Historial completo de retiros de reciclaje</p>
         </div>
         <div className="flex gap-2">
-          <Link href="/dashboard/upload">
-            <Button variant="outline"><Upload className="h-4 w-4 mr-1" /> Subir Excel</Button>
+          <Link href="/dashboard/upload" className="flex-1 sm:flex-none">
+            <Button variant="outline" className="w-full sm:w-auto"><Upload className="h-4 w-4 mr-1" /> Subir Excel</Button>
           </Link>
-          <Link href="/dashboard/pickups/new">
-            <Button>
+          <Link href="/dashboard/pickups/new" className="flex-1 sm:flex-none">
+            <Button className="w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-1.5" /> Registrar retiro
             </Button>
           </Link>
@@ -223,14 +223,14 @@ export default function PickupsPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-sand-100">
-                  <th className="w-8 py-3 px-3"></th>
-                  <th className="text-left py-3 px-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider">Fecha</th>
-                  <th className="text-left py-3 px-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider">Cliente</th>
-                  <th className="text-left py-3 px-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider">Materiales</th>
-                  <th className="text-right py-3 px-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider">Total kg</th>
-                  <th className="text-right py-3 px-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider">CO₂</th>
-                  <th className="text-right py-3 px-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider">Estado</th>
-                  <th className="w-10 py-3 px-3"></th>
+                  <th className="w-8 py-3 px-2 sm:px-3"></th>
+                  <th className="text-left py-3 px-2 sm:px-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider">Fecha</th>
+                  <th className="text-left py-3 px-2 sm:px-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider">Cliente</th>
+                  <th className="text-left py-3 px-2 sm:px-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider hidden md:table-cell">Materiales</th>
+                  <th className="text-right py-3 px-2 sm:px-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider">kg</th>
+                  <th className="text-right py-3 px-2 sm:px-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider hidden sm:table-cell">CO₂</th>
+                  <th className="text-right py-3 px-2 sm:px-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider hidden sm:table-cell">Estado</th>
+                  <th className="w-10 py-3 px-2 sm:px-3"></th>
                 </tr>
               </thead>
               <tbody>
@@ -276,33 +276,33 @@ function PickupRow({
         className="border-t border-sand-200 cursor-pointer hover:bg-white/50 transition-colors"
         onClick={onToggle}
       >
-        <td className="py-3 px-3">
+        <td className="py-3 px-2 sm:px-3">
           {isExpanded ? (
             <ChevronDown className="h-4 w-4 text-sage-400" />
           ) : (
             <ChevronRight className="h-4 w-4 text-sage-400" />
           )}
         </td>
-        <td className="py-3 px-3 font-medium text-sage-800 text-xs whitespace-nowrap">
+        <td className="py-3 px-2 sm:px-3 font-medium text-sage-800 text-xs whitespace-nowrap">
           {new Date(pickup.date + "T12:00:00").toLocaleDateString("es-CL", {
             day: "2-digit",
             month: "2-digit",
             year: "numeric",
           })}
         </td>
-        <td className="py-3 px-3">
+        <td className="py-3 px-2 sm:px-3">
           <div className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded-full bg-sage-50 flex items-center justify-center flex-shrink-0">
+            <div className="h-6 w-6 rounded-full bg-sage-50 flex items-center justify-center flex-shrink-0 hidden sm:flex">
               <span className="text-[10px] font-medium text-sage-500">
                 {pickup.clientName.charAt(0)}
               </span>
             </div>
-            <span className="text-xs font-medium text-sage-800 truncate max-w-[150px]">
-              {pickup.parentClientName && <span className="text-sage-800/40">{pickup.parentClientName}</span>} {pickup.parentClientName && <span className="text-sage-800/30 mx-1">›</span>} <span>{pickup.clientName}</span>
+            <span className="text-xs font-medium text-sage-800 truncate max-w-[100px] sm:max-w-[150px]">
+              {pickup.parentClientName && <span className="text-sage-800/40 hidden sm:inline">{pickup.parentClientName}</span>} {pickup.parentClientName && <span className="text-sage-800/30 mx-1 hidden sm:inline">›</span>} <span>{pickup.clientName}</span>
             </span>
           </div>
         </td>
-        <td className="py-3 px-3">
+        <td className="py-3 px-2 sm:px-3 hidden md:table-cell">
           <div className="flex flex-wrap gap-1">
             {pickup.materials.map((m, i) => (
               <span
@@ -316,18 +316,18 @@ function PickupRow({
             ))}
           </div>
         </td>
-        <td className="py-3 px-3 text-right text-xs font-medium text-sage-800 tabular-nums whitespace-nowrap">
+        <td className="py-3 px-2 sm:px-3 text-right text-xs font-medium text-sage-800 tabular-nums whitespace-nowrap">
           {pickup.totalKg.toLocaleString("es-CL")} kg
         </td>
-        <td className="py-3 px-3 text-right text-xs text-sage-500 tabular-nums whitespace-nowrap">
+        <td className="py-3 px-2 sm:px-3 text-right text-xs text-sage-500 tabular-nums whitespace-nowrap hidden sm:table-cell">
           {pickup.totalCo2.toLocaleString("es-CL")} kg
         </td>
-        <td className="py-3 px-3 text-right">
+        <td className="py-3 px-2 sm:px-3 text-right hidden sm:table-cell">
           <span className={`text-[10px] font-medium px-2 py-1 rounded-full border whitespace-nowrap ${status.className}`}>
             {status.label}
           </span>
         </td>
-        <td className="py-3 px-3 text-center">
+        <td className="py-3 px-2 sm:px-3 text-center">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button

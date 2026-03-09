@@ -141,13 +141,13 @@ export default function ChatbotPage() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)]">
-      <div className="flex items-center justify-between mb-4">
+    <div className="flex flex-col h-[calc(100vh-7rem)] sm:h-[calc(100vh-8rem)]">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 mb-4">
         <div>
-          <h1 className="font-serif text-2xl text-sage-800">Asistente CertiRecicla</h1>
-          <p className="text-sm text-sage-800/40">Crea certificados y consulta datos con IA</p>
+          <h1 className="font-serif text-xl sm:text-2xl text-sage-800">Asistente CertiRecicla</h1>
+          <p className="text-xs sm:text-sm text-sage-800/40">Crea certificados y consulta datos con IA</p>
         </div>
-        <Button variant="outline" size="sm" onClick={startNewSession}>
+        <Button variant="outline" size="sm" onClick={startNewSession} className="self-start sm:self-auto">
           <Plus className="h-4 w-4 mr-1" /> Nueva conversación
         </Button>
       </div>
@@ -170,7 +170,7 @@ export default function ChatbotPage() {
               </div>
             )}
             <div
-              className={`max-w-[80%] rounded-[12px] px-4 py-3 ${
+              className={`max-w-[90%] sm:max-w-[80%] rounded-[12px] px-3 sm:px-4 py-3 ${
                 msg.role === "user"
                   ? "bg-sage-500 text-white"
                   : "bg-white border border-sand-200"

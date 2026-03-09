@@ -145,25 +145,27 @@ export default function ClientsPage() {
             <div key={client.id} className="space-y-1">
               {/* Parent / standalone client card */}
               <Link href={`/dashboard/clients/${client.id}`}>
-                <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-5 card-hover flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-full bg-sage-100 flex items-center justify-center flex-shrink-0">
-                    <Users className="h-5 w-5 text-sage-500" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium text-sage-800 truncate">{client.name}</p>
-                      {(client.branches?.length ?? 0) > 0 && (
-                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                          {client.branches!.length} {client.branches!.length === 1 ? "sucursal" : "sucursales"}
-                        </Badge>
-                      )}
+                <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-4 sm:p-5 card-hover">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="h-10 w-10 rounded-full bg-sage-100 flex items-center justify-center flex-shrink-0">
+                      <Users className="h-5 w-5 text-sage-500" />
                     </div>
-                    <p className="text-xs text-sage-800/40">
-                      {client.contactName && `${client.contactName} · `}
-                      {client.email || "Sin email"}
-                    </p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-medium text-sage-800 truncate">{client.name}</p>
+                        {(client.branches?.length ?? 0) > 0 && (
+                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                            {client.branches!.length} {client.branches!.length === 1 ? "sucursal" : "sucursales"}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-sage-800/40">
+                        {client.contactName && `${client.contactName} · `}
+                        {client.email || "Sin email"}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap mt-2 ml-[52px] sm:ml-[56px]">
                     {hasIncompleteData(client) && (
                       <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-600 border border-amber-200 whitespace-nowrap flex items-center gap-1">
                         <AlertTriangle className="h-3 w-3" />
@@ -183,19 +185,21 @@ export default function ClientsPage() {
               {/* Branch cards */}
               {client.branches?.map((branch) => (
                 <Link key={branch.id} href={`/dashboard/clients/${branch.id}`}>
-                  <div className="ml-8 relative bg-sand-50 border border-sand-300 rounded-[14px] p-4 card-hover flex items-center gap-3">
-                    <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-4 border-t border-sand-300" />
-                    <div className="h-8 w-8 rounded-full bg-sage-100/60 flex items-center justify-center flex-shrink-0">
-                      <Users className="h-4 w-4 text-sage-400" />
+                  <div className="ml-4 sm:ml-8 relative bg-sand-50 border border-sand-300 rounded-[14px] p-3 sm:p-4 card-hover">
+                    <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-4 border-t border-sand-300 hidden sm:block" />
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-sage-100/60 flex items-center justify-center flex-shrink-0">
+                        <Users className="h-4 w-4 text-sage-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-sage-800 truncate">{branch.name}</p>
+                        <p className="text-xs text-sage-800/40">
+                          {branch.contactName && `${branch.contactName} · `}
+                          {branch.email || "Sin email"}
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-sage-800 truncate">{branch.name}</p>
-                      <p className="text-xs text-sage-800/40">
-                        {branch.contactName && `${branch.contactName} · `}
-                        {branch.email || "Sin email"}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap mt-2 ml-11">
                       {hasIncompleteData(branch) && (
                         <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-600 border border-amber-200 whitespace-nowrap flex items-center gap-1">
                           <AlertTriangle className="h-3 w-3" />

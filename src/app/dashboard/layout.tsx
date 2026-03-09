@@ -136,9 +136,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
 
       <Sheet open={open} onOpenChange={setOpen}>
-        <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-sand-50 border-b border-sand-300 px-4 py-3 flex items-center gap-3">
+        <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-sand-50 border-b border-sand-300 px-3 py-2.5 flex items-center gap-2">
           <SheetTrigger asChild>
-            <button className="text-sage-800/40 hover:text-sage-800 transition-colors">
+            <button className="min-w-[44px] min-h-[44px] flex items-center justify-center text-sage-800/40 hover:text-sage-800 transition-colors rounded-lg">
               <Menu className="h-5 w-5" strokeWidth={1.5} />
             </button>
           </SheetTrigger>
@@ -148,13 +148,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
           <NotificationBell />
         </div>
-        <SheetContent side="left" className="p-0 w-[228px] bg-sand-50 border-sand-300">
+        <SheetContent side="left" className="p-0 w-[280px] sm:w-[228px] bg-sand-50 border-sand-300">
           <Sidebar onNavigate={() => setOpen(false)} />
         </SheetContent>
       </Sheet>
 
       <main className="flex-1 overflow-auto lg:pt-0 pt-14">
-        <div className="p-6 lg:p-8 max-w-7xl">{children}</div>
+        <div className="p-4 sm:p-6 lg:p-8 max-w-7xl">{children}</div>
       </main>
     </div>
   );

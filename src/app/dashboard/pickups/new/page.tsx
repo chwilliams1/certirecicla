@@ -357,11 +357,11 @@ function NewPickupContent() {
 
         <div className="space-y-2.5">
           {materialEntries.map((entry, i) => (
-            <div key={i} className="flex items-center gap-2">
+            <div key={i} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
               <select
                 value={entry.material}
                 onChange={(e) => updateEntry(i, "material", e.target.value)}
-                className="flex-1 px-3 py-2 text-sm bg-white border border-sand-200 rounded-lg text-sage-800 focus:outline-none focus:ring-2 focus:ring-sage-400/30 focus:border-sage-400"
+                className="flex-1 px-3 py-2.5 sm:py-2 text-sm bg-white border border-sand-200 rounded-lg text-sage-800 focus:outline-none focus:ring-2 focus:ring-sage-400/30 focus:border-sage-400"
               >
                 <option value="">Material...</option>
                 {getAvailableMaterials(i).map((m) => (
@@ -372,26 +372,28 @@ function NewPickupContent() {
                   <option value={entry.material}>{entry.material}</option>
                 )}
               </select>
-              <div className="relative w-32">
-                <Input
-                  type="number"
-                  placeholder="0"
-                  value={entry.quantityKg}
-                  onChange={(e) => updateEntry(i, "quantityKg", e.target.value)}
-                  min="0"
-                  step="0.1"
-                  className="bg-white pr-8 text-right"
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-sage-800/30">kg</span>
+              <div className="flex items-center gap-2">
+                <div className="relative w-full sm:w-32">
+                  <Input
+                    type="number"
+                    placeholder="0"
+                    value={entry.quantityKg}
+                    onChange={(e) => updateEntry(i, "quantityKg", e.target.value)}
+                    min="0"
+                    step="0.1"
+                    className="bg-white pr-8 text-right"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-sage-800/30">kg</span>
+                </div>
+                {materialEntries.length > 1 && (
+                  <button
+                    onClick={() => removeMaterial(i)}
+                    className="text-red-400 hover:text-red-600 transition-colors flex-shrink-0 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
               </div>
-              {materialEntries.length > 1 && (
-                <button
-                  onClick={() => removeMaterial(i)}
-                  className="text-red-400 hover:text-red-600 transition-colors flex-shrink-0"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              )}
             </div>
           ))}
         </div>

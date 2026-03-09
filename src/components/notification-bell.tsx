@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { Bell, AlertTriangle, FileCheck, CheckCircle } from "lucide-react";
+import { Bell, AlertTriangle, FileCheck, CheckCircle, Send } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -16,9 +16,16 @@ interface InactiveClient {
   daysSince: number;
 }
 
+interface UnsentCertificate {
+  id: string;
+  clientName: string;
+  createdAt: string;
+}
+
 interface NotificationData {
   inactiveClients: InactiveClient[];
   pendingCertificates: number;
+  unsentCertificates: UnsentCertificate[];
   savedNotifications: Array<{ id: string; title: string; message: string }>;
   threshold: number;
 }
@@ -45,12 +52,13 @@ export function NotificationBell() {
   const totalAlerts =
     (data?.inactiveClients?.length || 0) +
     (data?.pendingCertificates || 0) +
+    (data?.unsentCertificates?.length || 0) +
     (data?.savedNotifications?.length || 0);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="relative p-2 rounded-[10px] text-sage-800/40 hover:text-sage-800/70 hover:bg-sand-100 transition-all">
+        <button className="relative p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-[10px] text-sage-800/40 hover:text-sage-800/70 hover:bg-sand-100 transition-all">
           <Bell className="h-[18px] w-[18px]" strokeWidth={1.5} />
           {totalAlerts > 0 && (
             <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white animate-pulse">
@@ -62,7 +70,7 @@ export function NotificationBell() {
       <PopoverContent
         align="end"
         sideOffset={8}
-        className="w-80 bg-sand-50 border-sand-300 rounded-[14px] p-0 shadow-lg"
+        className="w-[calc(100vw-2rem)] sm:w-80 bg-sand-50 border-sand-300 rounded-[14px] p-0 shadow-lg"
       >
         <div className="px-4 py-3 border-b border-sand-200">
           <h3 className="font-serif text-sm font-semibold text-sage-800">
@@ -143,6 +151,45 @@ export function NotificationBell() {
                     </span>
                   </Link>
                 </div>
+              )}
+
+              {/* Unsent published certificates section */}
+              {data && data.unsentCertificates && data.unsentCertificates.length > 0 && (
+                <>
+                  {((data.inactiveClients.length > 0) || (data.pendingCertificates > 0)) && (
+                    <div className="border-t border-sand-200 mx-4" />
+                  )}
+                  <div className="px-4 py-3">
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <Send className="h-3.5 w-3.5 text-amber-500" strokeWidth={1.5} />
+                      <span className="text-xs font-semibold text-sage-800/60 uppercase tracking-wider">
+                        Publicados sin enviar
+                      </span>
+                    </div>
+                    <div className="space-y-1">
+                      {data.unsentCertificates.slice(0, 8).map((cert) => (
+                        <Link
+                          key={cert.id}
+                          href={`/dashboard/certificates/${cert.id}`}
+                          onClick={() => setOpen(false)}
+                          className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-sand-100 transition-colors group"
+                        >
+                          <span className="text-sm text-sage-800/70 group-hover:text-sage-800 truncate mr-2">
+                            {cert.clientName}
+                          </span>
+                          <span className="text-[11px] text-amber-600 font-medium whitespace-nowrap">
+                            {new Date(cert.createdAt).toLocaleDateString("es-CL")}
+                          </span>
+                        </Link>
+                      ))}
+                      {data.unsentCertificates.length > 8 && (
+                        <p className="text-[11px] text-sage-800/30 text-center py-1">
+                          +{data.unsentCertificates.length - 8} más
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </>
               )}
 
               {/* Saved notifications section */}

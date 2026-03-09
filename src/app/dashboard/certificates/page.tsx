@@ -115,19 +115,19 @@ export default function CertificatesPage() {
 
   return (
     <div className="space-y-6 page-fade-in">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-serif text-2xl text-sage-800">Certificados</h1>
           <p className="text-sm text-sage-800/40">{certificates.length} certificados emitidos</p>
         </div>
         <Link href="/dashboard/certificates/new">
-          <Button>
+          <Button className="w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-1.5" /> Crear certificado
           </Button>
         </Link>
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-sage-800/30" />
           <Input
@@ -138,7 +138,7 @@ export default function CertificatesPage() {
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-40">
+          <SelectTrigger className="w-full sm:w-40">
             <SelectValue placeholder="Estado" />
           </SelectTrigger>
           <SelectContent>
@@ -162,23 +162,23 @@ export default function CertificatesPage() {
       ) : (
         <div className="space-y-3">
           {filtered.map((cert) => (
-            <div key={cert.id} className={`bg-sand-50 border rounded-[14px] p-5 card-hover ${selectedCerts.has(cert.id) ? "border-sage-400 ring-1 ring-sage-200" : "border-sand-300"}`}>
-              <div className="flex items-center gap-4">
+            <div key={cert.id} className={`bg-sand-50 border rounded-[14px] p-4 sm:p-5 card-hover ${selectedCerts.has(cert.id) ? "border-sage-400 ring-1 ring-sage-200" : "border-sand-300"}`}>
+              <div className="flex items-start sm:items-center gap-3 sm:gap-4">
                 {isSendable(cert) && (
                   <button
                     onClick={() => toggleCert(cert.id)}
-                    className={`h-5 w-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-all ${
+                    className={`h-6 w-6 sm:h-5 sm:w-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-all mt-1 sm:mt-0 ${
                       selectedCerts.has(cert.id) ? "bg-sage-500 border-sage-500" : "border-sand-300 hover:border-sage-300"
                     }`}
                   >
                     {selectedCerts.has(cert.id) && <Check className="h-3 w-3 text-white" />}
                   </button>
                 )}
-                <div className="h-10 w-10 rounded-full bg-sage-100 flex items-center justify-center flex-shrink-0">
+                <div className="h-10 w-10 rounded-full bg-sage-100 flex items-center justify-center flex-shrink-0 hidden sm:flex">
                   <FileCheck className="h-5 w-5 text-sage-500" />
                 </div>
                 <Link href={`/dashboard/certificates/${cert.id}`} className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <p className="font-medium text-sage-800 truncate">
                       {cert.name || (
                         <>
@@ -192,12 +192,16 @@ export default function CertificatesPage() {
                   <p className="text-xs text-sage-800/40">
                     {cert.uniqueCode}
                   </p>
+                  <div className="flex items-center gap-3 mt-1 sm:hidden">
+                    <p className="text-xs font-medium text-sage-800">{cert.totalKg.toLocaleString("es-CL")} kg</p>
+                    <p className="text-xs text-sage-500">{cert.totalCo2.toLocaleString("es-CL")} kg CO₂</p>
+                  </div>
                 </Link>
-                <div className="text-right">
+                <div className="text-right hidden sm:block">
                   <p className="text-sm font-medium text-sage-800">{cert.totalKg.toLocaleString("es-CL")} kg</p>
                   <p className="text-xs text-sage-500">{cert.totalCo2.toLocaleString("es-CL")} kg CO₂</p>
                 </div>
-                <Button variant="ghost" size="sm" onClick={() => handleDownloadPdf(cert.id, cert.name || cert.uniqueCode)}>
+                <Button variant="ghost" size="sm" onClick={() => handleDownloadPdf(cert.id, cert.name || cert.uniqueCode)} className="min-w-[44px] min-h-[44px]">
                   <Download className="h-4 w-4" />
                 </Button>
               </div>
@@ -226,7 +230,7 @@ export default function CertificatesPage() {
       )}
       {/* Floating action bar for bulk send */}
       {selectedCerts.size > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 bg-sage-800 text-white rounded-2xl shadow-xl px-6 py-3 flex items-center gap-4 animate-in slide-in-from-bottom-4 duration-200">
+        <div className="fixed bottom-6 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-30 bg-sage-800 text-white rounded-2xl shadow-xl px-4 sm:px-6 py-3 flex items-center gap-3 sm:gap-4 animate-in slide-in-from-bottom-4 duration-200">
           <span className="text-sm">
             {selectedCerts.size} {selectedCerts.size === 1 ? "certificado seleccionado" : "certificados seleccionados"}
           </span>

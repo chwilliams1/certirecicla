@@ -17,10 +17,18 @@ import {
   Pencil,
   X,
   Save,
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import { calculateEquivalencies } from "@/lib/co2-calculator";
+import { SendCertificateDialog } from "@/components/send-certificate-dialog";
 import Link from "next/link";
 
 // Colores centralizados en src/lib/material-colors.ts
@@ -58,13 +66,13 @@ export default function CertificateDetailPage() {
   const router = useRouter();
   const [cert, setCert] = useState<CertificateDetail | null>(null);
   const [loading, setLoading] = useState(true);
-  const [sending, setSending] = useState(false);
   const [publishing, setPublishing] = useState(false);
-  const [publishingAndSending, setPublishingAndSending] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editMaterials, setEditMaterials] = useState<Record<string, { kg: number; co2: number }>>({});
+  const [sendDialogOpen, setSendDialogOpen] = useState(false);
+  const [sendMode, setSendMode] = useState<"send" | "publishAndSend">("send");
 
   useEffect(() => {
     fetch(`/api/certificates/${params.id}`)
@@ -73,20 +81,13 @@ export default function CertificateDetailPage() {
       .finally(() => setLoading(false));
   }, [params.id]);
 
-  async function handlePublishAndSend() {
-    setPublishingAndSending(true);
-    const res = await fetch("/api/email/send", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ certificateId: params.id }),
-    });
-    const data = await res.json();
-    if (data.success) {
-      setCert((prev) => prev ? { ...prev, status: "sent", sentAt: new Date().toISOString() } : null);
-    } else {
-      alert(data.error || "Error al enviar email");
-    }
-    setPublishingAndSending(false);
+  function openSendDialog(mode: "send" | "publishAndSend") {
+    setSendMode(mode);
+    setSendDialogOpen(true);
+  }
+
+  function handleSendSuccess() {
+    setCert((prev) => prev ? { ...prev, status: "sent", sentAt: new Date().toISOString() } : null);
   }
 
   async function handleRevertToDraft() {
@@ -116,22 +117,6 @@ export default function CertificateDetailPage() {
       setCert(updated);
     }
     setPublishing(false);
-  }
-
-  async function handleSendEmail() {
-    setSending(true);
-    const res = await fetch("/api/email/send", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ certificateId: params.id }),
-    });
-    const data = await res.json();
-    if (data.success) {
-      setCert((prev) => prev ? { ...prev, status: "sent", sentAt: new Date().toISOString() } : null);
-    } else {
-      alert(data.error || "Error al enviar email");
-    }
-    setSending(false);
   }
 
   async function handleDownload() {
@@ -248,39 +233,58 @@ export default function CertificateDetailPage() {
   return (
     <div className="space-y-6 max-w-4xl">
       {/* Header */}
-      <div className="flex items-center gap-4 print:hidden">
-        <Button variant="ghost" size="sm" onClick={() => router.back()}><ArrowLeft className="h-4 w-4" /></Button>
-        <div className="flex-1">
-          <h1 className="font-serif text-2xl text-sage-800">{cert.name || `Certificado ${cert.uniqueCode}`}</h1>
-          <p className="text-xs text-sage-800/40 mt-0.5">{cert.uniqueCode}</p>
-          <Badge className={`mt-1 ${STATUS_STYLES[cert.status] || ""}`}>
-            {STATUS_LABELS[cert.status] || cert.status}
-          </Badge>
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 print:hidden">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="sm" onClick={() => router.back()}><ArrowLeft className="h-4 w-4" /></Button>
+          <div className="flex-1 min-w-0">
+            <h1 className="font-serif text-xl sm:text-2xl text-sage-800 truncate">{cert.name || `Certificado ${cert.uniqueCode}`}</h1>
+            <p className="text-xs text-sage-800/40 mt-0.5">{cert.uniqueCode}</p>
+            <Badge className={`mt-1 ${STATUS_STYLES[cert.status] || ""}`}>
+              {STATUS_LABELS[cert.status] || cert.status}
+            </Badge>
+          </div>
         </div>
-        <div className="flex gap-2 flex-wrap justify-end">
+        <div className="flex gap-2 flex-wrap">
+          {/* Draft: Editar (con opción eliminar dentro del dropdown) */}
           {isDraft && !editing && (
-            <>
-              <Button variant="outline" size="sm" onClick={startEditing}>
-                <Pencil className="h-4 w-4 mr-1" /> Editar
-              </Button>
-              <Button variant="destructive" size="sm" onClick={handleDelete} disabled={deleting}>
-                {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4 mr-1" />}
-                Eliminar
-              </Button>
-            </>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Pencil className="h-4 w-4 mr-1" /> Editar
+                  <ChevronDown className="h-3 w-3 ml-1" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={startEditing}>
+                  <Pencil className="h-4 w-4 mr-2" />
+                  Editar datos
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  className="text-red-600 focus:text-red-600"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Eliminar certificado
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
+          {/* Draft: Publicar */}
           {isDraft && !editing && (
             <Button variant="outline" size="sm" onClick={handlePublish} disabled={publishing}>
               {publishing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4 mr-1" />}
               Publicar
             </Button>
           )}
+          {/* Draft: Publicar y enviar (acción principal) */}
           {isDraft && !editing && cert.client?.email && (
-            <Button onClick={handlePublishAndSend} disabled={publishingAndSending}>
-              {publishingAndSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4 mr-1" />}
+            <Button onClick={() => openSendDialog("publishAndSend")} size="sm">
+              <Mail className="h-4 w-4 mr-1" />
               Publicar y enviar
             </Button>
           )}
+          {/* Editing mode */}
           {editing && (
             <>
               <Button variant="outline" size="sm" onClick={cancelEditing}>
@@ -292,18 +296,28 @@ export default function CertificateDetailPage() {
               </Button>
             </>
           )}
+          {/* Published/Sent: Volver a borrador */}
           {!editing && !isDraft && (
             <Button variant="outline" size="sm" onClick={handleRevertToDraft} disabled={publishing}>
               {publishing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Pencil className="h-4 w-4 mr-1" />}
               Volver a borrador
             </Button>
           )}
-          {!editing && cert.status !== "sent" && cert.client?.email && (
-            <Button variant="outline" size="sm" onClick={handleSendEmail} disabled={sending}>
-              {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4 mr-1" />}
+          {/* Published (not sent): Enviar */}
+          {!editing && cert.status === "published" && cert.client?.email && (
+            <Button size="sm" onClick={() => openSendDialog("send")}>
+              <Mail className="h-4 w-4 mr-1" />
               Enviar
             </Button>
           )}
+          {/* Sent: Reenviar */}
+          {!editing && cert.status === "sent" && cert.client?.email && (
+            <Button variant="outline" size="sm" onClick={() => openSendDialog("send")}>
+              <Mail className="h-4 w-4 mr-1" />
+              Reenviar
+            </Button>
+          )}
+          {/* Siempre: PDF */}
           {!editing && (
             <Button variant="outline" size="sm" onClick={handleDownload}>
               <Download className="h-4 w-4 mr-1" /> PDF
@@ -324,12 +338,12 @@ export default function CertificateDetailPage() {
 
       {/* Certificate Preview */}
       <div className={`bg-white border rounded-[14px] p-8 shadow-sm ${editing ? "border-sage-300 ring-2 ring-sage-200" : "border-sand-200"}`}>
-        <div className="flex justify-between items-start mb-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-8">
           <div>
             <h2 className="font-serif text-2xl text-sage-700">Certificado de Reciclaje</h2>
             <p className="text-sm text-sage-400 mt-1">CertiRecicla - Impacto Ambiental Verificado</p>
           </div>
-          <div className="text-right text-sm">
+          <div className="sm:text-right text-sm">
             <p className="font-medium">{cert.company.name}</p>
             {cert.company.rut && <p className="text-sage-800/40">{cert.company.rut}</p>}
             {cert.company.address && <p className="text-sage-800/40">{cert.company.address}</p>}
@@ -337,7 +351,7 @@ export default function CertificateDetailPage() {
         </div>
 
         <div className="border-t border-sand-200 pt-6 mb-6">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <p className="text-xs text-sage-800/40 uppercase">Cliente</p>
               <p className="font-medium">
@@ -423,21 +437,21 @@ export default function CertificateDetailPage() {
           </tbody>
         </table>
 
-        <div className="bg-sage-50 rounded-xl p-5 flex justify-between">
+        <div className="bg-sage-50 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row sm:justify-between gap-3">
           <div>
             <p className="text-xs text-sage-600">TOTAL RECICLADO</p>
-            <p className="font-serif text-2xl text-sage-700">{totalKg.toLocaleString("es-CL")} kg</p>
+            <p className="font-serif text-xl sm:text-2xl text-sage-700">{totalKg.toLocaleString("es-CL")} kg</p>
           </div>
-          <div className="text-right">
+          <div className="sm:text-right">
             <p className="text-xs text-sage-600">CO₂ EVITADO</p>
-            <p className="font-serif text-2xl text-sage-700">{totalCo2.toLocaleString("es-CL")} kg</p>
+            <p className="font-serif text-xl sm:text-2xl text-sage-700">{totalCo2.toLocaleString("es-CL")} kg</p>
           </div>
         </div>
 
         {!editing && (
           <>
             <h3 className="font-serif text-lg text-sage-700 mt-6 mb-4">Equivalencias Ecológicas</h3>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {[
                 { icon: TreePine, value: eq.trees, label: "Árboles preservados" },
                 { icon: Car, value: eq.kmNotDriven.toLocaleString("es-CL"), label: "Km no conducidos" },
@@ -454,12 +468,21 @@ export default function CertificateDetailPage() {
           </>
         )}
 
-        <div className="border-t border-sand-200 mt-6 pt-4 flex justify-between text-xs text-sage-800/30">
+        <div className="border-t border-sand-200 mt-6 pt-4 flex flex-col sm:flex-row sm:justify-between gap-1 text-xs text-sage-800/30">
           <span>Certificado #{cert.uniqueCode}</span>
           <span>Emitido: {new Date(cert.createdAt).toLocaleDateString("es-CL")}</span>
           <span>Generado por CertiRecicla</span>
         </div>
       </div>
+
+      {/* Send email dialog */}
+      <SendCertificateDialog
+        open={sendDialogOpen}
+        onOpenChange={setSendDialogOpen}
+        certificate={cert}
+        mode={sendMode}
+        onSuccess={handleSendSuccess}
+      />
     </div>
   );
 }

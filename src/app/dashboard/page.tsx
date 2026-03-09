@@ -62,13 +62,38 @@ const MONTH_NAMES: Record<string, string> = {
 
 function formatMonth(m: string) {
   const parts = m.split("-");
-  return MONTH_NAMES[parts[1]] || parts[1];
+  const month = MONTH_NAMES[parts[1]] || parts[1];
+  const year = parts[0].slice(2);
+  return `${month} ${year}`;
+}
+
+type ChartPeriod = "12m" | "6m" | "3m" | "year";
+
+const PERIOD_OPTIONS: { value: ChartPeriod; label: string }[] = [
+  { value: "year", label: "Año actual" },
+  { value: "12m", label: "12 meses" },
+  { value: "6m", label: "6 meses" },
+  { value: "3m", label: "3 meses" },
+];
+
+function filterByPeriod<T extends { month: string }>(items: T[], period: ChartPeriod): T[] {
+  const now = new Date();
+  if (period === "year") {
+    const yearPrefix = `${now.getFullYear()}-`;
+    return items.filter((d) => d.month.startsWith(yearPrefix));
+  }
+  const monthsBack = period === "6m" ? 6 : period === "3m" ? 3 : 12;
+  const cutoff = new Date(now);
+  cutoff.setMonth(cutoff.getMonth() - (monthsBack - 1));
+  const cutoffKey = `${cutoff.getFullYear()}-${String(cutoff.getMonth() + 1).padStart(2, "0")}`;
+  return items.filter((d) => d.month >= cutoffKey);
 }
 
 export default function DashboardPage() {
   const { data: session } = useSession();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [chartPeriod, setChartPeriod] = useState<ChartPeriod>("12m");
 
   useEffect(() => {
     fetch("/api/dashboard").then((r) => r.json()).then(setData).finally(() => setLoading(false));
@@ -93,16 +118,30 @@ export default function DashboardPage() {
   if (!data) return null;
 
   const equivalencies = calculateEquivalencies(data.kpis.totalCo2 * 1000);
-  const monthlyChartData = data.monthlyco2.map((d) => ({ ...d, name: formatMonth(d.month) }));
+  const filteredCo2 = filterByPeriod(data.monthlyco2, chartPeriod);
+  const monthlyChartData = filteredCo2.map((d) => ({ ...d, name: formatMonth(d.month) }));
   const prevYearKg = data.kpis.prevYearKg;
   const yoyPercent = prevYearKg > 0 ? Math.round(((data.kpis.totalKg - prevYearKg) / prevYearKg) * 100) : 0;
   const yoyUp = yoyPercent >= 0;
   // Count consecutive growing months
-  const co2Values = data.monthlyco2.map((d) => d.co2);
+  const co2Values = filteredCo2.map((d) => d.co2);
   let consecutiveGrowth = 0;
   for (let i = co2Values.length - 1; i > 0; i--) {
     if (co2Values[i] >= co2Values[i - 1]) consecutiveGrowth++;
     else break;
+  }
+
+  // Filter monthly materials by period and aggregate
+  const filteredMonthlyMats = filterByPeriod(
+    data.monthlyMaterials.map((m) => ({ ...m, month: m.month as string })),
+    chartPeriod
+  );
+  const filteredMaterialDist: Record<string, number> = {};
+  for (const entry of filteredMonthlyMats) {
+    for (const [key, val] of Object.entries(entry)) {
+      if (key === "month") continue;
+      filteredMaterialDist[key] = (filteredMaterialDist[key] || 0) + Number(val);
+    }
   }
 
   // Build consistent material → color mapping from distribution order
@@ -112,7 +151,9 @@ export default function DashboardPage() {
   });
 
   // Sort materials by value for ranked bars
-  const sortedMaterials = [...data.materialDistribution].sort((a, b) => b.value - a.value);
+  const sortedMaterials = Object.entries(filteredMaterialDist)
+    .map(([name, value]) => ({ name, value: Math.round(value) }))
+    .sort((a, b) => b.value - a.value);
   const maxMaterialValue = sortedMaterials[0]?.value || 1;
 
   const equivItems = [
@@ -134,9 +175,9 @@ export default function DashboardPage() {
       </div>
 
       {/* Impacto compacto + acciones rápidas */}
-      <div className="bg-gradient-to-br from-sage-50 to-sand-50 border border-sage-200 rounded-[14px] p-5 flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+      <div className="bg-gradient-to-br from-sage-50 to-sand-50 border border-sage-200 rounded-[14px] p-4 sm:p-5 flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
         <div className="text-center sm:text-left flex-shrink-0">
-          <p className="font-serif text-3xl text-sage-800">
+          <p className="font-serif text-2xl sm:text-3xl text-sage-800">
             <CountUp end={data.kpis.totalKg} decimals={0} suffix=" kg" />
           </p>
           <p className="text-xs text-sage-500">reciclados en {new Date().getFullYear()}</p>
@@ -148,11 +189,11 @@ export default function DashboardPage() {
           </div>
         )}
         <div className="hidden sm:block w-px h-10 bg-sage-200 flex-shrink-0" />
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 hidden sm:block">
           <RotatingEquivalence equivalences={equivItems} />
         </div>
         <div className="hidden sm:block flex-1" />
-        <div className="flex gap-2 flex-shrink-0">
+        <div className="flex gap-2 flex-shrink-0 flex-wrap justify-center sm:justify-end">
           {[
             { href: "/dashboard/upload", icon: Upload, label: "Subir datos" },
             { href: "/dashboard/certificates/new", icon: FileCheck, label: "Crear certificado" },
@@ -185,6 +226,23 @@ export default function DashboardPage() {
               <CountUp end={kpi.end} decimals={kpi.decimals} suffix={kpi.suffix} />
             </p>
           </div>
+        ))}
+      </div>
+
+      {/* Filtro de período */}
+      <div className="flex items-center gap-1 bg-sand-100 border border-sand-300 rounded-[10px] p-1 w-fit">
+        {PERIOD_OPTIONS.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => setChartPeriod(opt.value)}
+            className={`text-xs px-3 py-1.5 rounded-[8px] transition-colors ${
+              chartPeriod === opt.value
+                ? "bg-white text-sage-800 shadow-sm font-medium"
+                : "text-sage-500 hover:text-sage-700"
+            }`}
+          >
+            {opt.label}
+          </button>
         ))}
       </div>
 
@@ -270,9 +328,9 @@ export default function DashboardPage() {
                 <tr className="border-b border-sand-300">
                   <th className="text-left py-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider">Fecha</th>
                   <th className="text-left py-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider">Cliente</th>
-                  <th className="text-left py-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider">Materiales</th>
-                  <th className="text-right py-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider">Total kg</th>
-                  <th className="text-right py-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider">CO₂ evitado</th>
+                  <th className="text-left py-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider hidden md:table-cell">Materiales</th>
+                  <th className="text-right py-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider">kg</th>
+                  <th className="text-right py-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider hidden sm:table-cell">CO₂</th>
                 </tr>
               </thead>
               <tbody>
@@ -293,7 +351,7 @@ export default function DashboardPage() {
                         <span className="text-sm font-medium text-sage-800 truncate max-w-[140px]">{p.clientName}</span>
                       </div>
                     </td>
-                    <td className="py-3">
+                    <td className="py-3 hidden md:table-cell">
                       <div className="flex flex-wrap gap-1">
                         {p.materials.map((m, i) => (
                           <span
@@ -308,7 +366,7 @@ export default function DashboardPage() {
                     <td className="py-3 text-right text-xs font-medium text-sage-800 tabular-nums whitespace-nowrap">
                       {p.totalKg.toLocaleString("es-CL")} kg
                     </td>
-                    <td className="py-3 text-right text-xs text-sage-500 tabular-nums whitespace-nowrap">
+                    <td className="py-3 text-right text-xs text-sage-500 tabular-nums whitespace-nowrap hidden sm:table-cell">
                       {p.totalCo2.toLocaleString("es-CL")} kg
                     </td>
                   </tr>

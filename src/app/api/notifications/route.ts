@@ -88,6 +88,19 @@ export async function GET() {
     where: { companyId, status: "draft" },
   });
 
+  // Get published certificates not yet sent
+  const unsent = await prisma.certificate.findMany({
+    where: { companyId, status: "published" },
+    include: { client: { select: { name: true } } },
+    orderBy: { createdAt: "desc" },
+    take: 20,
+  });
+  const unsentCertificates = unsent.map((c) => ({
+    id: c.id,
+    clientName: c.client.name,
+    createdAt: c.createdAt.toISOString(),
+  }));
+
   // Saved notifications from DB
   const savedNotifications = await prisma.notification.findMany({
     where: { companyId, read: false },
@@ -98,6 +111,7 @@ export async function GET() {
   return NextResponse.json({
     inactiveClients,
     pendingCertificates,
+    unsentCertificates,
     savedNotifications,
     threshold,
   });

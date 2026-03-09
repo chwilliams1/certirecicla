@@ -80,7 +80,7 @@ export default function SettingsPage() {
       <form onSubmit={handleSave} className="space-y-6">
         <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-6 space-y-4">
           <h3 className="font-serif text-lg text-sage-800">Datos de la empresa</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="name">Nombre</Label>
               <Input id="name" name="name" defaultValue={settings.name} />
@@ -94,7 +94,7 @@ export default function SettingsPage() {
             <Label htmlFor="address">Dirección</Label>
             <Input id="address" name="address" defaultValue={settings.address || ""} />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="phone">Teléfono</Label>
               <Input id="phone" name="phone" defaultValue={settings.phone || ""} />

@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { certificateId } = body;
+  const { certificateId, to, cc, subject, body: emailBody, publish } = body;
 
   if (!certificateId) {
     return NextResponse.json({ error: "certificateId es requerido" }, { status: 400 });
@@ -26,11 +26,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Certificado no encontrado" }, { status: 404 });
   }
 
-  if (!certificate.client.email) {
+  // Use override email or fall back to client email
+  const recipientEmail = to || certificate.client.email;
+  if (!recipientEmail) {
     return NextResponse.json({ error: "El cliente no tiene email configurado" }, { status: 400 });
   }
 
-  const result = await sendCertificateEmail(certificate);
+  // Publish draft if requested
+  if (publish && certificate.status === "draft") {
+    await prisma.certificate.update({
+      where: { id: certificateId },
+      data: { status: "published" },
+    });
+  }
+
+  const result = await sendCertificateEmail(certificate, {
+    to: recipientEmail,
+    cc: cc || undefined,
+    subject: subject || undefined,
+    body: emailBody || undefined,
+  });
 
   if (result.success) {
     await prisma.certificate.update({

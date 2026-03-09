@@ -397,9 +397,9 @@ export default function ReportsPage() {
 
         {/* Preview section */}
         {clientId && period && (
-          <div className="bg-sage-50/50 border border-sage-200 rounded-xl p-4 flex items-center justify-between">
+          <div className="bg-sage-50/50 border border-sage-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-full bg-sage-100 flex items-center justify-center">
+              <div className="h-9 w-9 rounded-full bg-sage-100 flex items-center justify-center flex-shrink-0">
                 <FileBarChart className="h-4 w-4 text-sage-500" />
               </div>
               <div>

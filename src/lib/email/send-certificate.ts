@@ -15,19 +15,51 @@ interface CertificateWithRelations {
   company: { id: string; name: string; rut: string | null; address: string | null; phone: string | null; email: string | null };
 }
 
-export async function sendCertificateEmail(certificate: CertificateWithRelations) {
-  const clientEmail = certificate.client.email;
-  if (!clientEmail) {
+interface EmailOverrides {
+  to?: string;
+  cc?: string;
+  subject?: string;
+  body?: string;
+}
+
+function buildEmailHtml(bodyText: string, companyName: string): string {
+  const htmlBody = bodyText.replace(/\n/g, "<br>");
+  return `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+      <div style="border-bottom: 2px solid #4a6b4e; padding-bottom: 12px; margin-bottom: 24px;">
+        <h2 style="color: #4a6b4e; margin: 0;">Certificado de Reciclaje</h2>
+      </div>
+      <div style="line-height: 1.6;">
+        ${htmlBody}
+      </div>
+      <div style="border-top: 1px solid #e8e4dc; margin-top: 32px; padding-top: 12px;">
+        <p style="color: #888; font-size: 12px; margin: 0;">
+          Emitido por ${companyName} a través de CertiRecicla
+        </p>
+      </div>
+    </div>
+  `;
+}
+
+export async function sendCertificateEmail(
+  certificate: CertificateWithRelations,
+  overrides?: EmailOverrides
+) {
+  const recipientEmail = overrides?.to || certificate.client.email;
+  if (!recipientEmail) {
     return { success: false, error: "Cliente sin email" };
   }
+
+  const defaultSubject = `Certificado de Reciclaje - ${certificate.client.name}`;
+  const finalSubject = overrides?.subject || defaultSubject;
 
   const emailLog = await prisma.emailLog.create({
     data: {
       companyId: certificate.company.id,
       clientId: certificate.client.id,
       certificateId: certificate.id,
-      to: clientEmail,
-      subject: `Certificado de Reciclaje - ${certificate.client.name}`,
+      to: recipientEmail,
+      subject: finalSubject,
       template: "certificate",
       status: "pending",
     },
@@ -49,32 +81,43 @@ export async function sendCertificateEmail(certificate: CertificateWithRelations
       createdAt: certificate.createdAt.toISOString(),
     });
 
+    // Build HTML: use custom body or default
+    let html: string;
+    if (overrides?.body) {
+      html = buildEmailHtml(overrides.body, certificate.company.name);
+    } else {
+      const periodStart = certificate.periodStart.toLocaleDateString("es-CL");
+      const periodEnd = certificate.periodEnd.toLocaleDateString("es-CL");
+      const defaultBody = `Estimado/a equipo de <strong>${certificate.client.name}</strong>,\n\nAdjunto encontrarán su certificado de reciclaje correspondiente al período ${periodStart} - ${periodEnd}.\n\n<div style="background: #f4f7f4; padding: 20px; border-radius: 8px; margin: 20px 0;"><p style="margin: 0;"><strong>Total reciclado:</strong> ${certificate.totalKg.toLocaleString("es-CL")} kg</p><p style="margin: 8px 0 0;"><strong>CO₂ evitado:</strong> ${certificate.totalCo2.toLocaleString("es-CL")} kg</p></div>\n\nGracias por su compromiso con el medio ambiente.`;
+      html = buildEmailHtml(defaultBody, certificate.company.name);
+    }
+
     const resend = getResend();
-    const { data, error } = await resend.emails.send({
+    const emailPayload: {
+      from: string;
+      to: string[];
+      cc?: string[];
+      subject: string;
+      html: string;
+      attachments: Array<{ filename: string; content: Buffer }>;
+    } = {
       from: `CertiRecicla <onboarding@resend.dev>`,
-      to: [clientEmail],
-      subject: `Certificado de Reciclaje - ${certificate.client.name}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #4a6b4e;">Certificado de Reciclaje</h2>
-          <p>Estimado/a equipo de <strong>${certificate.client.name}</strong>,</p>
-          <p>Adjunto encontrarán su certificado de reciclaje correspondiente al período
-          ${certificate.periodStart.toLocaleDateString("es-CL")} - ${certificate.periodEnd.toLocaleDateString("es-CL")}.</p>
-          <div style="background: #f4f7f4; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p style="margin: 0;"><strong>Total reciclado:</strong> ${certificate.totalKg.toLocaleString("es-CL")} kg</p>
-            <p style="margin: 8px 0 0;"><strong>CO₂ evitado:</strong> ${certificate.totalCo2.toLocaleString("es-CL")} kg</p>
-          </div>
-          <p>Gracias por su compromiso con el medio ambiente.</p>
-          <p style="color: #888; font-size: 12px;">Emitido por ${certificate.company.name} a través de CertiRecicla</p>
-        </div>
-      `,
+      to: [recipientEmail],
+      subject: finalSubject,
+      html,
       attachments: [
         {
           filename: `certificado-${certificate.uniqueCode}.pdf`,
           content: pdfBuffer,
         },
       ],
-    });
+    };
+
+    if (overrides?.cc) {
+      emailPayload.cc = [overrides.cc];
+    }
+
+    const { data, error } = await resend.emails.send(emailPayload);
 
     if (error) {
       await prisma.emailLog.update({
