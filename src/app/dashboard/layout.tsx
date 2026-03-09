@@ -19,7 +19,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { NotificationBell } from "@/components/notification-bell";
 import { ProductTour } from "@/components/product-tour";
 import { usePermissions } from "@/hooks/use-permissions";
-import { Clock, ArrowRight } from "lucide-react";
+import { Clock, ArrowRight, ShieldAlert } from "lucide-react";
 import { useState, useEffect } from "react";
 
 const navItems = [
@@ -154,9 +154,9 @@ function TrialTopBar() {
       <div className="bg-red-600 text-white text-center py-1.5 px-4 text-xs sm:text-sm font-medium flex items-center justify-center gap-2">
         <Clock className="h-3.5 w-3.5 flex-shrink-0" />
         <span>Tu periodo de prueba ha terminado.</span>
-        <button className="underline hover:no-underline inline-flex items-center gap-0.5">
+        <Link href="/dashboard/billing" className="underline hover:no-underline inline-flex items-center gap-0.5">
           Seleccionar plan <ArrowRight className="h-3 w-3" />
-        </button>
+        </Link>
       </div>
     );
   }
@@ -165,9 +165,50 @@ function TrialTopBar() {
     <div className="bg-amber-500 text-white text-center py-1.5 px-4 text-xs sm:text-sm font-medium flex items-center justify-center gap-2">
       <Clock className="h-3.5 w-3.5 flex-shrink-0" />
       <span>Periodo de prueba: {trialDays} {trialDays === 1 ? "dia" : "dias"} restantes</span>
-      <button className="underline hover:no-underline inline-flex items-center gap-0.5">
+      <Link href="/dashboard/billing" className="underline hover:no-underline inline-flex items-center gap-0.5">
         Ver planes <ArrowRight className="h-3 w-3" />
-      </button>
+      </Link>
+    </div>
+  );
+}
+
+function TrialBlockOverlay() {
+  const [blocked, setBlocked] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    fetch("/api/plan")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.trialExpired && d.plan === "trial" && d.subscriptionStatus !== "active") {
+          setBlocked(true);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Allow access to billing page even when blocked
+  if (!blocked || pathname === "/dashboard/billing") return null;
+
+  return (
+    <div className="fixed inset-0 z-50 bg-sand-100/95 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-white rounded-[16px] shadow-xl border border-sand-200 max-w-md w-full p-8 text-center">
+        <div className="mx-auto w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mb-4">
+          <ShieldAlert className="h-6 w-6 text-red-500" />
+        </div>
+        <h2 className="text-xl font-serif text-sage-800 mb-2">
+          Periodo de prueba finalizado
+        </h2>
+        <p className="text-sm text-sage-800/50 mb-6">
+          Tu periodo de prueba ha terminado. Selecciona un plan para continuar usando CertiRecicla.
+        </p>
+        <Link
+          href="/dashboard/billing"
+          className="inline-flex items-center gap-2 bg-sage-500 text-white px-6 py-2.5 rounded-[8px] text-sm font-medium hover:bg-sage-600 transition-colors"
+        >
+          Ver planes <ArrowRight className="h-4 w-4" />
+        </Link>
+      </div>
     </div>
   );
 }
@@ -178,6 +219,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex flex-col h-screen bg-sand-100">
       <TrialTopBar />
+      <TrialBlockOverlay />
       <div className="flex flex-1 overflow-hidden">
         <aside className="hidden lg:block w-[228px] flex-shrink-0">
           <Sidebar />

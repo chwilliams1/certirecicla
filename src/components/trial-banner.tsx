@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Clock, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 interface PlanInfo {
   plan: string;
@@ -40,10 +41,10 @@ export function TrialBanner() {
               Tu periodo de prueba ha terminado
             </p>
           </div>
-          <button className="flex items-center gap-1 text-sm font-medium text-red-600 hover:text-red-800 transition-colors self-end sm:self-auto">
+          <Link href="/dashboard/billing" className="flex items-center gap-1 text-sm font-medium text-red-600 hover:text-red-800 transition-colors self-end sm:self-auto">
             Seleccionar plan
             <ArrowRight className="h-3.5 w-3.5" />
-          </button>
+          </Link>
         </div>
       </div>
     );
@@ -59,10 +60,10 @@ export function TrialBanner() {
               Quedan {planInfo.trialDaysRemaining} dias de prueba gratuita
             </p>
           </div>
-          <button className="flex items-center gap-1 text-sm font-medium text-amber-600 hover:text-amber-800 transition-colors self-end sm:self-auto">
+          <Link href="/dashboard/billing" className="flex items-center gap-1 text-sm font-medium text-amber-600 hover:text-amber-800 transition-colors self-end sm:self-auto">
             Ver planes
             <ArrowRight className="h-3.5 w-3.5" />
-          </button>
+          </Link>
         </div>
       </div>
     );

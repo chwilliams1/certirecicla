@@ -18,6 +18,7 @@ export async function GET() {
       trialEndsAt: true,
       maxClients: true,
       maxCertificatesPerMonth: true,
+      subscriptionStatus: true,
     },
   });
 
@@ -52,6 +53,7 @@ export async function GET() {
     priceClp: config.priceClp,
     trialExpired,
     trialDaysRemaining,
+    subscriptionStatus: company.subscriptionStatus,
     limits: {
       maxClients: config.maxClients,
       maxCertificatesPerMonth: config.maxCertificatesPerMonth,

@@ -48,6 +48,9 @@ model Company {
   trialEndsAt       DateTime?
   maxClients        Int           @default(60)        // trial gets Profesional limits
   maxCertificatesPerMonth Int     @default(-1)        // -1 = unlimited
+  // Reveniu subscription fields
+  reveniuSubscriptionId  Int?
+  subscriptionStatus     String   @default("none")    // none, active, failed, cancelled, switching
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
 }
