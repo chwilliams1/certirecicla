@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, FileCheck, Download, Plus, Mail, Check, MoreVertical, Send, Loader2 } from "lucide-react";
+import { Search, Download, Plus, Mail, Check, MoreHorizontal, Send, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -179,88 +178,14 @@ export default function CertificatesPage() {
       </div>
 
       {loading ? (
-        <div className="space-y-3">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="bg-sand-50 border border-sand-300 rounded-[14px] p-6">
-              <div className="skeleton h-5 w-48 rounded mb-2" />
-              <div className="skeleton h-4 w-32 rounded" />
-            </div>
-          ))}
+        <div className="space-y-4">
+          <div className="skeleton h-12 w-full rounded-[14px]" />
+          <div className="skeleton h-64 w-full rounded-[14px]" />
         </div>
-      ) : (
-        <div className="space-y-3">
-          {filtered.map((cert) => (
-            <div key={cert.id} className="bg-sand-50 border border-sand-300 rounded-[14px] p-4 sm:p-5 card-hover">
-              <div className="flex items-start sm:items-center gap-3 sm:gap-4">
-                <div className="h-10 w-10 rounded-full bg-sage-100 flex items-center justify-center flex-shrink-0 hidden sm:flex">
-                  <FileCheck className="h-5 w-5 text-sage-500" />
-                </div>
-                <Link href={`/dashboard/certificates/${cert.id}`} className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <p className="font-medium text-sage-800 truncate">
-                      {cert.name || (
-                        <>
-                          {cert.client?.parentClient && <span className="text-sage-800/40">{cert.client.parentClient.name} › </span>}
-                          {cert.client?.name}
-                        </>
-                      )}
-                    </p>
-                    <Badge className={STATUS_STYLES[cert.status] || ""}>{STATUS_LABELS[cert.status] || cert.status}</Badge>
-                  </div>
-                  <p className="text-xs text-sage-800/40">
-                    {cert.uniqueCode}
-                  </p>
-                  <div className="flex items-center gap-3 mt-1 sm:hidden">
-                    <p className="text-xs font-medium text-sage-800">{cert.totalKg.toLocaleString("es-CL")} kg</p>
-                    <p className="text-xs text-sage-500">{cert.totalCo2.toLocaleString("es-CL")} kg CO₂</p>
-                  </div>
-                </Link>
-                <div className="text-right hidden sm:block">
-                  <p className="text-sm font-medium text-sage-800">{cert.totalKg.toLocaleString("es-CL")} kg</p>
-                  <p className="text-xs text-sage-500">{cert.totalCo2.toLocaleString("es-CL")} kg CO₂</p>
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="min-w-[44px] min-h-[44px]">
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleDownloadPdf(cert.id, cert.name || cert.uniqueCode)}>
-                      <Download className="h-4 w-4 mr-2" />
-                      Descargar PDF
-                    </DropdownMenuItem>
-                    {cert.status === "draft" && (
-                      <DropdownMenuItem onClick={() => handlePublish(cert.id)}>
-                        <Check className="h-4 w-4 mr-2" />
-                        Publicar
-                      </DropdownMenuItem>
-                    )}
-                    {cert.status === "draft" && (
-                      <DropdownMenuItem onClick={() => openSendDialog(cert, "publishAndSend")}>
-                        <Mail className="h-4 w-4 mr-2" />
-                        Publicar y enviar
-                      </DropdownMenuItem>
-                    )}
-                    {cert.status === "published" && (
-                      <DropdownMenuItem onClick={() => openSendDialog(cert, "send")}>
-                        <Send className="h-4 w-4 mr-2" />
-                        Enviar por email
-                      </DropdownMenuItem>
-                    )}
-                    {cert.status === "sent" && (
-                      <DropdownMenuItem onClick={() => openSendDialog(cert, "send")}>
-                        <Mail className="h-4 w-4 mr-2" />
-                        Reenviar
-                      </DropdownMenuItem>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
-          ))}
-          {filtered.length === 0 && !search && (
-            <div className="text-center py-12">
+      ) : filtered.length === 0 ? (
+        <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-12 text-center">
+          {!search ? (
+            <>
               <p className="text-3xl mb-3">📄</p>
               <p className="text-sm text-sage-600">Sin certificados todavía.</p>
               <p className="text-xs text-sage-800/40 mt-1">Cuando estés listo, convierte tus retiros en impacto documentado.</p>
@@ -269,15 +194,101 @@ export default function CertificatesPage() {
                   <Plus className="h-4 w-4 mr-1" /> Crear certificado
                 </Button>
               </Link>
-            </div>
-          )}
-          {filtered.length === 0 && search && (
-            <div className="text-center py-12">
+            </>
+          ) : (
+            <>
               <p className="text-3xl mb-3">🔍</p>
               <p className="text-sm text-sage-600">Nada por aquí con esos filtros.</p>
               <p className="text-xs text-sage-800/40 mt-1">Prueba ampliando la búsqueda.</p>
-            </div>
+            </>
           )}
+        </div>
+      ) : (
+        <div className="bg-sand-50 border border-sand-300 rounded-[14px] overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-sand-100">
+                  <th className="text-left py-3 px-3 sm:px-4 text-xs font-medium text-sage-800/40 uppercase tracking-wider">Certificado</th>
+                  <th className="text-left py-3 px-3 sm:px-4 text-xs font-medium text-sage-800/40 uppercase tracking-wider hidden md:table-cell">Cliente</th>
+                  <th className="text-right py-3 px-3 sm:px-4 text-xs font-medium text-sage-800/40 uppercase tracking-wider">kg</th>
+                  <th className="text-right py-3 px-3 sm:px-4 text-xs font-medium text-sage-800/40 uppercase tracking-wider hidden sm:table-cell">CO₂</th>
+                  <th className="text-right py-3 px-3 sm:px-4 text-xs font-medium text-sage-800/40 uppercase tracking-wider hidden sm:table-cell">Estado</th>
+                  <th className="w-10 py-3 px-2"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((cert) => (
+                  <tr key={cert.id} className="border-t border-sand-200 hover:bg-white/50 transition-colors">
+                    <td className="py-3 px-3 sm:px-4">
+                      <Link href={`/dashboard/certificates/${cert.id}`} className="block">
+                        <span className="text-sm font-medium text-sage-800 truncate block">
+                          {cert.name || cert.client?.name}
+                        </span>
+                        <span className="text-[11px] text-sage-800/40">{cert.uniqueCode}</span>
+                      </Link>
+                    </td>
+                    <td className="py-3 px-3 sm:px-4 hidden md:table-cell">
+                      <span className="text-xs text-sage-800/60 truncate block max-w-[180px]">
+                        {cert.client?.parentClient && <span className="text-sage-800/30">{cert.client.parentClient.name} › </span>}
+                        {cert.client?.name}
+                      </span>
+                    </td>
+                    <td className="py-3 px-3 sm:px-4 text-right text-xs font-medium text-sage-800 tabular-nums whitespace-nowrap">
+                      {cert.totalKg.toLocaleString("es-CL")} kg
+                    </td>
+                    <td className="py-3 px-3 sm:px-4 text-right text-xs text-sage-500 tabular-nums whitespace-nowrap hidden sm:table-cell">
+                      {cert.totalCo2.toLocaleString("es-CL")} kg
+                    </td>
+                    <td className="py-3 px-3 sm:px-4 text-right hidden sm:table-cell">
+                      <span className={`text-[10px] font-medium px-2 py-1 rounded-full border whitespace-nowrap ${STATUS_STYLES[cert.status] || ""}`}>
+                        {STATUS_LABELS[cert.status] || cert.status}
+                      </span>
+                    </td>
+                    <td className="py-3 px-2 text-center">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button className="p-1 rounded-md hover:bg-sand-200 transition-colors">
+                            <MoreHorizontal className="h-4 w-4 text-sage-400" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleDownloadPdf(cert.id, cert.name || cert.uniqueCode)}>
+                            <Download className="h-4 w-4 mr-2" />
+                            Descargar PDF
+                          </DropdownMenuItem>
+                          {cert.status === "draft" && (
+                            <DropdownMenuItem onClick={() => handlePublish(cert.id)}>
+                              <Check className="h-4 w-4 mr-2" />
+                              Publicar
+                            </DropdownMenuItem>
+                          )}
+                          {cert.status === "draft" && (
+                            <DropdownMenuItem onClick={() => openSendDialog(cert, "publishAndSend")}>
+                              <Mail className="h-4 w-4 mr-2" />
+                              Publicar y enviar
+                            </DropdownMenuItem>
+                          )}
+                          {cert.status === "published" && (
+                            <DropdownMenuItem onClick={() => openSendDialog(cert, "send")}>
+                              <Send className="h-4 w-4 mr-2" />
+                              Enviar por email
+                            </DropdownMenuItem>
+                          )}
+                          {cert.status === "sent" && (
+                            <DropdownMenuItem onClick={() => openSendDialog(cert, "send")}>
+                              <Mail className="h-4 w-4 mr-2" />
+                              Reenviar
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
       {/* Send email dialog */}
