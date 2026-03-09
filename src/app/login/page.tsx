@@ -73,13 +73,13 @@ export default function LoginPage() {
             {error && (
               <p className="text-sm text-destructive">{error}</p>
             )}
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Ingresando..." : "Iniciar sesión"}
+            <Button type="submit" className="w-full min-h-[44px]" disabled={loading}>
+              {loading ? "Ingresando..." : "Iniciar sesion"}
             </Button>
           </form>
           <p className="mt-4 text-center text-sm text-muted-foreground">
-            ¿No tienes cuenta?{" "}
-            <Link href="/register" className="text-sage-600 hover:underline font-medium">
+            No tienes cuenta?{" "}
+            <Link href="/register" className="text-sage-600 hover:underline font-medium py-2 inline-block">
               Crea una gratis
             </Link>
           </p>

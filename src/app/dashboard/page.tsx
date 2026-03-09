@@ -43,6 +43,7 @@ interface DashboardData {
   materialDistribution: Array<{ name: string; value: number }>;
   monthlyMaterials: Array<Record<string, unknown>>;
   recentPickups: RecentPickup[];
+  kgPerClient: Array<{ name: string; kg: number }>;
 }
 
 const CHART_COLORS = ["#6889b0", "#b8a05a", "#6a9a82", "#b88a5a", "#8a80a8", "#a87a90", "#5f9aa8", "#737f8c"];
@@ -200,9 +201,9 @@ export default function DashboardPage() {
             { href: "/dashboard/pickups/new", icon: Truck, label: "Registrar retiro" },
           ].map((action) => (
             <Link key={action.href} href={action.href}>
-              <button className="inline-flex items-center gap-1.5 text-xs font-medium text-sage-600 bg-white/60 border border-sage-200 rounded-[10px] px-3 py-2 hover:bg-white/90 transition-colors btn-scale">
-                <action.icon className="h-3.5 w-3.5" strokeWidth={1.5} />
-                <span className="hidden lg:inline">{action.label}</span>
+              <button className="inline-flex items-center gap-1.5 text-xs font-medium text-sage-600 bg-white/60 border border-sage-200 rounded-[10px] px-3 py-2.5 min-h-[44px] hover:bg-white/90 transition-colors btn-scale">
+                <action.icon className="h-4 w-4" strokeWidth={1.5} />
+                <span className="hidden sm:inline">{action.label}</span>
               </button>
             </Link>
           ))}
@@ -210,14 +211,14 @@ export default function DashboardPage() {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {[
           { label: "CO₂ evitado", end: data.kpis.totalCo2, decimals: 1, suffix: " ton", icon: Leaf, color: "text-sage-500" },
           { label: "Retiros", end: data.kpis.totalPickups, decimals: 0, suffix: "", icon: Truck, color: "text-sage-400" },
           { label: "Clientes activos", end: data.kpis.activeClients, decimals: 0, suffix: "", icon: Users, color: "text-sand-500" },
           { label: "Certificados emitidos", end: data.kpis.certificatesCount, decimals: 0, suffix: "", icon: FileCheck, color: "text-sand-600" },
         ].map((kpi) => (
-          <div key={kpi.label} className="bg-sand-50 border border-sand-300 rounded-[14px] p-6 card-hover">
+          <div key={kpi.label} className="bg-sand-50 border border-sand-300 rounded-[14px] p-4 sm:p-6 card-hover">
             <div className="flex items-center justify-between mb-3">
               <p className="text-sm text-sage-800/40">{kpi.label}</p>
               <kpi.icon className={`h-5 w-5 ${kpi.color}`} strokeWidth={1.5} />
@@ -258,7 +259,7 @@ export default function DashboardPage() {
               </span>
             )}
           </div>
-          <ResponsiveContainer width="100%" height={280}>
+          <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={monthlyChartData}>
               <defs>
                 <linearGradient id="co2Gradient" x1="0" y1="0" x2="0" y2="1">
@@ -302,6 +303,37 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Kg por cliente */}
+      {data.kgPerClient && data.kgPerClient.length > 0 && (
+        <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-6">
+          <h3 className="font-serif text-lg text-sage-800 mb-6">Reciclaje por cliente</h3>
+          <div className="space-y-3">
+            {data.kgPerClient.map((client, i) => (
+              <div key={client.name} className="flex items-center gap-3">
+                <div className="h-7 w-7 rounded-full bg-sage-50 flex items-center justify-center flex-shrink-0">
+                  <span className="text-[10px] font-medium text-sage-500">{client.name.charAt(0)}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-medium text-sage-800 truncate">{client.name}</span>
+                    <span className="text-xs text-sage-500 tabular-nums">{client.kg.toLocaleString("es-CL")} kg</span>
+                  </div>
+                  <div className="h-2 bg-sand-200 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-1000 ease-out"
+                      style={{
+                        width: `${(client.kg / (data.kgPerClient[0]?.kg || 1)) * 100}%`,
+                        backgroundColor: CHART_COLORS[i % CHART_COLORS.length],
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-6">
         <div className="flex items-center justify-between mb-6">

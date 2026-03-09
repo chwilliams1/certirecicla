@@ -150,7 +150,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
           <NotificationBell />
         </div>
-        <SheetContent side="left" className="p-0 w-[280px] sm:w-[228px] bg-sand-50 border-sand-300">
+        <SheetContent side="left" className="p-0 w-[260px] sm:w-[228px] bg-sand-50 border-sand-300">
           <Sidebar onNavigate={() => setOpen(false)} />
         </SheetContent>
       </Sheet>

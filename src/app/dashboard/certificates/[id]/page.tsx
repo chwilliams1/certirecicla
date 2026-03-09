@@ -378,7 +378,7 @@ export default function CertificateDetailPage() {
         {/* Green left accent bar */}
         <div className="absolute top-0 left-0 bottom-0 w-2 bg-[#5a7d5e]" />
 
-        <div className="p-8 pl-10">
+        <div className="p-4 pl-6 sm:p-8 sm:pl-10">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
             <div className="flex items-center gap-3">
@@ -386,7 +386,7 @@ export default function CertificateDetailPage() {
                 <img src={cert.company.logo} alt="Logo" className="h-12 w-12 object-contain rounded" />
               )}
               <div>
-                <h2 className="font-serif text-2xl text-sage-700">Certificado de Reciclaje</h2>
+                <h2 className="font-serif text-xl sm:text-2xl text-sage-700">Certificado de Reciclaje</h2>
                 <p className="text-sm text-sage-400 mt-0.5">Impacto Ambiental Verificado</p>
               </div>
             </div>
@@ -589,7 +589,7 @@ export default function CertificateDetailPage() {
         </div>
 
         {/* Footer */}
-        <div className="bg-sage-50 border-t border-[#d4e4d6] px-8 pl-10 py-4 flex flex-col sm:flex-row sm:justify-between gap-1 text-xs text-sage-800/40">
+        <div className="bg-sage-50 border-t border-[#d4e4d6] px-4 pl-6 sm:px-8 sm:pl-10 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-between gap-1 text-xs text-sage-800/40">
           <span className="font-medium text-sage-800/60">Certificado #{cert.uniqueCode}</span>
           <span>Emitido: {new Date(cert.createdAt).toLocaleDateString("es-CL")}</span>
           <span>Verificar en: certirecicla.cl/verify/{cert.uniqueCode}</span>
@@ -599,9 +599,9 @@ export default function CertificateDetailPage() {
         {/* Watermark */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden" style={{ zIndex: 60 }}>
           {isDraft ? (
-            <span className="text-[5rem] font-bold text-red-600/[0.15] -rotate-45 whitespace-nowrap select-none">BORRADOR</span>
+            <span className="text-[3rem] sm:text-[5rem] font-bold text-red-600/[0.15] -rotate-45 whitespace-nowrap select-none">BORRADOR</span>
           ) : (
-            <span className="text-[4rem] font-bold text-sage-800/[0.04] -rotate-45 whitespace-nowrap select-none">{cert.uniqueCode}</span>
+            <span className="text-[2.5rem] sm:text-[4rem] font-bold text-sage-800/[0.04] -rotate-45 whitespace-nowrap select-none">{cert.uniqueCode}</span>
           )}
         </div>
       </div>

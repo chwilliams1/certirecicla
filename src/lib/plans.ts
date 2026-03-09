@@ -3,7 +3,7 @@ export type PlanType = "trial" | "starter" | "profesional" | "business";
 export interface PlanConfig {
   name: string;
   displayName: string;
-  priceUsd: number;
+  priceClp: number;
   maxClients: number;
   maxCertificatesPerMonth: number; // -1 = unlimited
   multiUser: boolean;
@@ -15,17 +15,17 @@ export const PLANS: Record<PlanType, PlanConfig> = {
   trial: {
     name: "trial",
     displayName: "Trial",
-    priceUsd: 0,
+    priceClp: 0,
     maxClients: 60,
     maxCertificatesPerMonth: -1,
     multiUser: false,
     sinaderExport: false,
-    description: "30 dias gratis con plan Profesional completo",
+    description: "14 dias gratis con plan Profesional completo",
   },
   starter: {
     name: "starter",
     displayName: "Starter",
-    priceUsd: 29,
+    priceClp: 19900,
     maxClients: 15,
     maxCertificatesPerMonth: 30,
     multiUser: false,
@@ -35,22 +35,22 @@ export const PLANS: Record<PlanType, PlanConfig> = {
   profesional: {
     name: "profesional",
     displayName: "Profesional",
-    priceUsd: 69,
+    priceClp: 49900,
     maxClients: 60,
     maxCertificatesPerMonth: -1,
     multiUser: false,
     sinaderExport: false,
-    description: "Para gestoras PyME con operacion activa",
+    description: "Para gestoras con operacion activa",
   },
   business: {
     name: "business",
     displayName: "Business",
-    priceUsd: 149,
+    priceClp: 99900,
     maxClients: 200,
     maxCertificatesPerMonth: -1,
     multiUser: true,
     sinaderExport: true,
-    description: "Para gestoras medianas con alto volumen",
+    description: "Para gestoras con alto volumen",
   },
 };
 

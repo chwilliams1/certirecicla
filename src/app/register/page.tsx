@@ -13,11 +13,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 export default function RegisterPage() {
   const router = useRouter();
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [rut, setRut] = useState("");
-  const [companyEmail, setCompanyEmail] = useState("");
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,7 +29,7 @@ export default function RegisterPage() {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password, companyName, rut, companyEmail, phone }),
+      body: JSON.stringify({ name, email, password, companyName, rut, phone }),
     });
 
     const data = await res.json();
@@ -58,15 +57,15 @@ export default function RegisterPage() {
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
+        <CardHeader className="text-center px-4 sm:px-6">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-sage-100">
             <Leaf className="h-6 w-6 text-sage-600" />
           </div>
-          <CardTitle className="text-2xl">Crear cuenta</CardTitle>
-          <CardDescription>Comienza tu prueba gratuita de 14 días</CardDescription>
+          <CardTitle className="text-xl sm:text-2xl">Crear cuenta</CardTitle>
+          <CardDescription>Comienza tu prueba gratuita de 14 dias</CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <CardContent className="px-4 sm:px-6">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             <div className="space-y-2">
               <Label htmlFor="companyName">Razón social</Label>
               <Input
@@ -89,29 +88,16 @@ export default function RegisterPage() {
                 required
               />
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label htmlFor="companyEmail">Correo empresa</Label>
-                <Input
-                  id="companyEmail"
-                  type="email"
-                  placeholder="contacto@empresa.cl"
-                  value={companyEmail}
-                  onChange={(e) => setCompanyEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">Teléfono</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="+56 9 1234 5678"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  required
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Teléfono</Label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="+56 9 1234 5678"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+              />
             </div>
             <hr className="my-2" />
             <div className="space-y-2">
@@ -126,7 +112,7 @@ export default function RegisterPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Correo electrónico</Label>
               <Input
                 id="email"
                 type="email"
@@ -151,14 +137,14 @@ export default function RegisterPage() {
             {error && (
               <p className="text-sm text-destructive">{error}</p>
             )}
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full min-h-[44px]" disabled={loading}>
               {loading ? "Creando cuenta..." : "Crear cuenta gratis"}
             </Button>
           </form>
           <p className="mt-4 text-center text-sm text-muted-foreground">
-            ¿Ya tienes cuenta?{" "}
-            <Link href="/login" className="text-sage-600 hover:underline font-medium">
-              Inicia sesión
+            Ya tienes cuenta?{" "}
+            <Link href="/login" className="text-sage-600 hover:underline font-medium py-2 inline-block">
+              Inicia sesion
             </Link>
           </p>
         </CardContent>

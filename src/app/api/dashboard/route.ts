@@ -44,9 +44,14 @@ export async function GET() {
   const prevYearKg = prevYearAgg._sum.quantityKg || 0;
 
   const materialDist: Record<string, number> = {};
+  const clientKgMap: Record<string, { name: string; kg: number }> = {};
 
   records.forEach((r) => {
     materialDist[r.material] = (materialDist[r.material] || 0) + r.quantityKg;
+    if (!clientKgMap[r.clientId]) {
+      clientKgMap[r.clientId] = { name: r.client.name, kg: 0 };
+    }
+    clientKgMap[r.clientId].kg += r.quantityKg;
   });
 
   // Last 12 months chart: fetch records spanning 12 months back from today
@@ -141,5 +146,9 @@ export async function GET() {
       .map(([month, materials]) => ({ month, ...materials }))
       .sort((a, b) => a.month.localeCompare(b.month)),
     recentPickups,
+    kgPerClient: Object.values(clientKgMap)
+      .map((c) => ({ name: c.name, kg: Math.round(c.kg) }))
+      .sort((a, b) => b.kg - a.kg)
+      .slice(0, 10),
   });
 }

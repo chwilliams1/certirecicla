@@ -49,7 +49,7 @@ export async function GET() {
   return NextResponse.json({
     plan: company.plan,
     displayName: config.displayName,
-    priceUsd: config.priceUsd,
+    priceClp: config.priceClp,
     trialExpired,
     trialDaysRemaining,
     limits: {
