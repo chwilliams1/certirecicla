@@ -1,5 +1,17 @@
 import { PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
+import crypto from "crypto";
+
+function generateCertCode(): string {
+  const year = new Date().getFullYear();
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let code = "";
+  const bytes = crypto.randomBytes(6);
+  for (let i = 0; i < 6; i++) {
+    code += chars[bytes[i] % chars.length];
+  }
+  return `CR-${year}-${code}`;
+}
 
 const prisma = new PrismaClient();
 
@@ -236,6 +248,7 @@ async function main() {
   };
   await prisma.certificate.create({
     data: {
+      uniqueCode: generateCertCode(),
       clientId: clients[0].id,
       companyId: company.id,
       totalKg: 3120,
@@ -255,6 +268,7 @@ async function main() {
   };
   await prisma.certificate.create({
     data: {
+      uniqueCode: generateCertCode(),
       clientId: clients[1].id,
       companyId: company.id,
       totalKg: 10000,
@@ -273,6 +287,7 @@ async function main() {
   };
   await prisma.certificate.create({
     data: {
+      uniqueCode: generateCertCode(),
       clientId: clients[3].id,
       companyId: company.id,
       totalKg: 5500,

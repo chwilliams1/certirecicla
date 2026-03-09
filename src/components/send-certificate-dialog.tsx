@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { formatPeriod } from "@/lib/format-period";
 
 interface CertificateForSend {
   id: string;
@@ -35,10 +36,6 @@ interface SendCertificateDialogProps {
   onSuccess?: () => void;
 }
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString("es-CL");
-}
-
 function generateDefaultBody(cert: CertificateForSend): string {
   let materials: Record<string, { kg: number; co2: number }> = {};
   try {
@@ -51,12 +48,11 @@ function generateDefaultBody(cert: CertificateForSend): string {
     .map(([name, { kg }]) => `  - ${name}: ${kg.toLocaleString("es-CL")} kg`)
     .join("\n");
 
-  const start = formatDate(cert.periodStart);
-  const end = formatDate(cert.periodEnd);
+  const period = formatPeriod(cert.periodStart);
 
   return `Estimado/a equipo de ${cert.client.name},
 
-Adjunto encontrarán su certificado de reciclaje correspondiente al período ${start} - ${end}.
+Adjunto encontrarán su certificado de reciclaje correspondiente a ${period}.
 
 Resumen de materiales:
 ${materialLines}
@@ -71,9 +67,7 @@ ${cert.company.name}`;
 }
 
 function generateDefaultSubject(cert: CertificateForSend): string {
-  const start = formatDate(cert.periodStart);
-  const end = formatDate(cert.periodEnd);
-  return `Certificado de Reciclaje — ${cert.client.name} (${start} - ${end})`;
+  return `Certificado de Reciclaje — ${cert.client.name} (${formatPeriod(cert.periodStart)})`;
 }
 
 export function SendCertificateDialog({
@@ -141,8 +135,7 @@ export function SendCertificateDialog({
     }
   }
 
-  const start = formatDate(certificate.periodStart);
-  const end = formatDate(certificate.periodEnd);
+  const period = formatPeriod(certificate.periodStart);
   const isPublish = mode === "publishAndSend";
 
   return (
@@ -165,7 +158,7 @@ export function SendCertificateDialog({
                 {certificate.name || certificate.client.name}
               </p>
               <p className="text-xs text-sage-800/40">
-                {start} - {end} · {certificate.totalKg.toLocaleString("es-CL")} kg · {certificate.totalCo2.toLocaleString("es-CL")} kg CO₂
+                {period} · {certificate.totalKg.toLocaleString("es-CL")} kg · {certificate.totalCo2.toLocaleString("es-CL")} kg CO₂
               </p>
             </div>
           </div>

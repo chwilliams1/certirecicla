@@ -428,8 +428,7 @@ export default function PortalPage() {
                       {cert.name || `Certificado ${cert.uniqueCode}`}
                     </p>
                     <p className="text-sm text-[#6b6b6b]">
-                      {formatDate(cert.periodStart)} -{" "}
-                      {formatDate(cert.periodEnd)} &middot;{" "}
+                      {formatDate(cert.periodStart)} &middot;{" "}
                       {Math.round(cert.totalKg).toLocaleString("es-CL")} kg
                       &middot; {(cert.totalCo2 / 1000).toFixed(2)} ton CO2
                     </p>

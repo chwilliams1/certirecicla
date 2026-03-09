@@ -38,6 +38,8 @@ model Company {
   chatSessions ChatSession[]
   portalTokens ClientPortalToken[]
   notifications Notification[]
+  sanitaryResolution String?
+  plantAddress       String?
   reminderDaysThreshold Int       @default(30)
   portalEnabled Boolean           @default(true)
   // Subscription plan fields
@@ -99,7 +101,7 @@ model RecyclingRecord {
 
 model Certificate {
   id          String     @id @default(cuid())
-  uniqueCode  String     @unique @default(cuid())
+  uniqueCode  String     @unique
   name        String     @default("")
   client      Client     @relation(fields: [clientId], references: [id])
   clientId    String

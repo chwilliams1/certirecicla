@@ -1,38 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { generateCertificatePDF } from "@/lib/pdf/generate-certificate-pdf";
 
 export async function GET(
-  req: NextRequest,
-  { params }: { params: { token: string; certId: string } }
+  _req: NextRequest,
+  { params }: { params: { code: string } }
 ) {
-  const portalToken = await prisma.clientPortalToken.findUnique({
-    where: { token: params.token },
-  });
-
-  if (!portalToken || !portalToken.active) {
-    return NextResponse.json({ error: "Enlace invalido" }, { status: 404 });
-  }
-
-  const certificate = await prisma.certificate.findFirst({
-    where: {
-      id: params.certId,
-      clientId: portalToken.clientId,
-      companyId: portalToken.companyId,
-      status: { in: ["published", "sent"] },
-    },
+  const certificate = await prisma.certificate.findUnique({
+    where: { uniqueCode: params.code },
     include: {
       client: { select: { name: true, rut: true } },
       company: {
         select: {
-          name: true, rut: true, address: true,
-          logo: true, sanitaryResolution: true, plantAddress: true,
+          name: true,
+          rut: true,
+          address: true,
+          logo: true,
+          sanitaryResolution: true,
+          plantAddress: true,
         },
       },
     },
   });
 
-  if (!certificate) {
+  if (!certificate || certificate.status === "draft") {
     return NextResponse.json(
       { error: "Certificado no encontrado" },
       { status: 404 }
@@ -42,8 +32,8 @@ export async function GET(
   // Fetch pickups for the period
   const pickupRecords = await prisma.recyclingRecord.findMany({
     where: {
-      clientId: portalToken.clientId,
-      companyId: portalToken.companyId,
+      clientId: certificate.clientId,
+      companyId: certificate.companyId,
       pickupDate: {
         gte: certificate.periodStart,
         lte: certificate.periodEnd,
@@ -52,7 +42,10 @@ export async function GET(
     orderBy: { pickupDate: "asc" },
   });
 
-  const pickupMap = new Map<string, { date: string; location: string; materials: string[]; kg: number }>();
+  const pickupMap = new Map<
+    string,
+    { date: string; location: string; materials: string[]; kg: number }
+  >();
   for (const r of pickupRecords) {
     const key = `${r.pickupDate.toISOString().slice(0, 10)}_${r.location || ""}`;
     const existing = pickupMap.get(key);
@@ -76,30 +69,31 @@ export async function GET(
     kg: p.kg,
   }));
 
-  const pdfBuffer = await generateCertificatePDF({
+  let materials: Record<string, { kg: number; co2: number }> = {};
+  try {
+    materials = JSON.parse(certificate.materials);
+  } catch {
+    /* empty */
+  }
+
+  return NextResponse.json({
     uniqueCode: certificate.uniqueCode,
+    status: certificate.status,
     clientName: certificate.client.name,
-    clientRut: certificate.client.rut || "",
+    clientRut: certificate.client.rut,
     companyName: certificate.company.name,
-    companyRut: certificate.company.rut || "",
-    companyAddress: certificate.company.address || "",
-    companyLogo: certificate.company.logo || undefined,
-    sanitaryResolution: certificate.company.sanitaryResolution || undefined,
-    plantAddress: certificate.company.plantAddress || undefined,
+    companyRut: certificate.company.rut,
+    companyAddress: certificate.company.address,
+    companyLogo: certificate.company.logo,
+    sanitaryResolution: certificate.company.sanitaryResolution,
+    plantAddress: certificate.company.plantAddress,
     totalKg: certificate.totalKg,
     totalCo2: certificate.totalCo2,
-    materials: JSON.parse(certificate.materials),
+    materials,
     periodStart: certificate.periodStart.toISOString(),
     periodEnd: certificate.periodEnd.toISOString(),
     createdAt: certificate.createdAt.toISOString(),
-    status: certificate.status,
+    sentAt: certificate.sentAt?.toISOString() || null,
     pickups,
-  });
-
-  return new NextResponse(new Uint8Array(pdfBuffer), {
-    headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="certificado-${certificate.uniqueCode}.pdf"`,
-    },
   });
 }

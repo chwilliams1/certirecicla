@@ -24,7 +24,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { name, rut, address, phone, email, autoSendOnPublish, co2Factors, ecoEquivalencies, reminderDaysThreshold } = body;
+  const { name, rut, address, phone, email, autoSendOnPublish, co2Factors, ecoEquivalencies, reminderDaysThreshold, sanitaryResolution, plantAddress } = body;
 
   const company = await prisma.company.update({
     where: { id: session.user.companyId },
@@ -36,6 +36,8 @@ export async function PATCH(req: NextRequest) {
       ...(email !== undefined && { email }),
       ...(autoSendOnPublish !== undefined && { autoSendOnPublish }),
       ...(reminderDaysThreshold !== undefined && { reminderDaysThreshold: Number(reminderDaysThreshold) }),
+      ...(sanitaryResolution !== undefined && { sanitaryResolution }),
+      ...(plantAddress !== undefined && { plantAddress }),
       ...(ecoEquivalencies !== undefined && { ecoEquivalencies: ecoEquivalencies ? JSON.stringify(ecoEquivalencies) : null }),
     },
   });

@@ -13,7 +13,7 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
     where: { id: params.id, companyId: session.user.companyId },
     include: {
       client: { include: { parentClient: { select: { name: true } } } },
-      company: { select: { name: true, rut: true, address: true, phone: true } },
+      company: { select: { name: true, rut: true, address: true, phone: true, logo: true, sanitaryResolution: true, plantAddress: true } },
     },
   });
 
@@ -21,7 +21,44 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
     return NextResponse.json({ error: "Certificado no encontrado" }, { status: 404 });
   }
 
-  return NextResponse.json(certificate);
+  // Fetch pickups for the period
+  const pickupRecords = await prisma.recyclingRecord.findMany({
+    where: {
+      clientId: certificate.clientId,
+      companyId: session.user.companyId,
+      pickupDate: {
+        gte: certificate.periodStart,
+        lte: certificate.periodEnd,
+      },
+    },
+    orderBy: { pickupDate: "asc" },
+  });
+
+  const pickupMap = new Map<string, { date: string; location: string; materials: string[]; kg: number }>();
+  for (const r of pickupRecords) {
+    const key = `${r.pickupDate.toISOString().slice(0, 10)}_${r.location || ""}`;
+    const existing = pickupMap.get(key);
+    if (existing) {
+      existing.materials.push(r.material);
+      existing.kg += r.quantityKg;
+    } else {
+      pickupMap.set(key, {
+        date: r.pickupDate.toISOString(),
+        location: r.location || "",
+        materials: [r.material],
+        kg: r.quantityKg,
+      });
+    }
+  }
+
+  const pickups = Array.from(pickupMap.values()).map((p) => ({
+    date: p.date,
+    location: p.location,
+    materials: Array.from(new Set(p.materials)).join(", "),
+    kg: p.kg,
+  }));
+
+  return NextResponse.json({ ...certificate, pickups });
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
@@ -61,15 +98,29 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       return NextResponse.json({ error: "Solo se pueden editar certificados en borrador" }, { status: 400 });
     }
 
-    // Recalculate totals from materials
-    let totalKg = 0;
-    let totalCo2 = 0;
-    for (const vals of Object.values(materials)) {
-      totalKg += vals.kg;
-      totalCo2 += vals.co2;
+    // Fetch company CO2 factors for server-side recalculation
+    const co2Factors = await prisma.co2Factor.findMany({
+      where: { companyId: session.user.companyId },
+    });
+    const factorMap: Record<string, number> = {};
+    for (const f of co2Factors) {
+      factorMap[f.material] = f.factor;
     }
 
-    updateData.materials = JSON.stringify(materials);
+    // Recalculate CO2 from kg using company factors
+    const { DEFAULT_CO2_FACTORS } = await import("@/lib/co2-calculator");
+    const recalculated: Record<string, { kg: number; co2: number }> = {};
+    let totalKg = 0;
+    let totalCo2 = 0;
+    for (const [mat, vals] of Object.entries(materials)) {
+      const factor = factorMap[mat] ?? DEFAULT_CO2_FACTORS[mat] ?? 0;
+      const co2 = Math.round(vals.kg * factor * 100) / 100;
+      recalculated[mat] = { kg: vals.kg, co2 };
+      totalKg += vals.kg;
+      totalCo2 += co2;
+    }
+
+    updateData.materials = JSON.stringify(recalculated);
     updateData.totalKg = totalKg;
     updateData.totalCo2 = totalCo2;
   }
@@ -87,7 +138,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     where: { id: params.id, companyId: session.user.companyId },
     include: {
       client: { include: { parentClient: { select: { name: true } } } },
-      company: { select: { name: true, rut: true, address: true, phone: true } },
+      company: { select: { name: true, rut: true, address: true, phone: true, logo: true, sanitaryResolution: true, plantAddress: true } },
     },
   });
 

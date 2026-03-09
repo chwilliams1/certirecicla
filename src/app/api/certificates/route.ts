@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { checkCertificateLimit, isTrialExpired } from "@/lib/plans";
+import { generateCertCode } from "@/lib/generate-cert-code";
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -111,26 +112,17 @@ export async function POST(req: NextRequest) {
     select: { name: true, parentClient: { select: { name: true } } },
   });
 
-  const MONTHS = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-  const startDate = new Date(periodStart);
-  const endDate = new Date(periodEnd);
-  const startMonth = MONTHS[startDate.getMonth()];
-  const startYear = startDate.getFullYear();
-  const endMonth = MONTHS[endDate.getMonth()];
-  const endYear = endDate.getFullYear();
+  const { formatPeriod } = await import("@/lib/format-period");
 
   const clientLabel = client?.parentClient
     ? `${client.parentClient.name} (${client.name})`
     : client?.name || "Cliente";
 
-  const periodLabel = startMonth === endMonth && startYear === endYear
-    ? `${startMonth} ${startYear}`
-    : `${startMonth}-${endMonth} ${endYear}`;
-
-  const certName = `${clientLabel} — ${periodLabel}`;
+  const certName = `${clientLabel} — ${formatPeriod(periodStart)}`;
 
   const certificate = await prisma.certificate.create({
     data: {
+      uniqueCode: generateCertCode(),
       clientId,
       companyId: session.user.companyId,
       name: certName,

@@ -17,6 +17,8 @@ interface CompanySettings {
   phone: string | null;
   email: string | null;
   autoSendOnPublish: boolean;
+  sanitaryResolution: string | null;
+  plantAddress: string | null;
   co2Factors: Array<{ id: string; material: string; factor: number }>;
   ecoEquivalencies: string | null;
 }
@@ -45,6 +47,8 @@ export default function SettingsPage() {
       address: formData.get("address"),
       phone: formData.get("phone"),
       email: formData.get("email"),
+      sanitaryResolution: formData.get("sanitaryResolution"),
+      plantAddress: formData.get("plantAddress"),
       autoSendOnPublish: formData.get("autoSendOnPublish") === "on",
     };
 
@@ -102,6 +106,16 @@ export default function SettingsPage() {
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input id="email" name="email" type="email" defaultValue={settings.email || ""} />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="sanitaryResolution">Resolución sanitaria</Label>
+              <Input id="sanitaryResolution" name="sanitaryResolution" placeholder="Ej: Res. N° 12345/2024" defaultValue={settings.sanitaryResolution || ""} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="plantAddress">Dirección planta</Label>
+              <Input id="plantAddress" name="plantAddress" placeholder="Dirección de la planta de reciclaje" defaultValue={settings.plantAddress || ""} />
             </div>
           </div>
         </div>

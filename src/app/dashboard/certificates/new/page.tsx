@@ -389,7 +389,7 @@ function NewCertificateContent() {
             </div>
 
             <p className="text-xs text-sage-800/40 mt-3">
-              Período: {MONTHS[selectedMonth]} {selectedYear} ({periodStart} a {periodEnd})
+              Período: {MONTHS[selectedMonth]} {selectedYear}
             </p>
           </div>
 
