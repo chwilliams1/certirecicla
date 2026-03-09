@@ -1,0 +1,64 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { hash } from "bcryptjs";
+import { hasPermission } from "@/lib/roles";
+
+export async function GET() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.companyId) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session.user.role, "users:view")) {
+    return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
+  }
+
+  const users = await prisma.user.findMany({
+    where: { companyId: session.user.companyId },
+    select: { id: true, name: true, email: true, role: true, createdAt: true },
+    orderBy: { createdAt: "asc" },
+  });
+
+  return NextResponse.json(users);
+}
+
+export async function POST(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.companyId) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session.user.role, "users:manage")) {
+    return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
+  }
+
+  const { name, email, password, role } = await req.json();
+
+  if (!name || !email || !password) {
+    return NextResponse.json({ error: "Nombre, email y contraseña son requeridos" }, { status: 400 });
+  }
+
+  const validRoles = ["admin", "operator", "viewer"];
+  if (role && !validRoles.includes(role)) {
+    return NextResponse.json({ error: "Rol inválido" }, { status: 400 });
+  }
+
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) {
+    return NextResponse.json({ error: "Ya existe un usuario con ese email" }, { status: 409 });
+  }
+
+  const hashedPassword = await hash(password, 12);
+  const user = await prisma.user.create({
+    data: {
+      name,
+      email,
+      password: hashedPassword,
+      role: role || "operator",
+      companyId: session.user.companyId,
+    },
+    select: { id: true, name: true, email: true, role: true, createdAt: true },
+  });
+
+  return NextResponse.json(user);
+}

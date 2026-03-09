@@ -1,0 +1,206 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  company   Company? @relation(fields: [companyId], references: [id])
+  companyId String?
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Company {
+  id           String            @id @default(cuid())
+  name         String
+  rut          String?
+  logo         String?
+  address      String?
+  phone        String?
+  email        String?
+  autoSendOnPublish  Boolean      @default(false)
+  ecoEquivalencies   String?
+  users        User[]
+  clients      Client[]
+  records      RecyclingRecord[]
+  certificates Certificate[]
+  co2Factors   Co2Factor[]
+  emailLogs    EmailLog[]
+  chatSessions ChatSession[]
+  portalTokens ClientPortalToken[]
+  notifications Notification[]
+  reminderDaysThreshold Int       @default(30)
+  portalEnabled Boolean           @default(true)
+  // Subscription plan fields
+  plan              String        @default("trial")   // trial, starter, profesional, business
+  planStartDate     DateTime      @default(now())
+  trialEndsAt       DateTime?
+  maxClients        Int           @default(60)        // trial gets Profesional limits
+  maxCertificatesPerMonth Int     @default(-1)        // -1 = unlimited
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+}
+
+model Client {
+  id             String            @id @default(cuid())
+  name           String
+  rut            String?
+  email          String?
+  phone          String?
+  address        String?
+  contactName    String?
+  notes          String?
+  active         Boolean           @default(true)
+  company        Company           @relation(fields: [companyId], references: [id])
+  companyId      String
+  parentClient   Client?           @relation("ClientBranches", fields: [parentClientId], references: [id])
+  parentClientId String?
+  branches       Client[]          @relation("ClientBranches")
+  records        RecyclingRecord[]
+  certificates   Certificate[]
+  emailLogs      EmailLog[]
+  portalTokens   ClientPortalToken[]
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@index([companyId])
+  @@index([parentClientId])
+  @@index([companyId, active])
+}
+
+model RecyclingRecord {
+  id         String   @id @default(cuid())
+  client     Client   @relation(fields: [clientId], references: [id])
+  clientId   String
+  company    Company  @relation(fields: [companyId], references: [id])
+  companyId  String
+  material   String
+  quantityKg Float
+  co2Saved   Float
+  pickupDate DateTime
+  location   String?
+  batchId    String?
+  createdAt  DateTime @default(now())
+
+  @@index([companyId])
+  @@index([clientId])
+  @@index([clientId, pickupDate])
+  @@index([companyId, pickupDate])
+}
+
+model Certificate {
+  id          String     @id @default(cuid())
+  uniqueCode  String     @unique @default(cuid())
+  name        String     @default("")
+  client      Client     @relation(fields: [clientId], references: [id])
+  clientId    String
+  company     Company    @relation(fields: [companyId], references: [id])
+  companyId   String
+  totalKg     Float
+  totalCo2    Float
+  materials   String
+  periodStart DateTime
+  periodEnd   DateTime
+  status      String     @default("draft")
+  sentAt      DateTime?
+  emailLogs   EmailLog[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([companyId])
+  @@index([clientId])
+  @@index([companyId, status])
+}
+
+model Co2Factor {
+  id        String  @id @default(cuid())
+  material  String
+  factor    Float
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId String
+
+  @@unique([companyId, material])
+}
+
+model EmailLog {
+  id            String       @id @default(cuid())
+  company       Company      @relation(fields: [companyId], references: [id])
+  companyId     String
+  client        Client?      @relation(fields: [clientId], references: [id])
+  clientId      String?
+  certificate   Certificate? @relation(fields: [certificateId], references: [id])
+  certificateId String?
+  to            String
+  subject       String
+  template      String
+  status        String       @default("pending")
+  resendId      String?
+  error         String?
+  sentAt        DateTime?
+  createdAt     DateTime     @default(now())
+
+  @@index([companyId])
+  @@index([certificateId])
+}
+
+model ChatSession {
+  id        String        @id @default(cuid())
+  company   Company       @relation(fields: [companyId], references: [id])
+  companyId String
+  userId    String
+  type      String        @default("certificate")
+  status    String        @default("active")
+  context   String?
+  messages  ChatMessage[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model ChatMessage {
+  id        String      @id @default(cuid())
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId String
+  role      String
+  content   String
+  metadata  String?
+  createdAt DateTime    @default(now())
+}
+
+model ClientPortalToken {
+  id        String    @id @default(cuid())
+  token     String    @unique @default(cuid())
+  client    Client    @relation(fields: [clientId], references: [id])
+  clientId  String
+  company   Company   @relation(fields: [companyId], references: [id])
+  companyId String
+  expiresAt DateTime?
+  active    Boolean   @default(true)
+  createdAt DateTime  @default(now())
+
+  @@index([token])
+  @@index([clientId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  company   Company  @relation(fields: [companyId], references: [id])
+  companyId String
+  type      String
+  title     String
+  message   String
+  metadata  String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([companyId])
+  @@index([companyId, read])
+}
