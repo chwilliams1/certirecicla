@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, FileCheck, Download, Plus, Mail, Check, MoreVertical, Send } from "lucide-react";
+import { Search, FileCheck, Download, Plus, Mail, Check, MoreVertical, Send, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -56,6 +56,7 @@ export default function CertificatesPage() {
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [sendDialogCert, setSendDialogCert] = useState<Certificate | null>(null);
   const [sendMode, setSendMode] = useState<"send" | "publishAndSend">("send");
+  const [bulkPublishing, setBulkPublishing] = useState(false);
 
   function openSendDialog(cert: Certificate, mode: "send" | "publishAndSend") {
     setSendDialogCert(cert);
@@ -82,6 +83,17 @@ export default function CertificatesPage() {
         prev.map((c) => c.id === certId ? { ...c, status: "published" } : c)
       );
     }
+  }
+
+  async function handleBulkPublish() {
+    const drafts = filtered.filter((c) => c.status === "draft");
+    if (drafts.length === 0) return;
+    if (!confirm(`¿Publicar ${drafts.length} certificado${drafts.length > 1 ? "s" : ""} en borrador?`)) return;
+    setBulkPublishing(true);
+    for (const cert of drafts) {
+      await handlePublish(cert.id);
+    }
+    setBulkPublishing(false);
   }
 
   useEffect(() => {
@@ -123,11 +135,19 @@ export default function CertificatesPage() {
           <h1 className="font-serif text-2xl text-sage-800">Certificados</h1>
           <p className="text-sm text-sage-800/40">{certificates.length} certificados emitidos</p>
         </div>
-        <Link href="/dashboard/certificates/new">
-          <Button className="w-full sm:w-auto">
-            <Plus className="h-4 w-4 mr-1.5" /> Crear certificado
-          </Button>
-        </Link>
+        <div className="flex gap-2 w-full sm:w-auto">
+          {certificates.some((c) => c.status === "draft") && (
+            <Button variant="outline" className="flex-1 sm:flex-initial" onClick={handleBulkPublish} disabled={bulkPublishing}>
+              {bulkPublishing ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Check className="h-4 w-4 mr-1.5" />}
+              Publicar todos
+            </Button>
+          )}
+          <Link href="/dashboard/certificates/new" className="flex-1 sm:flex-initial">
+            <Button className="w-full">
+              <Plus className="h-4 w-4 mr-1.5" /> Crear certificado
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
