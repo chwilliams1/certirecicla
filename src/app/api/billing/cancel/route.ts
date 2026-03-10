@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { cancelSubscription } from "@/lib/reveniu";
+import { getPlanConfig } from "@/lib/plans";
 
 export async function POST() {
   const session = await getServerSession(authOptions);
@@ -24,9 +25,17 @@ export async function POST() {
 
   await cancelSubscription(company.reveniuSubscriptionId);
 
+  const trialConfig = getPlanConfig("trial");
   await prisma.company.update({
     where: { id: session.user.companyId },
-    data: { subscriptionStatus: "cancelled" },
+    data: {
+      plan: "trial",
+      subscriptionStatus: "cancelled",
+      trialEndsAt: new Date(),
+      reveniuSubscriptionId: null,
+      maxClients: trialConfig.maxClients,
+      maxCertificatesPerMonth: trialConfig.maxCertificatesPerMonth,
+    },
   });
 
   return NextResponse.json({ ok: true });

@@ -79,6 +79,7 @@ export async function POST(req: NextRequest) {
         data: {
           plan: "trial",
           subscriptionStatus: "cancelled",
+          trialEndsAt: new Date(),
           maxClients: 60,
           maxCertificatesPerMonth: -1,
         },
@@ -89,7 +90,13 @@ export async function POST(req: NextRequest) {
     case "subscription_renewal_cancelled": {
       await prisma.company.update({
         where: { id: company.id },
-        data: { subscriptionStatus: "cancelled" },
+        data: {
+          plan: "trial",
+          subscriptionStatus: "cancelled",
+          trialEndsAt: new Date(),
+          maxClients: 60,
+          maxCertificatesPerMonth: -1,
+        },
       });
       break;
     }

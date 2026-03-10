@@ -67,12 +67,14 @@ export async function GET() {
             plan: "trial",
             subscriptionStatus: "cancelled",
             reveniuSubscriptionId: null,
+            trialEndsAt: new Date(),
             maxClients: trialConfig.maxClients,
             maxCertificatesPerMonth: trialConfig.maxCertificatesPerMonth,
           },
         });
         company.plan = "trial";
         company.subscriptionStatus = "cancelled";
+        company.trialEndsAt = new Date();
       }
     } catch {
       // Reveniu no disponible, seguir con datos de DB
