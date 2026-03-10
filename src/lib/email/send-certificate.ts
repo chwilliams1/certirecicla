@@ -2,6 +2,7 @@ import { getResend } from "@/lib/resend";
 import { formatPeriod } from "@/lib/format-period";
 import { prisma } from "@/lib/prisma";
 import { generateCertificatePDF } from "@/lib/pdf/generate-certificate-pdf";
+import { DEFAULT_BRANDING } from "@/lib/pdf/branding-config";
 import { groupRecordsIntoPickups, formatPickupsForPdf } from "@/lib/pickup-grouping";
 
 interface CertificateWithRelations {
@@ -14,7 +15,7 @@ interface CertificateWithRelations {
   periodEnd: Date;
   createdAt: Date;
   client: { id: string; name: string; email: string | null; rut: string | null };
-  company: { id: string; name: string; rut: string | null; address: string | null; phone: string | null; email: string | null; logo: string | null; sanitaryResolution: string | null; plantAddress: string | null };
+  company: { id: string; name: string; rut: string | null; address: string | null; phone: string | null; email: string | null; logo: string | null; sanitaryResolution: string | null; plantAddress: string | null; signatureUrl?: string | null };
 }
 
 interface EmailOverrides {
@@ -84,6 +85,12 @@ export async function sendCertificateEmail(
     const grouped = groupRecordsIntoPickups(pickupRecords);
     const pickups = formatPickupsForPdf(grouped);
 
+    // Build branding with signature (available to all plans)
+    const signatureUrl = certificate.company.signatureUrl || undefined;
+    const branding = signatureUrl
+      ? { ...DEFAULT_BRANDING, signatureImageUrl: signatureUrl }
+      : DEFAULT_BRANDING;
+
     const pdfBuffer = await generateCertificatePDF({
       uniqueCode: certificate.uniqueCode,
       clientName: certificate.client.name,
@@ -102,7 +109,7 @@ export async function sendCertificateEmail(
       createdAt: certificate.createdAt.toISOString(),
       status: "sent",
       pickups,
-    });
+    }, branding);
 
     // Build HTML: use custom body or default
     let html: string;

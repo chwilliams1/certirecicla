@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Save, Loader2, ChevronRight, Leaf, Scale, Users, FileSpreadsheet, Lock, Upload, X, Paintbrush } from "lucide-react";
+import { Save, Loader2, ChevronRight, Leaf, Scale, Users, FileSpreadsheet, Lock, Upload, X, Paintbrush, PenTool } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +22,7 @@ interface CompanySettings {
   plantAddress: string | null;
   co2Factors: Array<{ id: string; material: string; factor: number }>;
   ecoEquivalencies: string | null;
+  signatureUrl: string | null;
   brandPrimaryColor: string | null;
   brandHidePlatform: boolean;
   brandSignatureUrl: string | null;
@@ -95,6 +96,7 @@ export default function SettingsPage() {
   const [brandColor, setBrandColor] = useState("#4a6b4e");
   const [uploadingSignature, setUploadingSignature] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingDigitalSignature, setUploadingDigitalSignature] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -129,6 +131,31 @@ export default function SettingsPage() {
       } : prev);
     } finally {
       setUploading(false);
+    }
+  }, []);
+
+  const uploadDigitalSignature = useCallback(async (file: File) => {
+    setUploadingDigitalSignature(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/settings/signature", { method: "POST", body: formData });
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.error || "Error al subir firma");
+        return;
+      }
+      const { url } = await res.json();
+      setSettings((prev) => prev ? { ...prev, signatureUrl: url } : prev);
+    } finally {
+      setUploadingDigitalSignature(false);
+    }
+  }, []);
+
+  const deleteDigitalSignature = useCallback(async () => {
+    const res = await fetch("/api/settings/signature", { method: "DELETE" });
+    if (res.ok) {
+      setSettings((prev) => prev ? { ...prev, signatureUrl: null } : prev);
     }
   }, []);
 
@@ -249,6 +276,54 @@ export default function SettingsPage() {
             />
             <span className="text-sm">Enviar certificado por email automáticamente al publicar</span>
           </label>
+        </div>
+
+        {/* Digital Signature section - available to all plans */}
+        <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-6 space-y-4">
+          <div className="flex items-center gap-2">
+            <PenTool className="h-5 w-5 text-sage-800" />
+            <h3 className="font-serif text-lg text-sage-800">Firma digital</h3>
+          </div>
+          <p className="text-sm text-sage-800/50">
+            Sube la firma del representante legal. Aparecerá en todos los certificados que generes.
+          </p>
+          {settings.signatureUrl ? (
+            <div className="flex items-center gap-4 p-3 bg-white border border-sand-200 rounded-lg">
+              <img src={settings.signatureUrl} alt="Firma digital" className="h-14 object-contain" />
+              <div className="flex-1">
+                <p className="text-xs text-emerald-600 font-medium">Firma configurada</p>
+              </div>
+              <button
+                type="button"
+                onClick={deleteDigitalSignature}
+                className="text-red-400 hover:text-red-600 transition-colors p-1"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          ) : (
+            <label className="flex items-center gap-2 px-4 py-4 border-2 border-dashed border-sand-300 rounded-lg cursor-pointer hover:border-sage-400 transition-colors">
+              {uploadingDigitalSignature ? (
+                <Loader2 className="h-4 w-4 animate-spin text-sage-500" />
+              ) : (
+                <Upload className="h-4 w-4 text-sage-800/40" />
+              )}
+              <span className="text-sm text-sage-800/60">
+                {uploadingDigitalSignature ? "Subiendo..." : "Subir imagen de firma (PNG, JPG, WebP — máx 2MB)"}
+              </span>
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) uploadDigitalSignature(file);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+          )}
+          <p className="text-xs text-sage-800/30">Recomendado: imagen con fondo transparente (PNG) de al menos 300x100 px</p>
         </div>
 
         {/* Branding section */}

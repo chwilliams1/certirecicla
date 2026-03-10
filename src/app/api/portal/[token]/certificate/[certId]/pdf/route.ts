@@ -31,7 +31,7 @@ export async function GET(
         select: {
           name: true, rut: true, address: true,
           logo: true, sanitaryResolution: true, plantAddress: true,
-          plan: true,
+          plan: true, signatureUrl: true,
           brandPrimaryColor: true, brandHidePlatform: true,
           brandSignatureUrl: true, brandSecondaryLogoUrl: true,
           brandClosingText: true, brandFont: true,
@@ -64,6 +64,8 @@ export async function GET(
   const pickups = formatPickupsForPdf(grouped);
 
   // Build branding config
+  // Signature: brandSignatureUrl (Business) overrides signatureUrl (all plans)
+  const signatureUrl = certificate.company.brandSignatureUrl || certificate.company.signatureUrl || undefined;
   const canBrand = checkFeatureAccess(certificate.company.plan, "customBranding");
   const branding: BrandingConfig = canBrand ? {
     palette: certificate.company.brandPrimaryColor
@@ -71,10 +73,13 @@ export async function GET(
       : DEFAULT_PALETTE,
     fontFamily: (certificate.company.brandFont as BrandingConfig["fontFamily"]) || "Helvetica",
     hidePlatformBranding: certificate.company.brandHidePlatform,
-    signatureImageUrl: certificate.company.brandSignatureUrl || undefined,
+    signatureImageUrl: signatureUrl,
     secondaryLogoUrl: certificate.company.brandSecondaryLogoUrl || undefined,
     closingText: certificate.company.brandClosingText || undefined,
-  } : DEFAULT_BRANDING;
+  } : {
+    ...DEFAULT_BRANDING,
+    signatureImageUrl: signatureUrl,
+  };
 
   const pdfBuffer = await generateCertificatePDF({
     uniqueCode: certificate.uniqueCode,

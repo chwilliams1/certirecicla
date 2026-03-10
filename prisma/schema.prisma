@@ -51,6 +51,8 @@ model Company {
   // Reveniu subscription fields
   reveniuSubscriptionId  Int?
   subscriptionStatus     String   @default("none")    // none, active, failed, cancelled, switching
+  // Firma digital (todos los planes)
+  signatureUrl           String?
   // Branding (Business plan)
   brandPrimaryColor      String?
   brandHidePlatform      Boolean  @default(false)
