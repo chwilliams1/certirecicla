@@ -8,7 +8,13 @@ export async function GET(
   const certificate = await prisma.certificate.findUnique({
     where: { uniqueCode: params.code },
     include: {
-      client: { select: { name: true, rut: true } },
+      client: {
+        select: {
+          name: true,
+          rut: true,
+          parentClient: { select: { name: true } },
+        },
+      },
       company: {
         select: {
           name: true,
@@ -79,7 +85,9 @@ export async function GET(
   return NextResponse.json({
     uniqueCode: certificate.uniqueCode,
     status: certificate.status,
-    clientName: certificate.client.name,
+    clientName: certificate.client.parentClient
+      ? `${certificate.client.parentClient.name} - ${certificate.client.name}`
+      : certificate.client.name,
     clientRut: certificate.client.rut,
     companyName: certificate.company.name,
     companyRut: certificate.company.rut,

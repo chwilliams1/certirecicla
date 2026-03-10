@@ -21,7 +21,9 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
   const certificate = await prisma.certificate.findFirst({
     where: { id: params.id, companyId: session.user.companyId },
     include: {
-      client: true,
+      client: {
+        include: { parentClient: { select: { name: true } } },
+      },
       company: {
         select: {
           name: true, rut: true, address: true, phone: true,
@@ -75,7 +77,9 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 
   const pdfBuffer = await generateCertificatePDF({
     uniqueCode: certificate.uniqueCode,
-    clientName: certificate.client.name,
+    clientName: certificate.client.parentClient
+      ? `${certificate.client.parentClient.name} - ${certificate.client.name}`
+      : certificate.client.name,
     clientRut: certificate.client.rut || "",
     companyName: certificate.company.name,
     companyRut: certificate.company.rut || "",

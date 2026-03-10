@@ -26,7 +26,13 @@ export async function GET(
       status: { in: ["published", "sent"] },
     },
     include: {
-      client: { select: { name: true, rut: true } },
+      client: {
+        select: {
+          name: true,
+          rut: true,
+          parentClient: { select: { name: true } },
+        },
+      },
       company: {
         select: {
           name: true, rut: true, address: true,
@@ -83,7 +89,9 @@ export async function GET(
 
   const pdfBuffer = await generateCertificatePDF({
     uniqueCode: certificate.uniqueCode,
-    clientName: certificate.client.name,
+    clientName: certificate.client.parentClient
+      ? `${certificate.client.parentClient.name} - ${certificate.client.name}`
+      : certificate.client.name,
     clientRut: certificate.client.rut || "",
     companyName: certificate.company.name,
     companyRut: certificate.company.rut || "",
