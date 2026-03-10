@@ -37,7 +37,8 @@ model Company {
   emailLogs    EmailLog[]
   chatSessions ChatSession[]
   portalTokens ClientPortalToken[]
-  notifications Notification[]
+  notifications    Notification[]
+  scheduledReports ScheduledReport[]
   sanitaryResolution String?
   plantAddress       String?
   reminderDaysThreshold Int       @default(30)
@@ -82,9 +83,10 @@ model Client {
   records        RecyclingRecord[]
   certificates   Certificate[]
   emailLogs      EmailLog[]
-  portalTokens   ClientPortalToken[]
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+  portalTokens     ClientPortalToken[]
+  scheduledReports ScheduledReport[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 
   @@index([companyId])
   @@index([parentClientId])
@@ -217,4 +219,22 @@ model Notification {
 
   @@index([companyId])
   @@index([companyId, read])
+}
+
+model ScheduledReport {
+  id         String    @id @default(cuid())
+  company    Company   @relation(fields: [companyId], references: [id])
+  companyId  String
+  client     Client?   @relation(fields: [clientId], references: [id])
+  clientId   String?
+  frequency  String    // "monthly" | "quarterly"
+  emails     String    // JSON array of email addresses
+  active     Boolean   @default(true)
+  nextSendAt DateTime
+  lastSentAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([companyId])
+  @@index([active, nextSendAt])
 }

@@ -84,6 +84,8 @@ export interface ReportPDFData {
   materials: Record<string, { kg: number; co2: number }>;
   monthlyData: Array<{ month: string; kg: number; co2: number }>;
   generatedAt: string;
+  ranking?: Array<{ clientName: string; kg: number; co2: number; percentage: number }>;
+  branches?: Array<{ branchName: string; kg: number; co2: number; percentage: number }>;
 }
 
 function formatNum(n: number): string {
@@ -231,6 +233,56 @@ export function ReportPDFDocument({ data }: { data: ReportPDFData }) {
             </View>
           ))}
         </View>
+
+        {/* Ranking (consolidated reports) */}
+        {data.ranking && data.ranking.length > 0 && (
+          <>
+            <View style={styles.divider} />
+            <Text style={styles.sectionTitle}>Ranking de Clientes</Text>
+            <View style={styles.table}>
+              <View style={styles.tableHeader}>
+                <Text style={[styles.tableHeaderText, { width: "8%" }]}>#</Text>
+                <Text style={[styles.tableHeaderText, { width: "32%" }]}>Cliente</Text>
+                <Text style={[styles.tableHeaderText, styles.col2]}>Cantidad (kg)</Text>
+                <Text style={[styles.tableHeaderText, styles.col3]}>CO2 (kg)</Text>
+                <Text style={[styles.tableHeaderText, styles.col4]}>% Total</Text>
+              </View>
+              {data.ranking.map((r, i) => (
+                <View key={i} style={styles.tableRow}>
+                  <Text style={{ width: "8%" }}>{i + 1}</Text>
+                  <Text style={{ width: "32%" }}>{r.clientName}</Text>
+                  <Text style={styles.col2}>{formatNum(r.kg)}</Text>
+                  <Text style={styles.col3}>{formatNum(r.co2)}</Text>
+                  <Text style={styles.col4}>{r.percentage}%</Text>
+                </View>
+              ))}
+            </View>
+          </>
+        )}
+
+        {/* Branch breakdown */}
+        {data.branches && data.branches.length > 0 && (
+          <>
+            <View style={styles.divider} />
+            <Text style={styles.sectionTitle}>Desglose por Sucursal</Text>
+            <View style={styles.table}>
+              <View style={styles.tableHeader}>
+                <Text style={[styles.tableHeaderText, styles.col1]}>Sucursal</Text>
+                <Text style={[styles.tableHeaderText, styles.col2]}>Cantidad (kg)</Text>
+                <Text style={[styles.tableHeaderText, styles.col3]}>CO2 (kg)</Text>
+                <Text style={[styles.tableHeaderText, styles.col4]}>% Total</Text>
+              </View>
+              {data.branches.map((b, i) => (
+                <View key={i} style={styles.tableRow}>
+                  <Text style={styles.col1}>{b.branchName}</Text>
+                  <Text style={styles.col2}>{formatNum(b.kg)}</Text>
+                  <Text style={styles.col3}>{formatNum(b.co2)}</Text>
+                  <Text style={styles.col4}>{b.percentage}%</Text>
+                </View>
+              ))}
+            </View>
+          </>
+        )}
 
         {/* Footer */}
         <View style={styles.footer}>
