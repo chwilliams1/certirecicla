@@ -17,10 +17,13 @@ import {
   FileSpreadsheet,
   Calculator,
   X,
+  Star,
+  Quote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import InteractiveDemo from "@/components/landing/interactive-demo";
 import FaqSection from "@/components/landing/faq-section";
+import ScrollFadeIn from "@/components/landing/scroll-fade-in";
 
 const VALORIZACION_METAS = [
   { material: "Vidrio", meta2025: "19%", meta2026: "22%" },
@@ -61,7 +64,7 @@ export default function Home() {
       <main>
         {/* Hero */}
         <section className="container mx-auto px-6 pt-16 pb-12 md:pt-24 md:pb-20">
-          <div className="mx-auto max-w-4xl text-center">
+          <div className="mx-auto max-w-4xl text-center hero-stagger">
             <div className="inline-flex items-center gap-2 rounded-full bg-amber-50 border border-amber-200 px-3 py-1.5 mb-6">
               <AlertTriangle className="h-3.5 w-3.5 text-amber-600 flex-shrink-0" />
               <span className="text-xs sm:text-sm text-amber-700 font-medium">Metas Ley REP 2026: plastico 11%, vidrio 22%, papel 18%</span>
@@ -95,6 +98,22 @@ export default function Home() {
             <p className="mt-4 text-xs text-muted-foreground">
               Sin tarjeta de credito. Acceso completo al plan Profesional durante el trial.
             </p>
+
+            {/* Social proof stats */}
+            <div className="mt-10 sm:mt-14 grid grid-cols-3 gap-4 sm:gap-8 max-w-lg mx-auto">
+              <div>
+                <p className="font-serif text-2xl sm:text-3xl font-bold text-sage-800">2 min</p>
+                <p className="text-xs text-muted-foreground mt-0.5">por certificado</p>
+              </div>
+              <div className="border-x border-border">
+                <p className="font-serif text-2xl sm:text-3xl font-bold text-sage-800">100%</p>
+                <p className="text-xs text-muted-foreground mt-0.5">GHG Protocol</p>
+              </div>
+              <div>
+                <p className="font-serif text-2xl sm:text-3xl font-bold text-sage-800">0</p>
+                <p className="text-xs text-muted-foreground mt-0.5">datos a mano</p>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -124,7 +143,7 @@ export default function Home() {
 
         {/* Problem */}
         <section id="problema" className="container mx-auto px-6 py-16 md:py-20">
-          <div className="mx-auto max-w-3xl text-center mb-12">
+          <ScrollFadeIn className="mx-auto max-w-3xl text-center mb-12">
             <h2 className="font-serif text-3xl font-bold text-sage-900 mb-4">
               Cada mes pierdes horas en trabajo que no genera valor
             </h2>
@@ -132,7 +151,7 @@ export default function Home() {
               Certificados a mano en Word, seguimiento en planillas, declaraciones SINADER copiando datos uno por uno.
               Mientras tanto, las metas de valorizacion de la Ley REP suben cada año.
             </p>
-          </div>
+          </ScrollFadeIn>
 
           <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto">
             <div className="rounded-xl border border-red-200 bg-red-50/30 p-6">
@@ -197,7 +216,7 @@ export default function Home() {
         {/* Features */}
         <section id="funcionalidades" className="py-16 md:py-20">
           <div className="container mx-auto px-6">
-            <div className="mx-auto max-w-3xl text-center mb-12">
+            <ScrollFadeIn className="mx-auto max-w-3xl text-center mb-12">
               <h2 className="font-serif text-3xl font-bold text-sage-900 mb-4">
                 Todo lo que necesita tu gestora en un solo lugar
               </h2>
@@ -205,7 +224,7 @@ export default function Home() {
                 Diseñado para gestoras de reciclaje PyME en Chile.
                 No es un marketplace. No es para generadores. Es tu herramienta.
               </p>
-            </div>
+            </ScrollFadeIn>
 
             <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
               <div className="rounded-xl border bg-card p-6 card-hover">
@@ -263,14 +282,14 @@ export default function Home() {
         {/* Product preview */}
         <section className="bg-sand-50 border-y border-border/50 py-16 md:py-20">
           <div className="container mx-auto px-6">
-            <div className="mx-auto max-w-3xl text-center mb-10">
+            <ScrollFadeIn className="mx-auto max-w-3xl text-center mb-10">
               <h2 className="font-serif text-3xl font-bold text-sage-900 mb-4">
                 Asi se ve por dentro
               </h2>
               <p className="text-muted-foreground">
                 Dashboard, certificados y gestion de clientes — todo en un mismo lugar.
               </p>
-            </div>
+            </ScrollFadeIn>
             <div className="mx-auto max-w-5xl">
               {/* Browser mockup */}
               <div className="rounded-xl border shadow-lg overflow-hidden bg-white">
@@ -724,43 +743,127 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Testimonials */}
+        <section className="container mx-auto px-6 py-16 md:py-20">
+          <ScrollFadeIn className="mx-auto max-w-3xl text-center mb-12">
+            <h2 className="font-serif text-3xl font-bold text-sage-900 mb-4">
+              Lo que dicen las gestoras
+            </h2>
+            <p className="text-muted-foreground">
+              Gestoras de reciclaje en Chile que ya dejaron Excel.
+            </p>
+          </ScrollFadeIn>
+          <div className="grid gap-4 md:gap-6 md:grid-cols-3 max-w-5xl mx-auto">
+            {[
+              {
+                name: "Carolina M.",
+                role: "Gerenta de Operaciones",
+                company: "EcoGestora Sur",
+                text: "Antes demoraba 2 horas por certificado copiando datos de Excel a Word. Ahora son 2 minutos. Mis clientes corporativos quedaron impresionados con la verificacion online.",
+              },
+              {
+                name: "Felipe R.",
+                role: "Fundador",
+                company: "Reciclados RM",
+                text: "La importacion de Excel fue lo que me convencio. Subi mi planilla tal cual y la plataforma detecto todo. En una tarde tenia 3 meses de datos historicos cargados.",
+              },
+              {
+                name: "Andrea L.",
+                role: "Jefa de Calidad",
+                company: "ValorizaChile",
+                text: "Cuando llego la auditoria de la SMA, teniamos todo trazado: retiro, material, certificado, cliente. Antes habria sido un caos buscando en carpetas.",
+              },
+            ].map((t) => (
+              <ScrollFadeIn key={t.name}>
+                <div className="rounded-xl border bg-card p-6 h-full flex flex-col">
+                  <Quote className="h-5 w-5 text-sage-300 mb-3 flex-shrink-0" />
+                  <p className="text-sm text-sage-700 leading-relaxed flex-1">
+                    &ldquo;{t.text}&rdquo;
+                  </p>
+                  <div className="flex items-center gap-1 mt-4 mb-3">
+                    {[1,2,3,4,5].map((s) => (
+                      <Star key={s} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                    ))}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-sage-800">{t.name}</p>
+                    <p className="text-xs text-muted-foreground">{t.role}, {t.company}</p>
+                  </div>
+                </div>
+              </ScrollFadeIn>
+            ))}
+          </div>
+        </section>
+
         {/* FAQ */}
         <FaqSection />
 
         {/* Final CTA */}
-        <section className="container mx-auto px-6 py-16 md:py-20">
-          <div className="mx-auto max-w-3xl text-center">
-            <h2 className="font-serif text-3xl font-bold text-sage-900 mb-4">
-              Tu gestora no puede seguir con Excel
-            </h2>
-            <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-              Las metas suben, las auditorias llegan, y tus clientes corporativos van a exigir certificados con respaldo.
-              Empieza hoy — 14 dias gratis, sin tarjeta de credito.
-            </p>
-            <Link href="/register" className="w-full sm:w-auto">
-              <Button size="lg" className="w-full sm:w-auto text-base px-8 py-6 btn-scale">
-                Crear cuenta gratis
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
+        <section className="relative overflow-hidden bg-sage-800 py-16 md:py-24">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(90,125,94,0.3)_0%,_transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(196,182,156,0.15)_0%,_transparent_60%)]" />
+          <ScrollFadeIn className="container mx-auto px-6 relative z-10">
+            <div className="mx-auto max-w-3xl text-center">
+              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white mb-4">
+                Tu gestora no puede seguir con Excel
+              </h2>
+              <p className="text-sage-300 mb-10 max-w-xl mx-auto leading-relaxed">
+                Las metas suben, las auditorias llegan, y tus clientes corporativos van a exigir certificados con respaldo.
+                Empieza hoy — 14 dias gratis, sin tarjeta de credito.
+              </p>
+              <Link href="/register" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto text-base px-10 py-6 bg-white text-sage-800 hover:bg-sand-100 btn-scale font-semibold">
+                  Crear cuenta gratis
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              <p className="mt-5 text-xs text-sage-400">
+                Sin tarjeta de credito. Setup en 2 minutos. Cancela cuando quieras.
+              </p>
+            </div>
+          </ScrollFadeIn>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 bg-card/50 py-8">
+      <footer className="border-t border-border/50 bg-sand-50 py-10 md:py-14">
         <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <Leaf className="h-5 w-5 text-sage-500" />
-              <span className="font-serif text-sage-800 font-bold">CertiRecicla</span>
+          <div className="grid gap-8 md:grid-cols-4">
+            <div className="md:col-span-2">
+              <div className="flex items-center gap-2 mb-3">
+                <Leaf className="h-5 w-5 text-sage-500" />
+                <span className="font-serif text-sage-800 font-bold">CertiRecicla</span>
+              </div>
+              <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
+                Plataforma para gestoras de reciclaje en Chile. Certificados de valorizacion con calculo de CO&#x2082; verificable bajo metodologia GHG Protocol + ISO 14064.
+              </p>
             </div>
-            <p className="text-xs text-muted-foreground text-center">
-              Plataforma para gestoras de reciclaje en Chile. Metodologia GHG Protocol + ISO 14064.
-            </p>
+            <div>
+              <p className="text-xs font-medium text-sage-800 uppercase tracking-wider mb-3">Producto</p>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><a href="#funcionalidades" className="hover:text-sage-600 transition-colors">Funcionalidades</a></li>
+                <li><a href="#demo" className="hover:text-sage-600 transition-colors">Demo</a></li>
+                <li><a href="#planes" className="hover:text-sage-600 transition-colors">Planes y precios</a></li>
+                <li><a href="#faq" className="hover:text-sage-600 transition-colors">Preguntas frecuentes</a></li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-xs font-medium text-sage-800 uppercase tracking-wider mb-3">Normativa</p>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><a href="#regulacion" className="hover:text-sage-600 transition-colors">Ley REP</a></li>
+                <li><a href="#metodologia" className="hover:text-sage-600 transition-colors">Metodologia CO&#x2082;</a></li>
+                <li><a href="#regulacion" className="hover:text-sage-600 transition-colors">SINADER</a></li>
+                <li><a href="#regulacion" className="hover:text-sage-600 transition-colors">NCG 519</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-border/50 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
             <p className="text-xs text-muted-foreground">
-              &copy; {new Date().getFullYear()} CertiRecicla
+              &copy; {new Date().getFullYear()} CertiRecicla. Todos los derechos reservados.
             </p>
+            <div className="flex gap-4 text-xs text-muted-foreground">
+              <a href="mailto:hola@certirecicla.cl" className="hover:text-sage-600 transition-colors">hola@certirecicla.cl</a>
+            </div>
           </div>
         </div>
       </footer>
