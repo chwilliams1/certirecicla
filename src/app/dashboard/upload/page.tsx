@@ -80,8 +80,9 @@ export default function UploadPage() {
   const [newClientNames, setNewClientNames] = useState<string[]>([]);
   const [newBranchNames, setNewBranchNames] = useState<Set<string>>(new Set());
   const [showNewClientsPanel, setShowNewClientsPanel] = useState(false);
-  const [newClientDetails, setNewClientDetails] = useState<Record<string, { rut?: string; email?: string; phone?: string; address?: string; contactName?: string }>>({});
+  const [newClientDetails, setNewClientDetails] = useState<Record<string, { rut?: string; email?: string; phone?: string; address?: string; contactName?: string; editedName?: string; parentName?: string }>>({});
   const [expandedNewClient, setExpandedNewClient] = useState<string | null>(null);
+  const [existingClients, setExistingClients] = useState<Array<{ id: string; name: string }>>([]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -204,6 +205,15 @@ export default function UploadPage() {
           setNewClientNames(newNames);
           setNewBranchNames(branchSet);
           setShowNewClientsPanel(true);
+          // Fetch existing clients for parent assignment
+          fetch("/api/clients")
+            .then((r) => r.json())
+            .then((data) => {
+              if (Array.isArray(data)) {
+                setExistingClients(data.filter((c: { parentClientId: string | null }) => !c.parentClientId).map((c: { id: string; name: string }) => ({ id: c.id, name: c.name })));
+              }
+            })
+            .catch(() => {});
         } else {
           setNewClientNames([]);
           setNewBranchNames(new Set());
@@ -220,14 +230,58 @@ export default function UploadPage() {
     setStep("importing");
 
     // Filter out duplicates before importing
-    const dataToImport = duplicateFlags.length > 0
+    let dataToImport = duplicateFlags.length > 0
       ? transformed.data.filter((_, i) => !duplicateFlags[i])
-      : transformed.data;
+      : [...transformed.data];
 
     if (dataToImport.length === 0) {
       setError("Todos los registros son duplicados. No hay datos nuevos para importar.");
       setStep("preview");
       return;
+    }
+
+    // Apply name edits and parent assignments from newClientDetails
+    // Build a rename map: originalName → editedName
+    const renameMap = new Map<string, string>();
+    // Build a parent assignment map: clientName → parentName (making it a branch)
+    const parentAssignMap = new Map<string, string>();
+
+    for (const [origName, details] of Object.entries(newClientDetails)) {
+      if (details.editedName && details.editedName !== origName) {
+        renameMap.set(origName, details.editedName);
+      }
+      if (details.parentName) {
+        parentAssignMap.set(details.editedName || origName, details.parentName);
+      }
+    }
+
+    // Apply renames to data rows
+    if (renameMap.size > 0 || parentAssignMap.size > 0) {
+      dataToImport = dataToImport.map((row) => {
+        let cliente = renameMap.get(row.nombre_cliente) || row.nombre_cliente;
+        let sucursal = row.nombre_sucursal ? (renameMap.get(row.nombre_sucursal) || row.nombre_sucursal) : row.nombre_sucursal;
+
+        // If a standalone client is assigned a parent, move it to sucursal
+        if (!sucursal && parentAssignMap.has(cliente)) {
+          sucursal = cliente;
+          cliente = parentAssignMap.get(cliente)!;
+        }
+
+        return { ...row, nombre_cliente: cliente, nombre_sucursal: sucursal };
+      });
+    }
+
+    // Rebuild newClientDetails with edited names for the API
+    const finalDetails: Record<string, { rut?: string; email?: string; phone?: string; address?: string; contactName?: string }> = {};
+    for (const [origName, details] of Object.entries(newClientDetails)) {
+      const finalName = details.editedName || origName;
+      finalDetails[finalName] = {
+        rut: details.rut,
+        email: details.email,
+        phone: details.phone,
+        address: details.address,
+        contactName: details.contactName,
+      };
     }
 
     // Count unique pickups (client + sucursal + date + location)
@@ -240,7 +294,7 @@ export default function UploadPage() {
       const res = await fetch("/api/upload", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: dataToImport, newClientDetails }),
+        body: JSON.stringify({ data: dataToImport, newClientDetails: finalDetails }),
       });
       const result = await res.json();
       if (!res.ok) {
@@ -567,7 +621,9 @@ export default function UploadPage() {
                                 <div className={`h-6 w-6 rounded-full flex items-center justify-center flex-shrink-0 ${pickup.isNewClient ? "bg-emerald-50" : "bg-sage-50"}`}>
                                   <span className={`text-[10px] font-medium ${pickup.isNewClient ? "text-emerald-500" : "text-sage-500"}`}>{pickup.cliente.charAt(0)}</span>
                                 </div>
-                                <span className="font-medium text-sage-800 text-xs">{pickup.cliente}</span>
+                                <span className="font-medium text-sage-800 text-xs">
+                                  {newClientDetails[pickup.cliente]?.editedName || pickup.cliente}
+                                </span>
                                 {pickup.isNewClient && (
                                   <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600 border border-emerald-200">NUEVO</span>
                                 )}
@@ -713,7 +769,7 @@ export default function UploadPage() {
             onClick={() => setShowNewClientsPanel(false)}
           />
           {/* Panel */}
-          <div className="fixed top-0 right-0 h-full w-full max-w-md bg-white border-l border-sand-300 shadow-2xl z-50 flex flex-col animate-in slide-in-from-right duration-300">
+          <div className="fixed top-0 right-0 h-full w-full max-w-lg bg-white border-l border-sand-300 shadow-2xl z-50 flex flex-col animate-in slide-in-from-right duration-300">
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-sand-200">
               <div className="flex items-center gap-3">
@@ -722,7 +778,7 @@ export default function UploadPage() {
                 </div>
                 <div>
                   <h3 className="font-serif text-lg text-sage-800">Clientes nuevos</h3>
-                  <p className="text-xs text-sage-800/40">Completa los datos o importa solo con el nombre</p>
+                  <p className="text-xs text-sage-800/40">Edita nombres, completa datos o asigna como sucursal</p>
                 </div>
               </div>
               <button
@@ -738,7 +794,10 @@ export default function UploadPage() {
               {newClientNames.map((name) => {
                 const isExpanded = expandedNewClient === name;
                 const details = newClientDetails[name] || {};
-                const filledCount = Object.values(details).filter(Boolean).length;
+                const isBranch = newBranchNames.has(name);
+                const displayName = details.editedName || name;
+                const filledCount = [details.rut, details.email, details.phone, details.address, details.contactName].filter(Boolean).length;
+                const nameWasEdited = details.editedName && details.editedName !== name;
 
                 return (
                   <div key={name} className="bg-sand-50 border border-sand-200 rounded-[14px] overflow-hidden">
@@ -747,14 +806,19 @@ export default function UploadPage() {
                       onClick={() => setExpandedNewClient(isExpanded ? null : name)}
                       className="w-full flex items-center gap-3 px-4 py-3 hover:bg-sand-100/50 transition-colors"
                     >
-                      <div className={`h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0 ${newBranchNames.has(name) ? "bg-blue-50" : "bg-emerald-50"}`}>
-                        <span className={`text-xs font-medium ${newBranchNames.has(name) ? "text-blue-500" : "text-emerald-500"}`}>{name.charAt(0)}</span>
+                      <div className={`h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0 ${isBranch || details.parentName ? "bg-blue-50" : "bg-emerald-50"}`}>
+                        <span className={`text-xs font-medium ${isBranch || details.parentName ? "text-blue-500" : "text-emerald-500"}`}>{displayName.charAt(0)}</span>
                       </div>
                       <div className="flex-1 text-left min-w-0">
-                        <p className="text-sm font-medium text-sage-800 truncate">{name}</p>
+                        <div className="flex items-center gap-1.5">
+                          <p className="text-sm font-medium text-sage-800 truncate">{displayName}</p>
+                          {nameWasEdited && (
+                            <span className="text-[9px] px-1 py-0.5 rounded bg-blue-50 text-blue-500 border border-blue-200 flex-shrink-0">editado</span>
+                          )}
+                        </div>
                         <p className="text-[10px] text-sage-400">
-                          {newBranchNames.has(name) ? "Sucursal" : "Empresa"}
-                          {filledCount > 0 && ` · ${filledCount} ${filledCount === 1 ? "dato completado" : "datos completados"}`}
+                          {details.parentName ? `Sucursal de ${details.parentName}` : isBranch ? "Sucursal" : "Empresa"}
+                          {filledCount > 0 && ` · ${filledCount} ${filledCount === 1 ? "dato" : "datos"}`}
                         </p>
                       </div>
                       {filledCount > 0 && (
@@ -769,68 +833,88 @@ export default function UploadPage() {
 
                     {/* Expandable form */}
                     {isExpanded && (
-                      <div className="px-4 pb-4 pt-1 space-y-3 border-t border-sand-200">
-                        {newBranchNames.has(name) ? (
-                          <>
-                            {/* Branch (sucursal): no RUT needed, show contact details */}
-                            <p className="text-[10px] text-sage-400">Sucursal — el RUT es el mismo de la empresa</p>
-                            <div className="grid grid-cols-2 gap-3">
-                              <div className="space-y-1">
-                                <Label className="text-xs text-sage-600">Email</Label>
-                                <Input
-                                  placeholder="correo@sucursal.cl"
-                                  type="email"
-                                  value={details.email || ""}
-                                  onChange={(e) => setNewClientDetails((prev) => ({
-                                    ...prev,
-                                    [name]: { ...prev[name], email: e.target.value },
-                                  }))}
-                                  className="h-8 text-sm"
-                                />
-                              </div>
-                              <div className="space-y-1">
-                                <Label className="text-xs text-sage-600">Teléfono</Label>
-                                <Input
-                                  placeholder="+56 9 1234 5678"
-                                  value={details.phone || ""}
-                                  onChange={(e) => setNewClientDetails((prev) => ({
-                                    ...prev,
-                                    [name]: { ...prev[name], phone: e.target.value },
-                                  }))}
-                                  className="h-8 text-sm"
-                                />
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-3">
-                              <div className="space-y-1">
-                                <Label className="text-xs text-sage-600">Contacto</Label>
-                                <Input
-                                  placeholder="Nombre contacto"
-                                  value={details.contactName || ""}
-                                  onChange={(e) => setNewClientDetails((prev) => ({
-                                    ...prev,
-                                    [name]: { ...prev[name], contactName: e.target.value },
-                                  }))}
-                                  className="h-8 text-sm"
-                                />
-                              </div>
-                              <div className="space-y-1">
-                                <Label className="text-xs text-sage-600">Dirección</Label>
-                                <Input
-                                  placeholder="Dirección sucursal"
-                                  value={details.address || ""}
-                                  onChange={(e) => setNewClientDetails((prev) => ({
-                                    ...prev,
-                                    [name]: { ...prev[name], address: e.target.value },
-                                  }))}
-                                  className="h-8 text-sm"
-                                />
-                              </div>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            {/* Parent company (empresa): only RUT */}
+                      <div className="px-4 pb-4 pt-2 space-y-3 border-t border-sand-200">
+                        {/* Name editing */}
+                        <div className="space-y-1">
+                          <Label className="text-xs text-sage-600">Nombre del cliente</Label>
+                          <Input
+                            value={details.editedName ?? name}
+                            onChange={(e) => setNewClientDetails((prev) => ({
+                              ...prev,
+                              [name]: { ...prev[name], editedName: e.target.value },
+                            }))}
+                            className="h-8 text-sm font-medium"
+                          />
+                          {nameWasEdited && (
+                            <p className="text-[10px] text-sage-400">
+                              Original: <span className="text-sage-500">{name}</span>
+                              <button
+                                type="button"
+                                className="ml-1.5 text-blue-500 hover:underline"
+                                onClick={() => setNewClientDetails((prev) => ({
+                                  ...prev,
+                                  [name]: { ...prev[name], editedName: undefined },
+                                }))}
+                              >
+                                restaurar
+                              </button>
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Parent assignment — only for non-branch clients */}
+                        {!isBranch && (
+                          <div className="space-y-1">
+                            <Label className="text-xs text-sage-600">Asignar como sucursal de</Label>
+                            <select
+                              value={details.parentName || ""}
+                              onChange={(e) => setNewClientDetails((prev) => ({
+                                ...prev,
+                                [name]: { ...prev[name], parentName: e.target.value || undefined },
+                              }))}
+                              className="w-full rounded-md border border-sand-300 bg-white px-3 py-1.5 text-sm h-8"
+                            >
+                              <option value="">— Empresa independiente —</option>
+                              {/* Existing clients */}
+                              {existingClients.length > 0 && (
+                                <optgroup label="Clientes existentes">
+                                  {existingClients.map((c) => (
+                                    <option key={c.id} value={c.name}>{c.name}</option>
+                                  ))}
+                                </optgroup>
+                              )}
+                              {/* New parent clients from this import */}
+                              {(() => {
+                                const newParents = newClientNames.filter((n) => n !== name && !newBranchNames.has(n));
+                                if (newParents.length === 0) return null;
+                                return (
+                                  <optgroup label="Nuevos de esta importación">
+                                    {newParents.map((n) => (
+                                      <option key={n} value={newClientDetails[n]?.editedName || n}>
+                                        {newClientDetails[n]?.editedName || n}
+                                      </option>
+                                    ))}
+                                  </optgroup>
+                                );
+                              })()}
+                            </select>
+                            {details.parentName && (
+                              <p className="text-[10px] text-blue-500">
+                                Se creará como sucursal de &quot;{details.parentName}&quot;
+                              </p>
+                            )}
+                          </div>
+                        )}
+
+                        {isBranch && (
+                          <p className="text-[10px] text-sage-400 bg-blue-50/50 border border-blue-100 rounded px-2 py-1">
+                            Sucursal detectada del archivo — el RUT es el de la empresa madre
+                          </p>
+                        )}
+
+                        {/* Common fields for all client types */}
+                        <div className="grid grid-cols-2 gap-3">
+                          {!isBranch && !details.parentName && (
                             <div className="space-y-1">
                               <Label className="text-xs text-sage-600">RUT</Label>
                               <Input
@@ -843,8 +927,57 @@ export default function UploadPage() {
                                 className="h-8 text-sm"
                               />
                             </div>
-                          </>
-                        )}
+                          )}
+                          <div className="space-y-1">
+                            <Label className="text-xs text-sage-600">Email</Label>
+                            <Input
+                              placeholder="correo@empresa.cl"
+                              type="email"
+                              value={details.email || ""}
+                              onChange={(e) => setNewClientDetails((prev) => ({
+                                ...prev,
+                                [name]: { ...prev[name], email: e.target.value },
+                              }))}
+                              className="h-8 text-sm"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs text-sage-600">Teléfono</Label>
+                            <Input
+                              placeholder="+56 9 1234 5678"
+                              value={details.phone || ""}
+                              onChange={(e) => setNewClientDetails((prev) => ({
+                                ...prev,
+                                [name]: { ...prev[name], phone: e.target.value },
+                              }))}
+                              className="h-8 text-sm"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs text-sage-600">Contacto</Label>
+                            <Input
+                              placeholder="Nombre contacto"
+                              value={details.contactName || ""}
+                              onChange={(e) => setNewClientDetails((prev) => ({
+                                ...prev,
+                                [name]: { ...prev[name], contactName: e.target.value },
+                              }))}
+                              className="h-8 text-sm"
+                            />
+                          </div>
+                          <div className="space-y-1 col-span-2">
+                            <Label className="text-xs text-sage-600">Dirección</Label>
+                            <Input
+                              placeholder="Dirección del cliente"
+                              value={details.address || ""}
+                              onChange={(e) => setNewClientDetails((prev) => ({
+                                ...prev,
+                                [name]: { ...prev[name], address: e.target.value },
+                              }))}
+                              className="h-8 text-sm"
+                            />
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>
