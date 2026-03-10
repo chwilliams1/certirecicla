@@ -10,7 +10,7 @@ export async function GET(
   const portalToken = await prisma.clientPortalToken.findUnique({
     where: { token: params.token },
     include: {
-      client: { select: { id: true, name: true, rut: true } },
+      client: { select: { id: true, name: true, rut: true, parentClient: { select: { id: true, name: true, rut: true } } } },
       company: { select: { name: true, logo: true, ecoEquivalencies: true, plan: true } },
     },
   });
@@ -40,7 +40,7 @@ export async function GET(
   // Check if this client is a parent company with branches
   const branches = await prisma.client.findMany({
     where: { parentClientId: clientId, companyId, active: true },
-    select: { id: true, name: true },
+    select: { id: true, name: true, rut: true },
   });
 
   // Include records from parent + all branches
@@ -104,7 +104,8 @@ export async function GET(
 
   return NextResponse.json({
     client: portalToken.client,
-    branches: branches.map((b) => ({ id: b.id, name: b.name })),
+    parentClient: portalToken.client.parentClient || null,
+    branches: branches.map((b) => ({ id: b.id, name: b.name, rut: b.rut })),
     company: { name: portalToken.company.name, logo: portalToken.company.logo },
     kpis: {
       totalKg,
