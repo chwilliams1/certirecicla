@@ -51,11 +51,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Cliente no encontrado" }, { status: 404 });
   }
 
-  // Deactivate existing tokens for this client
-  await prisma.clientPortalToken.updateMany({
-    where: { clientId, companyId: session.user.companyId },
-    data: { active: false },
+  // Reuse existing active token if available (permanent link)
+  const existing = await prisma.clientPortalToken.findFirst({
+    where: { clientId, companyId: session.user.companyId, active: true },
   });
+
+  if (existing) {
+    return NextResponse.json({
+      token: existing.token,
+      url: `/portal/${existing.token}`,
+    });
+  }
 
   // Create new token with readable slug
   const portalToken = await prisma.clientPortalToken.create({
