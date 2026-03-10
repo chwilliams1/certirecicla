@@ -11,7 +11,7 @@ export async function GET(
     where: { token: params.token },
     include: {
       client: { select: { id: true, name: true, rut: true, parentClient: { select: { id: true, name: true, rut: true } } } },
-      company: { select: { name: true, logo: true, ecoEquivalencies: true, plan: true } },
+      company: { select: { name: true, logo: true, ecoEquivalencies: true, plan: true, brandPrimaryColor: true } },
     },
   });
 
@@ -110,7 +110,12 @@ export async function GET(
     client: portalToken.client,
     parentClient: portalToken.client.parentClient || null,
     branches: branches.map((b) => ({ id: b.id, name: b.name, rut: b.rut })),
-    company: { name: portalToken.company.name, logo: portalToken.company.logo },
+    company: {
+      name: portalToken.company.name,
+      logo: portalToken.company.logo,
+      plan: portalToken.company.plan,
+      brandPrimaryColor: portalToken.company.brandPrimaryColor,
+    },
     kpis: {
       totalKg,
       totalCo2: totalCo2 / 1000,

@@ -32,6 +32,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { derivePalette, DEFAULT_PALETTE } from "@/lib/pdf/branding-colors";
+import { checkFeatureAccess } from "@/lib/plans";
 
 interface PickupRecord {
   date: string;
@@ -45,7 +47,7 @@ interface PortalData {
   client: { id: string; name: string; rut: string | null };
   parentClient: { id: string; name: string; rut: string | null } | null;
   branches: { id: string; name: string; rut: string | null }[];
-  company: { name: string; logo: string | null };
+  company: { name: string; logo: string | null; plan?: string; brandPrimaryColor?: string | null };
   kpis: { totalKg: number; totalCo2: number; totalPickups: number };
   equivalencies: {
     trees: number;
@@ -257,6 +259,8 @@ export default function PortalPage() {
   if (error || !data) return <ErrorState message={error || "Error desconocido"} />;
 
   const { client, parentClient, branches, company, kpis, equivalencies, waterSaved, materialDistribution, monthlyCo2, certificates, pickups } = data;
+  const canBrand = checkFeatureAccess(company.plan || "starter", "customBranding");
+  const palette = canBrand && company.brandPrimaryColor ? derivePalette(company.brandPrimaryColor) : DEFAULT_PALETTE;
   const pickupGroups = groupPickups(pickups || []);
 
   // Group pickups by month for collapsible sections
@@ -278,7 +282,7 @@ export default function PortalPage() {
     <div className="min-h-screen bg-[#f7f6f3]">
       {/* Hero Header */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#2d5a3a] via-[#3d6b4a] to-[#4a8c5e]" />
+        <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${palette.dark}, ${palette.primary}, ${palette.primaryLight})` }} />
         <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
         <div className="relative px-4 pt-10 pb-24 md:pt-14 md:pb-28">
           <div className="max-w-5xl mx-auto">
@@ -342,13 +346,13 @@ export default function PortalPage() {
         {/* KPI Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-6">
           {[
-            { icon: Package, label: "Total reciclado", value: formatNumber(Math.round(kpis.totalKg)), unit: "kilogramos", accent: "from-emerald-500 to-green-600" },
-            { icon: Leaf, label: "CO₂ evitado", value: kpis.totalCo2.toFixed(2), unit: "toneladas de CO₂", accent: "from-teal-500 to-cyan-600" },
-            { icon: Truck, label: "Retiros realizados", value: String(kpis.totalPickups), unit: "retiros totales", accent: "from-green-500 to-emerald-600" },
+            { icon: Package, label: "Total reciclado", value: formatNumber(Math.round(kpis.totalKg)), unit: "kilogramos" },
+            { icon: Leaf, label: "CO₂ evitado", value: kpis.totalCo2.toFixed(2), unit: "toneladas de CO₂" },
+            { icon: Truck, label: "Retiros realizados", value: String(kpis.totalPickups), unit: "retiros totales" },
           ].map((kpi) => (
             <div key={kpi.label} className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow p-5 md:p-6 border border-[#eae8e3]">
               <div className="flex items-center gap-3 mb-3">
-                <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${kpi.accent} flex items-center justify-center shadow-sm`}>
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm" style={{ backgroundColor: palette.primary }}>
                   <kpi.icon className="w-4.5 h-4.5 text-white" strokeWidth={2} />
                 </div>
                 <span className="text-sm text-[#8a8a8a]">{kpi.label}</span>
@@ -362,21 +366,21 @@ export default function PortalPage() {
         {/* Eco-equivalencies */}
         <div className="bg-white rounded-2xl shadow-sm border border-[#eae8e3] p-5 md:p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
-            <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center">
-              <TrendingUp className="w-4 h-4 text-emerald-600" />
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: palette.primaryBg }}>
+              <TrendingUp className="w-4 h-4" style={{ color: palette.primary }} />
             </div>
             <h3 className="font-semibold text-[#1a1a1a]">Tu impacto equivale a</h3>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {[
-              { icon: TreePine, value: formatNumber(equivalencies.trees), label: "Árboles preservados", color: "text-emerald-600", bg: "bg-emerald-50" },
-              { icon: Car, value: formatNumber(equivalencies.kmNotDriven), label: "Km no conducidos", color: "text-blue-600", bg: "bg-blue-50" },
-              { icon: Droplets, value: formatNumber(waterSaved), label: "Litros de agua ahorrados", color: "text-cyan-600", bg: "bg-cyan-50" },
-              { icon: Home, value: String(equivalencies.homesEnergized), label: "Hogares energizados/año", color: "text-amber-600", bg: "bg-amber-50" },
-              { icon: Smartphone, value: formatNumber(equivalencies.smartphonesCharged), label: "Smartphones cargados", color: "text-purple-600", bg: "bg-purple-50" },
+              { icon: TreePine, value: formatNumber(equivalencies.trees), label: "Árboles preservados" },
+              { icon: Car, value: formatNumber(equivalencies.kmNotDriven), label: "Km no conducidos" },
+              { icon: Droplets, value: formatNumber(waterSaved), label: "Litros de agua ahorrados" },
+              { icon: Home, value: String(equivalencies.homesEnergized), label: "Hogares energizados/año" },
+              { icon: Smartphone, value: formatNumber(equivalencies.smartphonesCharged), label: "Smartphones cargados" },
             ].map((item) => (
-              <div key={item.label} className={`${item.bg}/50 rounded-xl p-4 text-center`}>
-                <item.icon className={`w-7 h-7 ${item.color} mx-auto mb-2`} strokeWidth={1.5} />
+              <div key={item.label} className="rounded-xl p-4 text-center" style={{ backgroundColor: palette.primaryBg }}>
+                <item.icon className="w-7 h-7 mx-auto mb-2" style={{ color: palette.primaryLight }} strokeWidth={1.5} />
                 <p className="text-2xl font-bold text-[#1a1a1a]">{item.value}</p>
                 <p className="text-xs text-[#8a8a8a] mt-0.5">{item.label}</p>
               </div>
@@ -389,8 +393,8 @@ export default function PortalPage() {
           {/* Material Distribution */}
           <div className="bg-white rounded-2xl shadow-sm border border-[#eae8e3] p-5 md:p-6">
             <div className="flex items-center gap-2 mb-5">
-              <div className="w-7 h-7 rounded-lg bg-[#e8f0e9] flex items-center justify-center">
-                <BarChart3 className="w-4 h-4 text-[#4a7c59]" />
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: palette.primaryBg }}>
+                <BarChart3 className="w-4 h-4" style={{ color: palette.primary }} />
               </div>
               <h3 className="font-semibold text-[#1a1a1a]">Materiales reciclados</h3>
             </div>
@@ -403,7 +407,7 @@ export default function PortalPage() {
                     formatter={(value) => [`${value} kg`, "Cantidad"]}
                     contentStyle={{ borderRadius: "12px", border: "1px solid #eae8e3", boxShadow: "0 4px 12px rgba(0,0,0,0.06)", fontSize: "13px" }}
                   />
-                  <Bar dataKey="value" fill="#4a7c59" radius={[0, 8, 8, 0]} barSize={18} />
+                  <Bar dataKey="value" fill={palette.primary} radius={[0, 8, 8, 0]} barSize={18} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
@@ -414,8 +418,8 @@ export default function PortalPage() {
           {/* Monthly CO2 */}
           <div className="bg-white rounded-2xl shadow-sm border border-[#eae8e3] p-5 md:p-6">
             <div className="flex items-center gap-2 mb-5">
-              <div className="w-7 h-7 rounded-lg bg-[#e8f0e9] flex items-center justify-center">
-                <Calendar className="w-4 h-4 text-[#4a7c59]" />
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: palette.primaryBg }}>
+                <Calendar className="w-4 h-4" style={{ color: palette.primary }} />
               </div>
               <h3 className="font-semibold text-[#1a1a1a]">CO₂ evitado por mes (kg)</h3>
             </div>
@@ -424,8 +428,8 @@ export default function PortalPage() {
                 <AreaChart data={monthlyCo2} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                   <defs>
                     <linearGradient id="co2Gradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#4a7c59" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#4a7c59" stopOpacity={0} />
+                      <stop offset="5%" stopColor={palette.primary} stopOpacity={0.2} />
+                      <stop offset="95%" stopColor={palette.primary} stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis
@@ -447,7 +451,7 @@ export default function PortalPage() {
                     }}
                     contentStyle={{ borderRadius: "12px", border: "1px solid #eae8e3", boxShadow: "0 4px 12px rgba(0,0,0,0.06)", fontSize: "13px" }}
                   />
-                  <Area type="monotone" dataKey="co2" stroke="#4a7c59" strokeWidth={2.5} fill="url(#co2Gradient)" />
+                  <Area type="monotone" dataKey="co2" stroke={palette.primary} strokeWidth={2.5} fill="url(#co2Gradient)" />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
@@ -464,8 +468,8 @@ export default function PortalPage() {
           return (
             <div className="bg-white rounded-2xl shadow-sm border border-[#eae8e3] p-5 md:p-6 mb-6">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-7 h-7 rounded-lg bg-[#e8f0e9] flex items-center justify-center">
-                  <FileCheck className="w-4 h-4 text-[#4a7c59]" />
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: palette.primaryBg }}>
+                  <FileCheck className="w-4 h-4" style={{ color: palette.primary }} />
                 </div>
                 <h3 className="font-semibold text-[#1a1a1a]">Certificados disponibles</h3>
                 <span className="ml-auto text-xs text-[#a3a3a3] bg-[#f5f3ef] px-2.5 py-1 rounded-full">{certificates.length}</span>
@@ -477,8 +481,8 @@ export default function PortalPage() {
                     className="flex items-center justify-between gap-3 p-3 bg-[#fafaf8] rounded-xl border border-[#eae8e3] hover:border-[#d4e4d6] transition-colors"
                   >
                     <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                      <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0">
-                        <FileCheck className="w-4 h-4 text-emerald-600" />
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: palette.primaryBg }}>
+                        <FileCheck className="w-4 h-4" style={{ color: palette.primary }} />
                       </div>
                       <div className="min-w-0">
                         <p className="text-sm font-medium text-[#1a1a1a] truncate">{cert.name || `Certificado ${cert.uniqueCode}`}</p>
@@ -489,7 +493,8 @@ export default function PortalPage() {
                     </div>
                     <a
                       href={`/api/portal/${token}/certificate/${cert.id}/pdf`}
-                      className="inline-flex items-center gap-1.5 px-3 py-2 bg-[#4a7c59] text-white text-xs font-medium rounded-lg hover:bg-[#3d6a4b] transition-colors shrink-0"
+                      className="inline-flex items-center gap-1.5 px-3 py-2 text-white text-xs font-medium rounded-lg transition-colors shrink-0"
+                      style={{ backgroundColor: palette.primary }}
                     >
                       <Download className="w-3.5 h-3.5" />
                       PDF
@@ -500,7 +505,8 @@ export default function PortalPage() {
               {hasMore && (
                 <button
                   onClick={() => setShowAllCerts(!showAllCerts)}
-                  className="w-full mt-3 flex items-center justify-center gap-1.5 text-sm text-[#4a7c59] font-medium py-2 rounded-xl hover:bg-[#f5f3ef] transition-colors"
+                  className="w-full mt-3 flex items-center justify-center gap-1.5 text-sm font-medium py-2 rounded-xl hover:bg-[#f5f3ef] transition-colors"
+                  style={{ color: palette.primary }}
                 >
                   <ChevronDown className={`w-4 h-4 transition-transform ${showAllCerts ? "rotate-180" : ""}`} />
                   {showAllCerts ? "Ver menos" : `Ver todos (${certificates.length})`}
@@ -514,8 +520,8 @@ export default function PortalPage() {
         {pickupGroups.length > 0 && (
           <div className="bg-white rounded-2xl shadow-sm border border-[#eae8e3] p-5 md:p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-7 h-7 rounded-lg bg-[#e8f0e9] flex items-center justify-center">
-                <Truck className="w-4 h-4 text-[#4a7c59]" />
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: palette.primaryBg }}>
+                <Truck className="w-4 h-4" style={{ color: palette.primary }} />
               </div>
               <h3 className="font-semibold text-[#1a1a1a]">Historial de retiros</h3>
               <span className="ml-auto text-xs text-[#a3a3a3] bg-[#f5f3ef] px-2.5 py-1 rounded-full">{pickupGroups.length} retiros</span>
@@ -544,7 +550,7 @@ export default function PortalPage() {
                         <span className="text-xs text-[#a3a3a3]">{groups.length} {groups.length === 1 ? "retiro" : "retiros"}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-[#4a7c59]">{monthTotal.toLocaleString("es-CL")} kg</span>
+                        <span className="text-sm font-semibold" style={{ color: palette.primary }}>{monthTotal.toLocaleString("es-CL")} kg</span>
                         <ChevronDown className={`w-4 h-4 text-[#a3a3a3] transition-transform ${isExpanded ? "rotate-180" : ""}`} />
                       </div>
                     </button>
@@ -563,7 +569,7 @@ export default function PortalPage() {
                                     {group.location}
                                   </span>
                                 )}
-                                <span className="text-xs font-semibold text-[#4a7c59]">{group.totalKg.toLocaleString("es-CL")} kg</span>
+                                <span className="text-xs font-semibold" style={{ color: palette.primary }}>{group.totalKg.toLocaleString("es-CL")} kg</span>
                               </div>
                             </div>
                             <div className="flex flex-wrap gap-1.5">
