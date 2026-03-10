@@ -328,10 +328,17 @@ export default function ClientDetailPage() {
               <p className="text-sm font-medium text-blue-800">Portal del cliente generado</p>
               <p className="text-xs text-blue-600 truncate mt-0.5">{portalUrl}</p>
             </div>
-            <Button variant="outline" size="sm" onClick={copyPortalUrl} className="flex-shrink-0">
-              {portalCopied ? <Check className="h-4 w-4 mr-1 text-emerald-500" /> : <Copy className="h-4 w-4 mr-1" />}
-              {portalCopied ? "Copiado" : "Copiar"}
-            </Button>
+            <div className="flex gap-2 flex-shrink-0">
+              <Button variant="outline" size="sm" onClick={copyPortalUrl}>
+                {portalCopied ? <Check className="h-4 w-4 mr-1 text-emerald-500" /> : <Copy className="h-4 w-4 mr-1" />}
+                {portalCopied ? "Copiado" : "Copiar"}
+              </Button>
+              <a href={portalUrl} target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" size="sm">
+                  <ExternalLink className="h-4 w-4 mr-1" /> Abrir
+                </Button>
+              </a>
+            </div>
           </div>
           <p className="text-[11px] text-blue-500/60 mt-2">Comparte este enlace con tu cliente para que vea su impacto ambiental y descargue certificados.</p>
         </div>
