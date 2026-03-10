@@ -78,6 +78,7 @@ export default function UploadPage() {
   const [importResult, setImportResult] = useState<{ pickupsCreated: number; recordsCreated: number; clientsCreated: number; duplicatesSkipped?: number } | null>(null);
   const [error, setError] = useState("");
   const [newClientNames, setNewClientNames] = useState<string[]>([]);
+  const [newBranchNames, setNewBranchNames] = useState<Set<string>>(new Set());
   const [showNewClientsPanel, setShowNewClientsPanel] = useState(false);
   const [newClientDetails, setNewClientDetails] = useState<Record<string, { rut?: string; email?: string; phone?: string; address?: string; contactName?: string }>>({});
   const [expandedNewClient, setExpandedNewClient] = useState<string | null>(null);
@@ -192,10 +193,20 @@ export default function UploadPage() {
         );
 
         if (newClientResult.status === "fulfilled" && newClientResult.value.newClients?.length > 0) {
-          setNewClientNames(newClientResult.value.newClients);
+          const newNames: string[] = newClientResult.value.newClients;
+          // Determine which new names are branches (sucursales) vs parent companies
+          const branchSet = new Set<string>();
+          for (const row of result.data) {
+            if (row.nombre_sucursal && newNames.includes(row.nombre_sucursal)) {
+              branchSet.add(row.nombre_sucursal);
+            }
+          }
+          setNewClientNames(newNames);
+          setNewBranchNames(branchSet);
           setShowNewClientsPanel(true);
         } else {
           setNewClientNames([]);
+          setNewBranchNames(new Set());
         }
       }
     } catch {
@@ -255,6 +266,7 @@ export default function UploadPage() {
     setImportResult(null);
     setError("");
     setNewClientNames([]);
+    setNewBranchNames(new Set());
     setShowNewClientsPanel(false);
     setNewClientDetails({});
     setExpandedNewClient(null);
@@ -735,14 +747,15 @@ export default function UploadPage() {
                       onClick={() => setExpandedNewClient(isExpanded ? null : name)}
                       className="w-full flex items-center gap-3 px-4 py-3 hover:bg-sand-100/50 transition-colors"
                     >
-                      <div className="h-8 w-8 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0">
-                        <span className="text-xs font-medium text-emerald-500">{name.charAt(0)}</span>
+                      <div className={`h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0 ${newBranchNames.has(name) ? "bg-blue-50" : "bg-emerald-50"}`}>
+                        <span className={`text-xs font-medium ${newBranchNames.has(name) ? "text-blue-500" : "text-emerald-500"}`}>{name.charAt(0)}</span>
                       </div>
                       <div className="flex-1 text-left min-w-0">
                         <p className="text-sm font-medium text-sage-800 truncate">{name}</p>
-                        {filledCount > 0 && (
-                          <p className="text-[10px] text-emerald-500">{filledCount} {filledCount === 1 ? "dato completado" : "datos completados"}</p>
-                        )}
+                        <p className="text-[10px] text-sage-400">
+                          {newBranchNames.has(name) ? "Sucursal" : "Empresa"}
+                          {filledCount > 0 && ` · ${filledCount} ${filledCount === 1 ? "dato completado" : "datos completados"}`}
+                        </p>
                       </div>
                       {filledCount > 0 && (
                         <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
@@ -757,71 +770,81 @@ export default function UploadPage() {
                     {/* Expandable form */}
                     {isExpanded && (
                       <div className="px-4 pb-4 pt-1 space-y-3 border-t border-sand-200">
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="space-y-1">
-                            <Label className="text-xs text-sage-600">RUT</Label>
-                            <Input
-                              placeholder="12.345.678-9"
-                              value={details.rut || ""}
-                              onChange={(e) => setNewClientDetails((prev) => ({
-                                ...prev,
-                                [name]: { ...prev[name], rut: e.target.value },
-                              }))}
-                              className="h-8 text-sm"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <Label className="text-xs text-sage-600">Email</Label>
-                            <Input
-                              placeholder="correo@empresa.cl"
-                              type="email"
-                              value={details.email || ""}
-                              onChange={(e) => setNewClientDetails((prev) => ({
-                                ...prev,
-                                [name]: { ...prev[name], email: e.target.value },
-                              }))}
-                              className="h-8 text-sm"
-                            />
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="space-y-1">
-                            <Label className="text-xs text-sage-600">Teléfono</Label>
-                            <Input
-                              placeholder="+56 9 1234 5678"
-                              value={details.phone || ""}
-                              onChange={(e) => setNewClientDetails((prev) => ({
-                                ...prev,
-                                [name]: { ...prev[name], phone: e.target.value },
-                              }))}
-                              className="h-8 text-sm"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <Label className="text-xs text-sage-600">Contacto</Label>
-                            <Input
-                              placeholder="Nombre contacto"
-                              value={details.contactName || ""}
-                              onChange={(e) => setNewClientDetails((prev) => ({
-                                ...prev,
-                                [name]: { ...prev[name], contactName: e.target.value },
-                              }))}
-                              className="h-8 text-sm"
-                            />
-                          </div>
-                        </div>
-                        <div className="space-y-1">
-                          <Label className="text-xs text-sage-600">Dirección</Label>
-                          <Input
-                            placeholder="Dirección del cliente"
-                            value={details.address || ""}
-                            onChange={(e) => setNewClientDetails((prev) => ({
-                              ...prev,
-                              [name]: { ...prev[name], address: e.target.value },
-                            }))}
-                            className="h-8 text-sm"
-                          />
-                        </div>
+                        {newBranchNames.has(name) ? (
+                          <>
+                            {/* Branch (sucursal): no RUT needed, show contact details */}
+                            <p className="text-[10px] text-sage-400">Sucursal — el RUT es el mismo de la empresa</p>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="space-y-1">
+                                <Label className="text-xs text-sage-600">Email</Label>
+                                <Input
+                                  placeholder="correo@sucursal.cl"
+                                  type="email"
+                                  value={details.email || ""}
+                                  onChange={(e) => setNewClientDetails((prev) => ({
+                                    ...prev,
+                                    [name]: { ...prev[name], email: e.target.value },
+                                  }))}
+                                  className="h-8 text-sm"
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <Label className="text-xs text-sage-600">Teléfono</Label>
+                                <Input
+                                  placeholder="+56 9 1234 5678"
+                                  value={details.phone || ""}
+                                  onChange={(e) => setNewClientDetails((prev) => ({
+                                    ...prev,
+                                    [name]: { ...prev[name], phone: e.target.value },
+                                  }))}
+                                  className="h-8 text-sm"
+                                />
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="space-y-1">
+                                <Label className="text-xs text-sage-600">Contacto</Label>
+                                <Input
+                                  placeholder="Nombre contacto"
+                                  value={details.contactName || ""}
+                                  onChange={(e) => setNewClientDetails((prev) => ({
+                                    ...prev,
+                                    [name]: { ...prev[name], contactName: e.target.value },
+                                  }))}
+                                  className="h-8 text-sm"
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <Label className="text-xs text-sage-600">Dirección</Label>
+                                <Input
+                                  placeholder="Dirección sucursal"
+                                  value={details.address || ""}
+                                  onChange={(e) => setNewClientDetails((prev) => ({
+                                    ...prev,
+                                    [name]: { ...prev[name], address: e.target.value },
+                                  }))}
+                                  className="h-8 text-sm"
+                                />
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            {/* Parent company (empresa): only RUT */}
+                            <div className="space-y-1">
+                              <Label className="text-xs text-sage-600">RUT</Label>
+                              <Input
+                                placeholder="12.345.678-9"
+                                value={details.rut || ""}
+                                onChange={(e) => setNewClientDetails((prev) => ({
+                                  ...prev,
+                                  [name]: { ...prev[name], rut: e.target.value },
+                                }))}
+                                className="h-8 text-sm"
+                              />
+                            </div>
+                          </>
+                        )}
                       </div>
                     )}
                   </div>
