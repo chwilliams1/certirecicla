@@ -31,9 +31,7 @@ const navItems = [
   { href: "/dashboard/reports", label: "Reportes", icon: FileBarChart, tourId: "nav-reports", permission: "reports:view" as const },
 ];
 
-const secondaryNavItems = [
-  { href: "/dashboard/settings", label: "Configuración", icon: Settings, tourId: "nav-settings", permission: "settings:view" as const },
-];
+// Settings moved to sidebar footer next to notifications
 
 function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
@@ -76,31 +74,9 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             </Link>
           );
         })}
-        <div className="border-t border-sand-200 my-2 mx-3" />
-        {secondaryNavItems.filter(item => can(item.permission)).map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link key={item.href} href={item.href} onClick={onNavigate}>
-              <div
-                data-tour={item.tourId}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-sm transition-all ${
-                  isActive
-                    ? "bg-sage-500/[0.08] text-sage-500 font-semibold nav-active-bar"
-                    : "text-sage-800/40 hover:text-sage-800/70 hover:bg-sand-100"
-                }`}
-              >
-                <item.icon className="h-[18px] w-[18px]" strokeWidth={1.5} />
-                {item.label}
-              </div>
-            </Link>
-          );
-        })}
       </nav>
 
       <div className="p-4 border-t border-sand-300">
-        <div className="flex items-center justify-between px-2 mb-3">
-          <NotificationBell />
-        </div>
         {impactKg !== null && impactKg > 0 && (
           <div className="bg-emerald-50/60 border border-emerald-200/60 rounded-[10px] px-3 py-2.5 mb-3">
             <p className="text-xs font-medium text-emerald-700">
@@ -115,9 +91,26 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
               {session?.user?.name?.charAt(0) || "U"}
             </span>
           </div>
-          <div className="min-w-0">
+          <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-sage-800 truncate">{session?.user?.name}</p>
             <p className="text-xs text-sage-800/30 truncate">{session?.user?.email}</p>
+          </div>
+          <div className="flex items-center gap-0.5 shrink-0">
+            <NotificationBell />
+            {can("settings:view") && (
+              <Link href="/dashboard/settings" onClick={onNavigate}>
+                <div
+                  data-tour="nav-settings"
+                  className={`relative p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-[10px] transition-all ${
+                    pathname?.startsWith("/dashboard/settings")
+                      ? "text-sage-500 bg-sage-500/[0.08]"
+                      : "text-sage-800/40 hover:text-sage-800/70 hover:bg-sand-100"
+                  }`}
+                >
+                  <Settings className="h-[18px] w-[18px]" strokeWidth={1.5} />
+                </div>
+              </Link>
+            )}
           </div>
         </div>
         <button
@@ -278,7 +271,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Leaf className="h-5 w-5 text-sage-500 animate-breathe" strokeWidth={1.5} />
               <span className="font-serif text-sage-800">CertiRecicla</span>
             </div>
-            <NotificationBell />
+            <div className="flex items-center gap-0.5">
+              <NotificationBell />
+              <Link href="/dashboard/settings">
+                <div className="relative p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-[10px] text-sage-800/40 hover:text-sage-800/70 hover:bg-sand-100 transition-all">
+                  <Settings className="h-[18px] w-[18px]" strokeWidth={1.5} />
+                </div>
+              </Link>
+            </div>
           </div>
           <SheetContent side="left" className="p-0 w-[260px] sm:w-[228px] bg-sand-50 border-sand-300">
             <Sidebar onNavigate={() => setOpen(false)} />
