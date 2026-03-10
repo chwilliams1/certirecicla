@@ -258,7 +258,7 @@ export default function ClientDetailPage() {
         <div className="flex-1 min-w-0">
           <h1 className="font-serif text-xl sm:text-2xl text-sage-800 truncate">
             {client.parentClient ? (
-              <><Link href={`/dashboard/clients/${client.parentClient.id}`} className="text-sage-800/40 hover:text-sage-600 transition-colors">{client.parentClient.name}</Link>{` - ${client.name}`}</>
+              <><Link href={`/dashboard/clients/${client.parentClient.id}`} className="text-sage-800 hover:text-sage-600 transition-colors">{client.parentClient.name}</Link><span className="text-sage-800"> - {client.name}</span></>
             ) : client.name}
           </h1>
           {client.rut && <p className="text-sm text-sage-800/40">RUT: {client.rut}</p>}

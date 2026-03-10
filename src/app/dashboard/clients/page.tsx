@@ -259,6 +259,17 @@ export default function ClientsPage() {
                 {hasBranches && isExpanded && (
                   <div className="border-t border-sand-200">
                     <div className="border-l-2 border-sage-200 ml-6">
+                      {/* Link directo a la empresa */}
+                      <Link
+                        href={`/dashboard/clients/${client.id}`}
+                        className="flex items-center gap-3 px-4 py-2.5 border-b border-sand-100 hover:bg-white/40 transition-colors"
+                      >
+                        <div className="h-5 w-5 rounded-full bg-sage-100 flex items-center justify-center flex-shrink-0">
+                          <span className="text-[9px] font-medium text-sage-500">{client.name.charAt(0)}</span>
+                        </div>
+                        <span className="text-xs font-medium text-sage-600">Ver empresa</span>
+                        <ChevronRight className="h-3.5 w-3.5 text-sage-300 ml-auto flex-shrink-0" />
+                      </Link>
                       {client.branches.map((branch) => (
                         <Link
                           key={branch.id}
