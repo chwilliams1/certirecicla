@@ -85,23 +85,32 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             <p className="text-[10px] text-emerald-600/50 mt-0.5">en {new Date().getFullYear()}</p>
           </div>
         )}
-        <div className="flex items-center gap-3 px-2 mb-3">
+        <div className="flex items-center gap-3 px-2 mb-2">
           <div className="h-8 w-8 rounded-full bg-sage-50 flex items-center justify-center flex-shrink-0">
             <span className="text-xs font-medium text-sage-500">
               {session?.user?.name?.charAt(0) || "U"}
             </span>
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0">
             <p className="text-sm font-medium text-sage-800 truncate">{session?.user?.name}</p>
             <p className="text-xs text-sage-800/30 truncate">{session?.user?.email}</p>
           </div>
-          <div className="flex items-center gap-0.5 shrink-0">
+        </div>
+        <div className="flex items-center justify-between px-2">
+          <button
+            onClick={() => signOut({ callbackUrl: "/" })}
+            className="flex items-center gap-1.5 py-1.5 text-xs text-sage-800/30 hover:text-red-500 transition-colors"
+          >
+            <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} />
+            Salir
+          </button>
+          <div className="flex items-center gap-0.5">
             <NotificationBell />
             {can("settings:view") && (
               <Link href="/dashboard/settings" onClick={onNavigate}>
                 <div
                   data-tour="nav-settings"
-                  className={`relative p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-[10px] transition-all ${
+                  className={`relative p-2 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-[10px] transition-all ${
                     pathname?.startsWith("/dashboard/settings")
                       ? "text-sage-500 bg-sage-500/[0.08]"
                       : "text-sage-800/40 hover:text-sage-800/70 hover:bg-sand-100"
@@ -113,13 +122,6 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             )}
           </div>
         </div>
-        <button
-          onClick={() => signOut({ callbackUrl: "/" })}
-          className="flex items-center gap-2 px-2 py-1.5 text-xs text-sage-800/30 hover:text-red-500 transition-colors w-full"
-        >
-          <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} />
-          Cerrar sesión
-        </button>
       </div>
     </div>
   );
