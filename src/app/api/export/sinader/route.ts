@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { hasPermission } from "@/lib/roles";
+import { checkFeatureAccess, getPlanConfig } from "@/lib/plans";
 
 const LER_CODES: Record<string, string> = {
   "Plástico PET": "200139",
@@ -34,6 +35,19 @@ export async function GET(req: NextRequest) {
   }
   if (!hasPermission(session.user.role, "export:sinader")) {
     return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
+  }
+
+  // Gate: SINADER export requiere plan Business
+  const company = await prisma.company.findUnique({
+    where: { id: session.user.companyId },
+    select: { plan: true },
+  });
+  if (!checkFeatureAccess(company?.plan || "trial", "sinaderExport")) {
+    const requiredPlan = getPlanConfig("business");
+    return NextResponse.json(
+      { error: `Esta funcion requiere el plan ${requiredPlan.displayName}. Actualiza tu plan para acceder.` },
+      { status: 403 }
+    );
   }
 
   const { searchParams } = new URL(req.url);

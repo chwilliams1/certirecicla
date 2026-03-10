@@ -13,6 +13,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PermissionGate } from "@/components/permission-gate";
+import { Lock } from "lucide-react";
+
+interface PlanData {
+  limits: {
+    fullReports: boolean;
+  };
+}
 
 interface ClientOption {
   id: string;
@@ -103,6 +110,14 @@ export default function ReportsPage() {
   const [error, setError] = useState("");
   const [recordCount, setRecordCount] = useState<number | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [planData, setPlanData] = useState<PlanData | null>(null);
+
+  useEffect(() => {
+    fetch("/api/plan")
+      .then((r) => r.json())
+      .then(setPlanData)
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     fetch("/api/clients")
@@ -437,25 +452,43 @@ export default function ReportsPage() {
         )}
 
         {/* Generate button */}
-        <PermissionGate permission="reports:generate">
-          <Button
-            onClick={handleGenerate}
-            disabled={!canGenerate}
-            className="w-full"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Generando reporte...
-              </>
-            ) : (
-              <>
-                <Download className="h-4 w-4 mr-2" />
-                Generar Reporte
-              </>
-            )}
-          </Button>
-        </PermissionGate>
+        {planData && !planData.limits.fullReports ? (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+            <Lock className="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-amber-800">Reportes avanzados no disponibles</p>
+              <p className="text-xs text-amber-700 mt-1">
+                Los reportes avanzados con desglose por material, equivalencias ecologicas y tendencias estan disponibles desde el plan Profesional.
+              </p>
+              <a
+                href="/dashboard/billing"
+                className="inline-block mt-2 text-xs font-medium text-amber-700 underline hover:text-amber-900"
+              >
+                Actualizar plan
+              </a>
+            </div>
+          </div>
+        ) : (
+          <PermissionGate permission="reports:generate">
+            <Button
+              onClick={handleGenerate}
+              disabled={!canGenerate}
+              className="w-full"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Generando reporte...
+                </>
+              ) : (
+                <>
+                  <Download className="h-4 w-4 mr-2" />
+                  Generar Reporte
+                </>
+              )}
+            </Button>
+          </PermissionGate>
+        )}
       </div>
 
       {/* Info card */}

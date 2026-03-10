@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { clientCreateSchema } from "@/lib/validations";
-import { checkClientLimit, isTrialExpired } from "@/lib/plans";
+import { checkClientLimit, checkFeatureAccess, getPlanConfig, isTrialExpired } from "@/lib/plans";
 import { hasPermission } from "@/lib/roles";
 
 export async function GET() {
@@ -97,6 +97,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "El nombre de la empresa es requerido" }, { status: 400 });
     }
 
+    // Gate: sub-clientes requiere plan Profesional o superior
+    if (sucursalName && !checkFeatureAccess(company?.plan || "trial", "subClients")) {
+      const requiredPlan = getPlanConfig("profesional");
+      return NextResponse.json(
+        { error: `Esta funcion requiere el plan ${requiredPlan.displayName}. Actualiza tu plan para acceder.` },
+        { status: 403 }
+      );
+    }
+
     const details = {
       ...(body.rut && { rut: String(body.rut).trim() }),
       ...(body.email && { email: String(body.email).trim() }),
@@ -147,6 +156,15 @@ export async function POST(req: NextRequest) {
   }
 
   if (parsed.data.parentClientId) {
+    // Gate: sub-clientes requiere plan Profesional o superior
+    if (!checkFeatureAccess(company?.plan || "trial", "subClients")) {
+      const requiredPlan = getPlanConfig("profesional");
+      return NextResponse.json(
+        { error: `Esta funcion requiere el plan ${requiredPlan.displayName}. Actualiza tu plan para acceder.` },
+        { status: 403 }
+      );
+    }
+
     const parent = await prisma.client.findFirst({
       where: { id: parsed.data.parentClientId, companyId, active: true },
     });

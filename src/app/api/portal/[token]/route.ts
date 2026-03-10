@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { calculateEquivalencies } from "@/lib/co2-calculator";
+import { checkFeatureAccess } from "@/lib/plans";
 
 export async function GET(
   req: NextRequest,
@@ -10,7 +11,7 @@ export async function GET(
     where: { token: params.token },
     include: {
       client: { select: { id: true, name: true, rut: true } },
-      company: { select: { name: true, logo: true, ecoEquivalencies: true } },
+      company: { select: { name: true, logo: true, ecoEquivalencies: true, plan: true } },
     },
   });
 
@@ -23,6 +24,14 @@ export async function GET(
 
   if (portalToken.expiresAt && portalToken.expiresAt < new Date()) {
     return NextResponse.json({ error: "Enlace expirado" }, { status: 410 });
+  }
+
+  // Gate: portal de clientes requiere plan Profesional o superior
+  if (!checkFeatureAccess(portalToken.company.plan, "clientPortal")) {
+    return NextResponse.json(
+      { error: "El portal de clientes no esta disponible en el plan actual de esta empresa." },
+      { status: 403 }
+    );
   }
 
   const clientId = portalToken.clientId;

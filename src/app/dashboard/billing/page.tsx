@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Check, Loader2, AlertCircle, CheckCircle2, CreditCard } from "lucide-react";
+import { Check, X, Loader2, AlertCircle, CheckCircle2, CreditCard } from "lucide-react";
 import { PLANS, type PlanType } from "@/lib/plans";
 
 interface BillingStatus {
@@ -16,6 +16,19 @@ interface BillingStatus {
 }
 
 const planOrder: PlanType[] = ["starter", "profesional", "business"];
+
+function FeatureRow({ enabled, label }: { enabled: boolean; label: string }) {
+  return (
+    <li className={`flex items-start gap-2 text-sm ${enabled ? "text-sage-800/70" : "text-sage-800/30"}`}>
+      {enabled ? (
+        <Check className="h-4 w-4 text-sage-500 mt-0.5 flex-shrink-0" />
+      ) : (
+        <X className="h-4 w-4 text-sage-800/20 mt-0.5 flex-shrink-0" />
+      )}
+      {label}
+    </li>
+  );
+}
 
 export default function BillingPage() {
   return (
@@ -214,36 +227,59 @@ function BillingContent() {
                 <span className="text-sm text-sage-800/40">/mes</span>
               </div>
 
-              <ul className="space-y-2.5 mb-6 flex-1">
-                <li className="flex items-start gap-2 text-sm text-sage-800/70">
-                  <Check className="h-4 w-4 text-sage-500 mt-0.5 flex-shrink-0" />
-                  Hasta {plan.maxClients} clientes
-                </li>
-                <li className="flex items-start gap-2 text-sm text-sage-800/70">
-                  <Check className="h-4 w-4 text-sage-500 mt-0.5 flex-shrink-0" />
-                  {plan.maxCertificatesPerMonth === -1
-                    ? "Certificados ilimitados"
-                    : `${plan.maxCertificatesPerMonth} certificados/mes`}
-                </li>
-                <li className="flex items-start gap-2 text-sm text-sage-800/70">
-                  <Check className="h-4 w-4 text-sage-500 mt-0.5 flex-shrink-0" />
-                  {plan.maxUsers === -1
-                    ? "Usuarios ilimitados"
-                    : `${plan.maxUsers} usuario${plan.maxUsers > 1 ? "s" : ""}`}
-                </li>
-                {plan.multiUser && (
-                  <li className="flex items-start gap-2 text-sm text-sage-800/70">
-                    <Check className="h-4 w-4 text-sage-500 mt-0.5 flex-shrink-0" />
-                    Multi-usuario
-                  </li>
-                )}
-                {plan.sinaderExport && (
-                  <li className="flex items-start gap-2 text-sm text-sage-800/70">
-                    <Check className="h-4 w-4 text-sage-500 mt-0.5 flex-shrink-0" />
-                    Exportacion SINADER
-                  </li>
-                )}
-              </ul>
+              <div className="space-y-4 mb-6 flex-1">
+                {/* Capacidad */}
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-sage-800/30 mb-1.5">Capacidad</p>
+                  <ul className="space-y-1.5">
+                    <li className="flex items-start gap-2 text-sm text-sage-800/70">
+                      <Check className="h-4 w-4 text-sage-500 mt-0.5 flex-shrink-0" />
+                      Hasta {plan.maxClients} clientes
+                    </li>
+                    <li className="flex items-start gap-2 text-sm text-sage-800/70">
+                      <Check className="h-4 w-4 text-sage-500 mt-0.5 flex-shrink-0" />
+                      {plan.maxCertificatesPerMonth === -1
+                        ? "Certificados ilimitados"
+                        : `${plan.maxCertificatesPerMonth} certificados/mes`}
+                    </li>
+                    <li className="flex items-start gap-2 text-sm text-sage-800/70">
+                      <Check className="h-4 w-4 text-sage-500 mt-0.5 flex-shrink-0" />
+                      {plan.maxUsers === -1
+                        ? "Usuarios ilimitados"
+                        : `${plan.maxUsers} usuario${plan.maxUsers > 1 ? "s" : ""}`}
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Gestion */}
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-sage-800/30 mb-1.5">Gestion</p>
+                  <ul className="space-y-1.5">
+                    <FeatureRow enabled={plan.subClients} label="Sub-clientes (sucursales)" />
+                    <FeatureRow enabled={plan.clientPortal} label="Portal de clientes" />
+                  </ul>
+                </div>
+
+                {/* Reportes */}
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-sage-800/30 mb-1.5">Reportes</p>
+                  <ul className="space-y-1.5">
+                    <li className="flex items-start gap-2 text-sm text-sage-800/70">
+                      <Check className="h-4 w-4 text-sage-500 mt-0.5 flex-shrink-0" />
+                      {plan.fullReports ? "Reportes avanzados" : "Dashboard basico"}
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Compliance */}
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-sage-800/30 mb-1.5">Compliance</p>
+                  <ul className="space-y-1.5">
+                    <FeatureRow enabled={plan.sinaderExport} label="Exportacion SINADER" />
+                    <FeatureRow enabled={plan.customBranding} label="Branding en certificados" />
+                  </ul>
+                </div>
+              </div>
 
               {isCurrent ? (
                 <div className="w-full py-2.5 text-center text-sm font-medium text-sage-500 bg-sage-50 rounded-[8px]">

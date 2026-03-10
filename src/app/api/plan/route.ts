@@ -135,18 +135,15 @@ export async function GET() {
     trialExpired,
     trialDaysRemaining,
     subscriptionStatus: company.subscriptionStatus,
-    _debug: {
-      reveniuSubscriptionId: company.reveniuSubscriptionId,
-      trialEndsAt: company.trialEndsAt,
-      rawPlan: company.plan,
-      rawStatus: company.subscriptionStatus,
-      sync: syncDebug,
-    },
     limits: {
       maxClients: config.maxClients,
       maxCertificatesPerMonth: config.maxCertificatesPerMonth,
       multiUser: config.multiUser,
+      subClients: config.subClients,
+      clientPortal: config.clientPortal,
+      fullReports: config.fullReports,
       sinaderExport: config.sinaderExport,
+      customBranding: config.customBranding,
     },
     usage: {
       activeClients,

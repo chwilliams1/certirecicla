@@ -8,7 +8,11 @@ export interface PlanConfig {
   maxCertificatesPerMonth: number; // -1 = unlimited
   maxUsers: number; // -1 = unlimited
   multiUser: boolean;
+  subClients: boolean;
+  clientPortal: boolean;
+  fullReports: boolean;
   sinaderExport: boolean;
+  customBranding: boolean;
   description: string;
 }
 
@@ -17,45 +21,61 @@ export const PLANS: Record<PlanType, PlanConfig> = {
     name: "trial",
     displayName: "Trial",
     priceClp: 0,
-    maxClients: 60,
-    maxCertificatesPerMonth: -1,
+    maxClients: 10,
+    maxCertificatesPerMonth: 15,
     maxUsers: 1,
     multiUser: false,
+    subClients: false,
+    clientPortal: false,
+    fullReports: false,
     sinaderExport: false,
-    description: "14 dias gratis con plan Profesional completo",
+    customBranding: false,
+    description: "Prueba gratuita para conocer la plataforma",
   },
   starter: {
     name: "starter",
     displayName: "Starter",
     priceClp: 19900,
-    maxClients: 15,
-    maxCertificatesPerMonth: 30,
+    maxClients: 25,
+    maxCertificatesPerMonth: 50,
     maxUsers: 1,
     multiUser: false,
+    subClients: false,
+    clientPortal: false,
+    fullReports: false,
     sinaderExport: false,
+    customBranding: false,
     description: "Para gestoras que empiezan a digitalizar",
   },
   profesional: {
     name: "profesional",
     displayName: "Profesional",
     priceClp: 49900,
-    maxClients: 60,
+    maxClients: 80,
     maxCertificatesPerMonth: -1,
-    maxUsers: 3,
+    maxUsers: 5,
     multiUser: true,
+    subClients: true,
+    clientPortal: true,
+    fullReports: true,
     sinaderExport: false,
+    customBranding: false,
     description: "Para gestoras con operacion activa",
   },
   business: {
     name: "business",
     displayName: "Business",
     priceClp: 99900,
-    maxClients: 200,
+    maxClients: 300,
     maxCertificatesPerMonth: -1,
     maxUsers: -1,
     multiUser: true,
+    subClients: true,
+    clientPortal: true,
+    fullReports: true,
     sinaderExport: true,
-    description: "Para gestoras con alto volumen",
+    customBranding: true,
+    description: "Para gestoras con alto volumen y compliance",
   },
 };
 
@@ -139,4 +159,9 @@ export function checkUserLimit(
     };
   }
   return { allowed: true, currentCount: currentUsers, limit: config.maxUsers };
+}
+
+export function checkFeatureAccess(plan: string, feature: keyof PlanConfig): boolean {
+  const config = getPlanConfig(plan);
+  return Boolean(config[feature]);
 }
