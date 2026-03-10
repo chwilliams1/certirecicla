@@ -933,6 +933,7 @@ export default function Home() {
                 <li><a href="#demo" className="hover:text-sage-600 transition-colors">Demo</a></li>
                 <li><a href="#planes" className="hover:text-sage-600 transition-colors">Planes y precios</a></li>
                 <li><a href="#faq" className="hover:text-sage-600 transition-colors">Preguntas frecuentes</a></li>
+                <li><Link href="/blog" className="hover:text-sage-600 transition-colors">Blog</Link></li>
               </ul>
             </div>
             <div>
