@@ -16,11 +16,12 @@ import {
   FileBarChart,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { NotificationBell } from "@/components/notification-bell";
 import { ProductTour } from "@/components/product-tour";
 import { usePermissions } from "@/hooks/use-permissions";
 import { PlanProvider, usePlan } from "@/components/plan-provider";
-import { Clock, ArrowRight, ShieldAlert, HeartHandshake } from "lucide-react";
+import { Clock, ArrowRight, ShieldAlert, HeartHandshake, ChevronsUpDown, User } from "lucide-react";
 import { useState, useEffect } from "react";
 
 const navItems = [
@@ -76,50 +77,70 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         })}
       </nav>
 
-      <div className="p-4 border-t border-sand-300">
+      <div className="border-t border-sand-300">
         {impactKg !== null && impactKg > 0 && (
-          <div className="bg-emerald-50/60 border border-emerald-200/60 rounded-[10px] px-3 py-2.5 mb-3">
-            <p className="text-xs font-medium text-emerald-700">
+          <div className="mx-3 mt-3 bg-emerald-50/60 border border-emerald-200/60 rounded-[10px] px-3 py-2 mb-1">
+            <p className="text-[11px] font-medium text-emerald-700">
               ♻️ {impactKg.toLocaleString("es-CL")} kg reciclados
             </p>
-            <p className="text-[10px] text-emerald-600/50 mt-0.5">en {new Date().getFullYear()}</p>
           </div>
         )}
-        <div className="flex items-center justify-between px-2 mb-2">
+
+        {/* Quick actions row */}
+        <div className="flex items-center px-3 py-2">
           <NotificationBell />
-          {can("settings:view") && (
-            <Link href="/dashboard/settings" onClick={onNavigate}>
-              <div
-                data-tour="nav-settings"
-                className={`relative p-2 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-[10px] transition-all ${
-                  pathname?.startsWith("/dashboard/settings")
-                    ? "text-sage-500 bg-sage-500/[0.08]"
-                    : "text-sage-800/40 hover:text-sage-800/70 hover:bg-sand-100"
-                }`}
+        </div>
+
+        {/* User profile — popover trigger (Linear/Notion pattern) */}
+        <div className="px-3 pb-3">
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-[10px] hover:bg-sand-100 transition-colors text-left group">
+                <div className="h-8 w-8 rounded-full bg-sage-500/10 flex items-center justify-center flex-shrink-0">
+                  <span className="text-xs font-semibold text-sage-500">
+                    {session?.user?.name?.charAt(0)?.toUpperCase() || "U"}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-sage-800 truncate leading-tight">{session?.user?.name}</p>
+                  <p className="text-[11px] text-sage-800/30 truncate leading-tight">{session?.user?.email}</p>
+                </div>
+                <ChevronsUpDown className="h-3.5 w-3.5 text-sage-800/20 group-hover:text-sage-800/40 transition-colors shrink-0" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              side="top"
+              align="start"
+              sideOffset={8}
+              className="w-[200px] p-1.5 rounded-[12px] border-sand-300 shadow-lg"
+            >
+              <Link
+                href="/dashboard/settings"
+                onClick={onNavigate}
+                className="flex items-center gap-2.5 px-3 py-2 rounded-[8px] text-sm text-sage-800 hover:bg-sand-100 transition-colors"
               >
-                <Settings className="h-[18px] w-[18px]" strokeWidth={1.5} />
-              </div>
-            </Link>
-          )}
+                <User className="h-4 w-4 text-sage-800/40" strokeWidth={1.5} />
+                Mi cuenta
+              </Link>
+              <Link
+                href="/dashboard/settings"
+                onClick={onNavigate}
+                className="flex items-center gap-2.5 px-3 py-2 rounded-[8px] text-sm text-sage-800 hover:bg-sand-100 transition-colors"
+              >
+                <Settings className="h-4 w-4 text-sage-800/40" strokeWidth={1.5} />
+                Configuración
+              </Link>
+              <div className="my-1 border-t border-sand-200" />
+              <button
+                onClick={() => signOut({ callbackUrl: "/" })}
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-[8px] text-sm text-red-500 hover:bg-red-50 transition-colors"
+              >
+                <LogOut className="h-4 w-4" strokeWidth={1.5} />
+                Cerrar sesión
+              </button>
+            </PopoverContent>
+          </Popover>
         </div>
-        <div className="flex items-center gap-3 px-2 mb-2">
-          <div className="h-8 w-8 rounded-full bg-sage-50 flex items-center justify-center flex-shrink-0">
-            <span className="text-xs font-medium text-sage-500">
-              {session?.user?.name?.charAt(0) || "U"}
-            </span>
-          </div>
-          <div className="min-w-0">
-            <p className="text-sm font-medium text-sage-800 truncate">{session?.user?.name}</p>
-            <p className="text-xs text-sage-800/30 truncate">{session?.user?.email}</p>
-          </div>
-        </div>
-        <button
-          onClick={() => signOut({ callbackUrl: "/" })}
-          className="flex items-center gap-1.5 px-2 py-1.5 text-xs text-sage-800/30 hover:text-red-500 transition-colors w-full"
-        >
-          <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} />
-          Cerrar sesión
-        </button>
       </div>
     </div>
   );

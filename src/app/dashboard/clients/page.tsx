@@ -174,7 +174,7 @@ export default function ClientsPage() {
                   <th className="w-10 py-3 px-2"></th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="stagger-rows">
                 {filtered.map((client) => (
                   <ClientRows key={client.id} client={client} />
                 ))}
@@ -196,12 +196,18 @@ function ClientRow({ client, isBranch }: { client: Client; isBranch?: boolean })
     : client._count.certificates + (client.branches?.reduce((s, b) => s + b._count.certificates, 0) || 0);
 
   return (
-    <tr className="border-t border-sand-200 hover:bg-white/50 transition-colors">
+    <tr className={`border-t border-sand-200 hover:bg-white/50 transition-colors ${isBranch ? "bg-sand-50/50" : ""}`}>
       <td className="py-3 px-3 sm:px-4">
         <Link href={`/dashboard/clients/${client.id}`} className="flex items-center gap-2">
-          {isBranch && <span className="text-sage-800/20 ml-4">└</span>}
-          <div className="h-6 w-6 rounded-full bg-sage-100 flex items-center justify-center flex-shrink-0">
-            <span className="text-[10px] font-medium text-sage-500">
+          {isBranch && (
+            <span className="ml-3 mr-0.5 text-sage-300 flex-shrink-0">
+              <svg width="12" height="16" viewBox="0 0 12 16" className="text-sage-300">
+                <path d="M1 0V10C1 12 3 12 5 12H12" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+              </svg>
+            </span>
+          )}
+          <div className={`${isBranch ? "h-5 w-5" : "h-6 w-6"} rounded-full ${isBranch ? "bg-sage-50 border border-sage-200" : "bg-sage-100"} flex items-center justify-center flex-shrink-0`}>
+            <span className={`${isBranch ? "text-[9px]" : "text-[10px]"} font-medium text-sage-500`}>
               {client.name.charAt(0)}
             </span>
           </div>

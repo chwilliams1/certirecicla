@@ -142,7 +142,7 @@ export default function PickupsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 stagger-cards">
         <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-4 text-center">
           <p className="text-xl font-serif text-sage-500">{stats.total}</p>
           <p className="text-xs text-sage-800/40 mt-1">Retiros</p>
@@ -238,7 +238,7 @@ export default function PickupsPage() {
                   <th className="w-10 py-3 px-2 sm:px-3"></th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="stagger-rows">
                 {filtered.map((pickup) => {
                   const isExpanded = expandedPickup === pickup.key;
                   return (

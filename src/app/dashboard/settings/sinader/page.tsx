@@ -118,11 +118,11 @@ export default function SinaderExportPage() {
     return (
       <div className="space-y-6 max-w-2xl">
         <button
-          onClick={() => router.push("/dashboard/settings")}
+          onClick={() => router.push("/dashboard/reports")}
           className="flex items-center gap-1.5 text-sm text-sage-800/50 hover:text-sage-800 transition-colors mb-3"
         >
           <ArrowLeft className="h-4 w-4" />
-          Volver a configuración
+          Volver a reportes
         </button>
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 flex items-start gap-3">
           <Lock className="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" />
@@ -144,11 +144,11 @@ export default function SinaderExportPage() {
     <div className="space-y-6 max-w-2xl">
       <div>
         <button
-          onClick={() => router.push("/dashboard/settings")}
+          onClick={() => router.push("/dashboard/reports")}
           className="flex items-center gap-1.5 text-sm text-sage-800/50 hover:text-sage-800 transition-colors mb-3"
         >
           <ArrowLeft className="h-4 w-4" />
-          Volver a configuración
+          Volver a reportes
         </button>
         <div className="flex items-center gap-3 mb-1">
           <FileSpreadsheet className="h-6 w-6 text-sage-500" strokeWidth={1.5} />

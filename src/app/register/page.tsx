@@ -14,8 +14,6 @@ export default function RegisterPage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [rut, setRut] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
@@ -29,7 +27,7 @@ export default function RegisterPage() {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password, companyName, rut, phone }),
+      body: JSON.stringify({ name, email, password, phone }),
     });
 
     const data = await res.json();
@@ -62,44 +60,10 @@ export default function RegisterPage() {
             <Leaf className="h-6 w-6 text-sage-600" />
           </div>
           <CardTitle className="text-xl sm:text-2xl">Crear cuenta</CardTitle>
-          <CardDescription>Comienza tu prueba gratuita de 14 dias</CardDescription>
+          <CardDescription>14 dias gratis — sin tarjeta de credito</CardDescription>
         </CardHeader>
         <CardContent className="px-4 sm:px-6">
           <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="companyName">Razón social</Label>
-              <Input
-                id="companyName"
-                type="text"
-                placeholder="Ej: Reciclajes del Sur"
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="rut">RUT de la empresa</Label>
-              <Input
-                id="rut"
-                type="text"
-                placeholder="Ej: 76.123.456-7"
-                value={rut}
-                onChange={(e) => setRut(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Teléfono</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="+56 9 1234 5678"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                required
-              />
-            </div>
-            <hr className="my-2" />
             <div className="space-y-2">
               <Label htmlFor="name">Tu nombre</Label>
               <Input
@@ -123,15 +87,26 @@ export default function RegisterPage() {
               />
             </div>
             <div className="space-y-2">
+              <Label htmlFor="phone">Teléfono</Label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="+56 9 1234 5678"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="password">Contraseña</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Mínimo 6 caracteres"
+                placeholder="Mínimo 8 caracteres"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={6}
+                minLength={8}
               />
             </div>
             {error && (

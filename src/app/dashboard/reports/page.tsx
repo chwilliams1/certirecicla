@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileBarChart, Download, Calendar, User, Loader2 } from "lucide-react";
+import { FileBarChart, Download, Calendar, User, Loader2, FileSpreadsheet, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -12,12 +12,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PermissionGate } from "@/components/permission-gate";
 import { Lock } from "lucide-react";
 
 interface PlanData {
   limits: {
     fullReports: boolean;
+    sinaderExport: boolean;
   };
 }
 
@@ -40,6 +42,22 @@ const PERIOD_LABELS: Record<PeriodType, string> = {
 const MONTHS = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
+];
+
+const SINADER_MONTHS = [
+  { value: "", label: "Todo el año" },
+  { value: "1", label: "Enero" },
+  { value: "2", label: "Febrero" },
+  { value: "3", label: "Marzo" },
+  { value: "4", label: "Abril" },
+  { value: "5", label: "Mayo" },
+  { value: "6", label: "Junio" },
+  { value: "7", label: "Julio" },
+  { value: "8", label: "Agosto" },
+  { value: "9", label: "Septiembre" },
+  { value: "10", label: "Octubre" },
+  { value: "11", label: "Noviembre" },
+  { value: "12", label: "Diciembre" },
 ];
 
 function getYearOptions(): number[] {
@@ -95,6 +113,199 @@ function computePeriod(
   }
 }
 
+/* ─── SINADER Tab ─── */
+function SinaderTab({ planData }: { planData: PlanData | null }) {
+  const currentYear = new Date().getFullYear();
+  const years = [currentYear, currentYear - 1, currentYear - 2];
+
+  const [year, setYear] = useState(String(currentYear));
+  const [month, setMonth] = useState("");
+  const [clientId, setClientId] = useState("");
+  const [clients, setClients] = useState<{ id: string; name: string }[]>([]);
+  const [recordCount, setRecordCount] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [loadingCount, setLoadingCount] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/clients")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setClients(data.map((c: { id: string; name: string }) => ({ id: c.id, name: c.name })));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    setLoadingCount(true);
+    const params = new URLSearchParams({ year });
+    if (month) params.set("month", month);
+    if (clientId) params.set("clientId", clientId);
+
+    fetch(`/api/pickups?${params.toString()}&countOnly=true`)
+      .then((r) => r.json())
+      .then((data) => {
+        setRecordCount(typeof data.count === "number" ? data.count : null);
+      })
+      .catch(() => setRecordCount(null))
+      .finally(() => setLoadingCount(false));
+  }, [year, month, clientId]);
+
+  async function handleDownload() {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({ year });
+      if (month) params.set("month", month);
+      if (clientId) params.set("clientId", clientId);
+
+      const response = await fetch(`/api/export/sinader?${params.toString()}`);
+      if (!response.ok) throw new Error("Error al exportar");
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = month
+        ? `sinader_${year}_${month.padStart(2, "0")}.csv`
+        : `sinader_${year}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      // Error silencioso
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (planData && !planData.limits.sinaderExport) {
+    return (
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 flex items-start gap-3">
+        <Lock className="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" />
+        <div>
+          <p className="text-sm font-medium text-amber-800">Exportacion SINADER no disponible</p>
+          <p className="text-xs text-amber-700 mt-1">
+            La exportacion en formato SINADER esta disponible en el plan Business.
+          </p>
+          <a href="/dashboard/billing" className="inline-block mt-2 text-xs font-medium text-amber-700 underline hover:text-amber-900">
+            Ver planes
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-6 space-y-5">
+        {/* Year selector */}
+        <div className="space-y-2">
+          <label className="flex items-center gap-1.5 text-sm font-medium text-sage-800">
+            <Calendar className="h-3.5 w-3.5 text-sage-500" strokeWidth={1.5} />
+            Ano
+          </label>
+          <Select value={year} onValueChange={setYear}>
+            <SelectTrigger className="w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {years.map((y) => (
+                <SelectItem key={y} value={String(y)}>
+                  {y}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Month selector */}
+        <div className="space-y-2">
+          <label className="flex items-center gap-1.5 text-sm font-medium text-sage-800">
+            <Calendar className="h-3.5 w-3.5 text-sage-500" strokeWidth={1.5} />
+            Mes (opcional)
+          </label>
+          <Select value={month} onValueChange={setMonth}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Todo el año" />
+            </SelectTrigger>
+            <SelectContent>
+              {SINADER_MONTHS.map((m) => (
+                <SelectItem key={m.value || "all"} value={m.value || "all"}>
+                  {m.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Client filter */}
+        <div className="space-y-2">
+          <label className="flex items-center gap-1.5 text-sm font-medium text-sage-800">
+            <Filter className="h-3.5 w-3.5 text-sage-500" strokeWidth={1.5} />
+            Cliente (opcional)
+          </label>
+          <Select value={clientId} onValueChange={setClientId}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Todos los clientes" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos los clientes</SelectItem>
+              {clients.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Preview */}
+        <div className="bg-sand-100 border border-sand-200 rounded-lg px-4 py-3 flex items-center justify-between">
+          <span className="text-sm text-sage-800/60">Registros a exportar</span>
+          {loadingCount ? (
+            <Loader2 className="h-4 w-4 animate-spin text-sage-500" />
+          ) : (
+            <Badge
+              variant="secondary"
+              className="bg-sage-500/10 text-sage-600 border-sage-500/20"
+            >
+              {recordCount !== null ? recordCount : "—"}
+            </Badge>
+          )}
+        </div>
+      </div>
+
+      {/* Download button */}
+      <Button
+        onClick={handleDownload}
+        disabled={loading}
+        className="w-full"
+      >
+        {loading ? (
+          <Loader2 className="h-4 w-4 animate-spin mr-1" />
+        ) : (
+          <Download className="h-4 w-4 mr-1" />
+        )}
+        Descargar CSV para SINADER
+      </Button>
+
+      {/* Info box */}
+      <div className="bg-emerald-50/60 border border-emerald-200 rounded-lg p-3 space-y-1.5">
+        <p className="text-xs font-medium text-emerald-700">Sobre el formato SINADER</p>
+        <p className="text-[11px] text-emerald-600/70 leading-relaxed">
+          El archivo CSV generado incluye las columnas requeridas por SINADER: fecha, RUT del
+          generador, tipo de residuo con codigo LER, cantidad en kg, tratamiento aplicado y datos
+          del gestor. Revisa los datos antes de subir al portal oficial del Ministerio del Medio
+          Ambiente.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Main Page ─── */
 export default function ReportsPage() {
   const [clients, setClients] = useState<ClientOption[]>([]);
   const [clientId, setClientId] = useState("");
@@ -204,302 +415,321 @@ export default function ReportsPage() {
     <div className="space-y-6 page-fade-in">
       {/* Header */}
       <div>
-        <h1 className="font-serif text-2xl text-sage-800">Reportes de Impacto</h1>
+        <h1 className="font-serif text-2xl text-sage-800">Reportes</h1>
         <p className="text-sm text-sage-800/40">
-          Genera reportes periodicos de impacto ambiental para tus clientes
+          Genera reportes de impacto y exportaciones para tus clientes
         </p>
       </div>
 
-      {/* Main card */}
-      <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-6 space-y-6">
-        {/* Client selector */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-sage-800 flex items-center gap-2">
-            <User className="h-4 w-4 text-sage-500" />
-            Cliente
-          </label>
-          {clientsLoading ? (
-            <div className="skeleton h-10 w-full rounded-lg" />
-          ) : (
-            <Select value={clientId} onValueChange={setClientId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccionar cliente..." />
-              </SelectTrigger>
-              <SelectContent>
-                {clients.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.parentClient ? `${c.parentClient.name} > ${c.name}` : c.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        </div>
+      <Tabs defaultValue="impact" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="impact" className="flex items-center gap-1.5">
+            <FileBarChart className="h-3.5 w-3.5" />
+            Reportes de Impacto
+          </TabsTrigger>
+          <TabsTrigger value="sinader" className="flex items-center gap-1.5">
+            <FileSpreadsheet className="h-3.5 w-3.5" />
+            Exportar SINADER
+          </TabsTrigger>
+        </TabsList>
 
-        {/* Period type selector */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-sage-800 flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-sage-500" />
-            Tipo de periodo
-          </label>
-          <Select
-            value={periodType}
-            onValueChange={(v) => setPeriodType(v as PeriodType)}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {(Object.keys(PERIOD_LABELS) as PeriodType[]).map((key) => (
-                <SelectItem key={key} value={key}>
-                  {PERIOD_LABELS[key]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Period-specific selectors */}
-        <div className="space-y-2">
-          {periodType === "monthly" && (
-            <div className="flex gap-3">
-              <div className="flex-1">
-                <label className="text-xs text-sage-800/50 mb-1 block">Mes</label>
-                <Select
-                  value={String(month)}
-                  onValueChange={(v) => setMonth(parseInt(v))}
-                >
+        <TabsContent value="impact" className="space-y-6">
+          {/* Main card */}
+          <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-6 space-y-6">
+            {/* Client selector */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-sage-800 flex items-center gap-2">
+                <User className="h-4 w-4 text-sage-500" />
+                Cliente
+              </label>
+              {clientsLoading ? (
+                <div className="skeleton h-10 w-full rounded-lg" />
+              ) : (
+                <Select value={clientId} onValueChange={setClientId}>
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Seleccionar cliente..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {MONTHS.map((m, i) => (
-                      <SelectItem key={i + 1} value={String(i + 1)}>
-                        {m}
+                    {clients.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.parentClient ? `${c.parentClient.name} > ${c.name}` : c.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
-              <div className="w-32">
-                <label className="text-xs text-sage-800/50 mb-1 block">Ano</label>
-                <Select value={String(year)} onValueChange={(v) => setYear(parseInt(v))}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {yearOptions.map((y) => (
-                      <SelectItem key={y} value={String(y)}>
-                        {y}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              )}
             </div>
-          )}
 
-          {periodType === "quarterly" && (
-            <div className="flex gap-3">
-              <div className="flex-1">
-                <label className="text-xs text-sage-800/50 mb-1 block">Trimestre</label>
-                <Select
-                  value={String(quarter)}
-                  onValueChange={(v) => setQuarter(parseInt(v))}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">Q1 (Ene - Mar)</SelectItem>
-                    <SelectItem value="2">Q2 (Abr - Jun)</SelectItem>
-                    <SelectItem value="3">Q3 (Jul - Sep)</SelectItem>
-                    <SelectItem value="4">Q4 (Oct - Dic)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="w-32">
-                <label className="text-xs text-sage-800/50 mb-1 block">Ano</label>
-                <Select value={String(year)} onValueChange={(v) => setYear(parseInt(v))}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {yearOptions.map((y) => (
-                      <SelectItem key={y} value={String(y)}>
-                        {y}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          )}
-
-          {periodType === "semiannual" && (
-            <div className="flex gap-3">
-              <div className="flex-1">
-                <label className="text-xs text-sage-800/50 mb-1 block">Semestre</label>
-                <Select
-                  value={String(semester)}
-                  onValueChange={(v) => setSemester(parseInt(v))}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">S1 (Ene - Jun)</SelectItem>
-                    <SelectItem value="2">S2 (Jul - Dic)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="w-32">
-                <label className="text-xs text-sage-800/50 mb-1 block">Ano</label>
-                <Select value={String(year)} onValueChange={(v) => setYear(parseInt(v))}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {yearOptions.map((y) => (
-                      <SelectItem key={y} value={String(y)}>
-                        {y}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          )}
-
-          {periodType === "annual" && (
-            <div className="w-32">
-              <label className="text-xs text-sage-800/50 mb-1 block">Ano</label>
-              <Select value={String(year)} onValueChange={(v) => setYear(parseInt(v))}>
+            {/* Period type selector */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-sage-800 flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-sage-500" />
+                Tipo de periodo
+              </label>
+              <Select
+                value={periodType}
+                onValueChange={(v) => setPeriodType(v as PeriodType)}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {yearOptions.map((y) => (
-                    <SelectItem key={y} value={String(y)}>
-                      {y}
+                  {(Object.keys(PERIOD_LABELS) as PeriodType[]).map((key) => (
+                    <SelectItem key={key} value={key}>
+                      {PERIOD_LABELS[key]}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-          )}
 
-          {periodType === "custom" && (
-            <div className="flex gap-3">
-              <div className="flex-1">
-                <label className="text-xs text-sage-800/50 mb-1 block">Desde</label>
-                <Input
-                  type="date"
-                  value={customStart}
-                  onChange={(e) => setCustomStart(e.target.value)}
-                />
-              </div>
-              <div className="flex-1">
-                <label className="text-xs text-sage-800/50 mb-1 block">Hasta</label>
-                <Input
-                  type="date"
-                  value={customEnd}
-                  onChange={(e) => setCustomEnd(e.target.value)}
-                />
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Preview section */}
-        {clientId && period && (
-          <div className="bg-sage-50/50 border border-sage-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-full bg-sage-100 flex items-center justify-center flex-shrink-0">
-                <FileBarChart className="h-4 w-4 text-sage-500" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-sage-800">{period.label}</p>
-                <p className="text-xs text-sage-800/40">
-                  {new Date(period.start).toLocaleDateString("es-CL")} -{" "}
-                  {new Date(period.end).toLocaleDateString("es-CL")}
-                </p>
-              </div>
-            </div>
-            <div>
-              {previewLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin text-sage-400" />
-              ) : recordCount !== null ? (
-                <Badge
-                  className={
-                    recordCount > 0
-                      ? "bg-sage-100 text-sage-600"
-                      : "bg-sand-200 text-sage-800/60"
-                  }
-                >
-                  {recordCount} {recordCount === 1 ? "registro" : "registros"}
-                </Badge>
-              ) : null}
-            </div>
-          </div>
-        )}
-
-        {/* Error message */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">
-            {error}
-          </div>
-        )}
-
-        {/* Generate button */}
-        {planData && !planData.limits.fullReports ? (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
-            <Lock className="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="text-sm font-medium text-amber-800">Reportes avanzados no disponibles</p>
-              <p className="text-xs text-amber-700 mt-1">
-                Los reportes avanzados con desglose por material, equivalencias ecologicas y tendencias estan disponibles desde el plan Profesional.
-              </p>
-              <a
-                href="/dashboard/billing"
-                className="inline-block mt-2 text-xs font-medium text-amber-700 underline hover:text-amber-900"
-              >
-                Actualizar plan
-              </a>
-            </div>
-          </div>
-        ) : (
-          <PermissionGate permission="reports:generate">
-            <Button
-              onClick={handleGenerate}
-              disabled={!canGenerate}
-              className="w-full"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Generando reporte...
-                </>
-              ) : (
-                <>
-                  <Download className="h-4 w-4 mr-2" />
-                  Generar Reporte
-                </>
+            {/* Period-specific selectors */}
+            <div className="space-y-2">
+              {periodType === "monthly" && (
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <label className="text-xs text-sage-800/50 mb-1 block">Mes</label>
+                    <Select
+                      value={String(month)}
+                      onValueChange={(v) => setMonth(parseInt(v))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {MONTHS.map((m, i) => (
+                          <SelectItem key={i + 1} value={String(i + 1)}>
+                            {m}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="w-32">
+                    <label className="text-xs text-sage-800/50 mb-1 block">Ano</label>
+                    <Select value={String(year)} onValueChange={(v) => setYear(parseInt(v))}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {yearOptions.map((y) => (
+                          <SelectItem key={y} value={String(y)}>
+                            {y}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               )}
-            </Button>
-          </PermissionGate>
-        )}
-      </div>
 
-      {/* Info card */}
-      <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-5">
-        <h3 className="text-sm font-medium text-sage-800 mb-2">Sobre los reportes</h3>
-        <ul className="text-xs text-sage-800/50 space-y-1.5">
-          <li>Los reportes incluyen un resumen de KPIs, desglose por material, equivalencias ecologicas y tendencia mensual.</li>
-          <li>Se generan en formato PDF listo para compartir con tus clientes.</li>
-          <li>Los datos se calculan a partir de los registros de reciclaje del periodo seleccionado.</li>
-        </ul>
-      </div>
+              {periodType === "quarterly" && (
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <label className="text-xs text-sage-800/50 mb-1 block">Trimestre</label>
+                    <Select
+                      value={String(quarter)}
+                      onValueChange={(v) => setQuarter(parseInt(v))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">Q1 (Ene - Mar)</SelectItem>
+                        <SelectItem value="2">Q2 (Abr - Jun)</SelectItem>
+                        <SelectItem value="3">Q3 (Jul - Sep)</SelectItem>
+                        <SelectItem value="4">Q4 (Oct - Dic)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="w-32">
+                    <label className="text-xs text-sage-800/50 mb-1 block">Ano</label>
+                    <Select value={String(year)} onValueChange={(v) => setYear(parseInt(v))}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {yearOptions.map((y) => (
+                          <SelectItem key={y} value={String(y)}>
+                            {y}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
+
+              {periodType === "semiannual" && (
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <label className="text-xs text-sage-800/50 mb-1 block">Semestre</label>
+                    <Select
+                      value={String(semester)}
+                      onValueChange={(v) => setSemester(parseInt(v))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">S1 (Ene - Jun)</SelectItem>
+                        <SelectItem value="2">S2 (Jul - Dic)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="w-32">
+                    <label className="text-xs text-sage-800/50 mb-1 block">Ano</label>
+                    <Select value={String(year)} onValueChange={(v) => setYear(parseInt(v))}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {yearOptions.map((y) => (
+                          <SelectItem key={y} value={String(y)}>
+                            {y}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
+
+              {periodType === "annual" && (
+                <div className="w-32">
+                  <label className="text-xs text-sage-800/50 mb-1 block">Ano</label>
+                  <Select value={String(year)} onValueChange={(v) => setYear(parseInt(v))}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {yearOptions.map((y) => (
+                        <SelectItem key={y} value={String(y)}>
+                          {y}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {periodType === "custom" && (
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <label className="text-xs text-sage-800/50 mb-1 block">Desde</label>
+                    <Input
+                      type="date"
+                      value={customStart}
+                      onChange={(e) => setCustomStart(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="text-xs text-sage-800/50 mb-1 block">Hasta</label>
+                    <Input
+                      type="date"
+                      value={customEnd}
+                      onChange={(e) => setCustomEnd(e.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Preview section */}
+            {clientId && period && (
+              <div className="bg-sage-50/50 border border-sage-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-full bg-sage-100 flex items-center justify-center flex-shrink-0">
+                    <FileBarChart className="h-4 w-4 text-sage-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-sage-800">{period.label}</p>
+                    <p className="text-xs text-sage-800/40">
+                      {new Date(period.start).toLocaleDateString("es-CL")} -{" "}
+                      {new Date(period.end).toLocaleDateString("es-CL")}
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  {previewLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin text-sage-400" />
+                  ) : recordCount !== null ? (
+                    <Badge
+                      className={
+                        recordCount > 0
+                          ? "bg-sage-100 text-sage-600"
+                          : "bg-sand-200 text-sage-800/60"
+                      }
+                    >
+                      {recordCount} {recordCount === 1 ? "registro" : "registros"}
+                    </Badge>
+                  ) : null}
+                </div>
+              </div>
+            )}
+
+            {/* Error message */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">
+                {error}
+              </div>
+            )}
+
+            {/* Generate button */}
+            {planData && !planData.limits.fullReports ? (
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+                <Lock className="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-amber-800">Reportes avanzados no disponibles</p>
+                  <p className="text-xs text-amber-700 mt-1">
+                    Los reportes avanzados con desglose por material, equivalencias ecologicas y tendencias estan disponibles desde el plan Profesional.
+                  </p>
+                  <a
+                    href="/dashboard/billing"
+                    className="inline-block mt-2 text-xs font-medium text-amber-700 underline hover:text-amber-900"
+                  >
+                    Actualizar plan
+                  </a>
+                </div>
+              </div>
+            ) : (
+              <PermissionGate permission="reports:generate">
+                <Button
+                  onClick={handleGenerate}
+                  disabled={!canGenerate}
+                  className="w-full"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Generando reporte...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-4 w-4 mr-2" />
+                      Generar Reporte
+                    </>
+                  )}
+                </Button>
+              </PermissionGate>
+            )}
+          </div>
+
+          {/* Info card */}
+          <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-5">
+            <h3 className="text-sm font-medium text-sage-800 mb-2">Sobre los reportes</h3>
+            <ul className="text-xs text-sage-800/50 space-y-1.5">
+              <li>Los reportes incluyen un resumen de KPIs, desglose por material, equivalencias ecologicas y tendencia mensual.</li>
+              <li>Se generan en formato PDF listo para compartir con tus clientes.</li>
+              <li>Los datos se calculan a partir de los registros de reciclaje del periodo seleccionado.</li>
+            </ul>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="sinader">
+          <SinaderTab planData={planData} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

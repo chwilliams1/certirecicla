@@ -217,14 +217,20 @@ export default function CertificatesPage() {
                   <th className="w-10 py-3 px-2"></th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="stagger-rows">
                 {filtered.map((cert) => (
                   <tr key={cert.id} className="border-t border-sand-200 hover:bg-white/50 transition-colors">
                     <td className="py-3 px-3 sm:px-4">
                       <Link href={`/dashboard/certificates/${cert.id}`} className="block">
-                        <span className="text-sm font-medium text-sage-800 truncate block">
-                          {cert.name || cert.client?.name}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-sage-800 truncate">
+                            {cert.name || cert.client?.name}
+                          </span>
+                          {/* Status dot visible on mobile only */}
+                          <span className={`sm:hidden inline-block h-2 w-2 rounded-full flex-shrink-0 ${
+                            cert.status === "sent" ? "bg-blue-400" : cert.status === "published" ? "bg-sage-400" : "bg-sand-400"
+                          }`} />
+                        </div>
                         <span className="text-[11px] text-sage-800/40">{cert.uniqueCode}</span>
                       </Link>
                     </td>

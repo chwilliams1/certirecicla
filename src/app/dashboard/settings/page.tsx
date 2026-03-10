@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Save, Loader2, ChevronRight, Leaf, Scale, Users, FileSpreadsheet, Lock, Upload, X, Paintbrush, PenTool } from "lucide-react";
+import { Save, Loader2, ChevronRight, Leaf, Scale, Users, Lock, Upload, X, Paintbrush, PenTool } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -533,27 +533,6 @@ export default function SettingsPage() {
           <ChevronRight className="h-5 w-5 text-sage-800/30 group-hover:text-blue-500 transition-colors shrink-0" />
         </button>
 
-        <button
-          type="button"
-          onClick={() => planInfo?.limits?.sinaderExport ? router.push("/dashboard/settings/sinader") : router.push("/dashboard/billing")}
-          className={`w-full bg-sand-50 border border-sand-300 rounded-[14px] p-5 flex items-center gap-4 transition-colors text-left group ${planInfo?.limits?.sinaderExport ? "hover:border-amber-300 hover:bg-amber-50/30" : "opacity-60"}`}
-        >
-          <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
-            <FileSpreadsheet className="h-5 w-5 text-amber-600" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-medium text-sage-800">Exportar SINADER</p>
-            <p className="text-xs text-sage-800/40">
-              {planInfo?.limits?.sinaderExport
-                ? "Exporta datos en formato compatible con el Sistema Nacional de Declaración de Residuos"
-                : "Disponible en el plan Business"}
-            </p>
-          </div>
-          {planInfo?.limits?.sinaderExport
-            ? <ChevronRight className="h-5 w-5 text-sage-800/30 group-hover:text-amber-500 transition-colors shrink-0" />
-            : <Lock className="h-5 w-5 text-sage-800/30 shrink-0" />
-          }
-        </button>
       </div>
 
       <Separator />

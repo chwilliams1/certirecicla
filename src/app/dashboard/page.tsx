@@ -22,7 +22,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { calculateEquivalencies } from "@/lib/co2-calculator";
+import { calculateEquivalencies, calculateWaterSaved } from "@/lib/co2-calculator";
 import { CountUp } from "@/components/count-up";
 import { RotatingEquivalence } from "@/components/rotating-equivalence";
 import { TrialBanner } from "@/components/trial-banner";
@@ -66,6 +66,31 @@ function formatMonth(m: string) {
   const month = MONTH_NAMES[parts[1]] || parts[1];
   const year = parts[0].slice(2);
   return `${month} ${year}`;
+}
+
+/* Mini sparkline for KPI cards */
+function Sparkline({ data, color = "#5a7d5e", width = 80, height = 28 }: { data: number[]; color?: string; width?: number; height?: number }) {
+  if (data.length < 2) return null;
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+  const points = data.map((v, i) => {
+    const x = (i / (data.length - 1)) * width;
+    const y = height - ((v - min) / range) * (height - 4) - 2;
+    return `${x},${y}`;
+  });
+  return (
+    <svg width={width} height={height} className="opacity-40">
+      <polyline
+        points={points.join(" ")}
+        fill="none"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
 }
 
 type ChartPeriod = "12m" | "6m" | "3m" | "year";
@@ -119,6 +144,8 @@ export default function DashboardPage() {
   if (!data) return null;
 
   const equivalencies = calculateEquivalencies(data.kpis.totalCo2 * 1000);
+  const waterMaterials = data.materialDistribution.map((m) => ({ material: m.name, kg: m.value }));
+  const waterSaved = calculateWaterSaved(waterMaterials);
   const filteredCo2 = filterByPeriod(data.monthlyco2, chartPeriod);
   const monthlyChartData = filteredCo2.map((d) => ({ ...d, name: formatMonth(d.month) }));
   const prevYearKg = data.kpis.prevYearKg;
@@ -160,7 +187,7 @@ export default function DashboardPage() {
   const equivItems = [
     { emoji: "🌳", value: equivalencies.trees.toLocaleString("es-CL"), label: "árboles que siguen en pie" },
     { emoji: "🚗", value: equivalencies.kmNotDriven.toLocaleString("es-CL"), label: "km que un auto no recorrió" },
-    { emoji: "🏠", value: equivalencies.homesEnergized.toString(), label: "hogares con energía limpia por un día" },
+    { emoji: "💧", value: waterSaved.toLocaleString("es-CL"), label: "litros de agua ahorrados" },
     { emoji: "📱", value: equivalencies.smartphonesCharged.toLocaleString("es-CL"), label: "smartphones cargados" },
   ];
 
@@ -211,21 +238,26 @@ export default function DashboardPage() {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 stagger-cards">
         {[
-          { label: "CO₂ evitado", end: data.kpis.totalCo2, decimals: 1, suffix: " ton", icon: Leaf, color: "text-sage-500" },
-          { label: "Retiros", end: data.kpis.totalPickups, decimals: 0, suffix: "", icon: Truck, color: "text-sage-400" },
-          { label: "Clientes activos", end: data.kpis.activeClients, decimals: 0, suffix: "", icon: Users, color: "text-sand-500" },
-          { label: "Certificados emitidos", end: data.kpis.certificatesCount, decimals: 0, suffix: "", icon: FileCheck, color: "text-sand-600" },
-        ].map((kpi) => (
-          <div key={kpi.label} className="bg-sand-50 border border-sand-300 rounded-[14px] p-4 sm:p-6 card-hover">
+          { label: "CO₂ evitado", end: data.kpis.totalCo2, decimals: 1, suffix: " ton", icon: Leaf, color: "text-sage-500", sparkColor: "#5a7d5e" },
+          { label: "Retiros", end: data.kpis.totalPickups, decimals: 0, suffix: "", icon: Truck, color: "text-sage-400", sparkColor: "#7c9a82" },
+          { label: "Clientes activos", end: data.kpis.activeClients, decimals: 0, suffix: "", icon: Users, color: "text-sand-500", sparkColor: "#c4b69c" },
+          { label: "Certificados emitidos", end: data.kpis.certificatesCount, decimals: 0, suffix: "", icon: FileCheck, color: "text-sand-600", sparkColor: "#a09080" },
+        ].map((kpi, idx) => (
+          <div key={kpi.label} className="bg-sand-50 border border-sand-300 rounded-[14px] p-4 sm:p-6 card-hover relative overflow-hidden">
             <div className="flex items-center justify-between mb-3">
               <p className="text-sm text-sage-800/40">{kpi.label}</p>
               <kpi.icon className={`h-5 w-5 ${kpi.color}`} strokeWidth={1.5} />
             </div>
-            <p className="font-serif text-2xl text-sage-800">
-              <CountUp end={kpi.end} decimals={kpi.decimals} suffix={kpi.suffix} />
-            </p>
+            <div className="flex items-end justify-between gap-2">
+              <p className="font-serif text-2xl text-sage-800">
+                <CountUp end={kpi.end} decimals={kpi.decimals} suffix={kpi.suffix} />
+              </p>
+              {idx === 0 && co2Values.length >= 3 && (
+                <Sparkline data={co2Values.slice(-6)} color={kpi.sparkColor} />
+              )}
+            </div>
           </div>
         ))}
       </div>
@@ -248,14 +280,14 @@ export default function DashboardPage() {
       </div>
 
       {/* Gráficos lado a lado */}
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
         {/* CO₂ evitado por mes */}
-        <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="font-serif text-lg text-sage-800">CO₂ evitado por mes</h3>
+        <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <h3 className="font-serif text-base sm:text-lg text-sage-800">CO₂ evitado por mes</h3>
             {consecutiveGrowth >= 2 && (
-              <span className="text-xs text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
-                📈 {consecutiveGrowth} meses consecutivos creciendo
+              <span className="text-[10px] sm:text-xs text-emerald-600 bg-emerald-50 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full whitespace-nowrap">
+                📈 {consecutiveGrowth} meses creciendo
               </span>
             )}
           </div>
@@ -277,8 +309,8 @@ export default function DashboardPage() {
         </div>
 
         {/* Ranking de materiales */}
-        <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-6">
-          <h3 className="font-serif text-lg text-sage-800 mb-6">Ranking de materiales</h3>
+        <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-4 sm:p-6">
+          <h3 className="font-serif text-base sm:text-lg text-sage-800 mb-4 sm:mb-6">Ranking de materiales</h3>
           <div className="space-y-3">
             {sortedMaterials.map((mat, i) => (
               <div key={mat.name} className="flex items-center gap-3">
@@ -365,7 +397,7 @@ export default function DashboardPage() {
                   <th className="text-right py-3 text-xs font-medium text-sage-800/40 uppercase tracking-wider hidden sm:table-cell">CO₂</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="stagger-rows">
                 {data.recentPickups.map((p) => (
                   <tr key={p.key} className="border-b border-sand-200 last:border-0 hover:bg-sage-50/30 transition-colors">
                     <td className="py-3 text-xs text-sage-800 whitespace-nowrap">
