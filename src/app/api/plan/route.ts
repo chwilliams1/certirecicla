@@ -124,6 +124,12 @@ export async function GET() {
     trialExpired,
     trialDaysRemaining,
     subscriptionStatus: company.subscriptionStatus,
+    _debug: {
+      reveniuSubscriptionId: company.reveniuSubscriptionId,
+      trialEndsAt: company.trialEndsAt,
+      rawPlan: company.plan,
+      rawStatus: company.subscriptionStatus,
+    },
     limits: {
       maxClients: config.maxClients,
       maxCertificatesPerMonth: config.maxCertificatesPerMonth,
