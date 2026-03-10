@@ -126,6 +126,11 @@ export default function DashboardPage() {
     fetch("/api/dashboard").then((r) => r.json()).then(setData).finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    const timer = setInterval(() => setHeroMetric((m) => (m === "kg" ? "co2" : "kg")), 6000);
+    return () => clearInterval(timer);
+  }, []);
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -142,11 +147,6 @@ export default function DashboardPage() {
       </div>
     );
   }
-  useEffect(() => {
-    const timer = setInterval(() => setHeroMetric((m) => (m === "kg" ? "co2" : "kg")), 6000);
-    return () => clearInterval(timer);
-  }, []);
-
   if (!data) return null;
 
   const equivalencies = calculateEquivalencies(data.kpis.totalCo2 * 1000);
