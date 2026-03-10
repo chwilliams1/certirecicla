@@ -19,7 +19,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { NotificationBell } from "@/components/notification-bell";
 import { ProductTour } from "@/components/product-tour";
 import { usePermissions } from "@/hooks/use-permissions";
-import { Clock, ArrowRight, ShieldAlert } from "lucide-react";
+import { Clock, ArrowRight, ShieldAlert, HeartHandshake } from "lucide-react";
 import { useState, useEffect } from "react";
 
 const navItems = [
@@ -134,6 +134,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
 function TrialTopBar() {
   const [trialDays, setTrialDays] = useState<number | null>(null);
   const [expired, setExpired] = useState(false);
+  const [cancelled, setCancelled] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -142,11 +143,14 @@ function TrialTopBar() {
       .then((d) => {
         if (d.trialExpired) {
           setExpired(true);
+          setCancelled(d.subscriptionStatus === "cancelled");
         } else if (d.plan === "trial") {
           setTrialDays(d.trialDaysRemaining);
-          setExpired(d.trialExpired);
+          setExpired(false);
+          setCancelled(false);
         } else {
           setExpired(false);
+          setCancelled(false);
           setTrialDays(null);
         }
       })
@@ -154,6 +158,18 @@ function TrialTopBar() {
   }, [pathname]);
 
   if (trialDays === null && !expired) return null;
+
+  if (expired && cancelled) {
+    return (
+      <div className="bg-sage-700 text-white text-center py-1.5 px-4 text-xs sm:text-sm font-medium flex items-center justify-center gap-2">
+        <HeartHandshake className="h-3.5 w-3.5 flex-shrink-0" />
+        <span>Tu plan fue cancelado. Te extrañamos.</span>
+        <Link href="/dashboard/billing" className="underline hover:no-underline inline-flex items-center gap-0.5">
+          Reactivar plan <ArrowRight className="h-3 w-3" />
+        </Link>
+      </div>
+    );
+  }
 
   if (expired) {
     return (
@@ -179,7 +195,7 @@ function TrialTopBar() {
 }
 
 function TrialBlockOverlay() {
-  const [blocked, setBlocked] = useState(false);
+  const [blockReason, setBlockReason] = useState<"trial_expired" | "cancelled" | null>(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -187,35 +203,75 @@ function TrialBlockOverlay() {
       .then((r) => r.json())
       .then((d) => {
         if (d.trialExpired && d.subscriptionStatus !== "active") {
-          setBlocked(true);
+          setBlockReason(d.subscriptionStatus === "cancelled" ? "cancelled" : "trial_expired");
         } else {
-          setBlocked(false);
+          setBlockReason(null);
         }
       })
       .catch(() => {});
   }, [pathname]);
 
   // Allow access to billing page even when blocked
-  if (!blocked || pathname === "/dashboard/billing") return null;
+  if (!blockReason || pathname === "/dashboard/billing") return null;
+
+  if (blockReason === "cancelled") {
+    return (
+      <div className="fixed inset-0 z-50 bg-sand-100/95 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="bg-white rounded-[16px] shadow-xl border border-sand-200 max-w-md w-full p-8 text-center">
+          <div className="mx-auto w-14 h-14 bg-sage-50 rounded-full flex items-center justify-center mb-5">
+            <HeartHandshake className="h-7 w-7 text-sage-500" />
+          </div>
+          <h2 className="text-xl font-serif text-sage-800 mb-3">
+            Tu plan ha sido cancelado
+          </h2>
+          <p className="text-sm text-sage-800/60 mb-2 leading-relaxed">
+            Sabemos que las cosas cambian, y esta bien.
+            Tu trabajo y el impacto que has generado siguen siendo valiosos.
+          </p>
+          <p className="text-sm text-sage-800/60 mb-7 leading-relaxed">
+            Cuando estes listo para volver, tu cuenta y todos tus datos
+            te estaran esperando exactamente como los dejaste.
+          </p>
+          <Link
+            href="/dashboard/billing"
+            className="inline-flex items-center gap-2 bg-sage-500 text-white px-7 py-2.5 rounded-[8px] text-sm font-medium hover:bg-sage-600 transition-colors"
+          >
+            Reactivar mi plan <ArrowRight className="h-4 w-4" />
+          </Link>
+          <p className="text-xs text-sage-800/30 mt-4">
+            Elige un plan y retoma tu gestion en segundos
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 bg-sand-100/95 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white rounded-[16px] shadow-xl border border-sand-200 max-w-md w-full p-8 text-center">
-        <div className="mx-auto w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mb-4">
-          <ShieldAlert className="h-6 w-6 text-red-500" />
+        <div className="mx-auto w-14 h-14 bg-amber-50 rounded-full flex items-center justify-center mb-5">
+          <Clock className="h-7 w-7 text-amber-500" />
         </div>
-        <h2 className="text-xl font-serif text-sage-800 mb-2">
-          Periodo de prueba finalizado
+        <h2 className="text-xl font-serif text-sage-800 mb-3">
+          Tu periodo de prueba ha finalizado
         </h2>
-        <p className="text-sm text-sage-800/50 mb-6">
-          Tu periodo de prueba ha terminado. Selecciona un plan para continuar usando CertiRecicla.
+        <p className="text-sm text-sage-800/60 mb-2 leading-relaxed">
+          Esperamos que hayas disfrutado explorar todo lo que CertiRecicla
+          puede hacer por tu gestion de reciclaje.
+        </p>
+        <p className="text-sm text-sage-800/60 mb-7 leading-relaxed">
+          Elige el plan que mejor se adapte a tu operacion
+          y sigue generando impacto ambiental con tus clientes.
         </p>
         <Link
           href="/dashboard/billing"
-          className="inline-flex items-center gap-2 bg-sage-500 text-white px-6 py-2.5 rounded-[8px] text-sm font-medium hover:bg-sage-600 transition-colors"
+          className="inline-flex items-center gap-2 bg-sage-500 text-white px-7 py-2.5 rounded-[8px] text-sm font-medium hover:bg-sage-600 transition-colors"
         >
-          Ver planes <ArrowRight className="h-4 w-4" />
+          Ver planes disponibles <ArrowRight className="h-4 w-4" />
         </Link>
+        <p className="text-xs text-sage-800/30 mt-4">
+          Activa tu plan en menos de 2 minutos
+        </p>
       </div>
     </div>
   );
