@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { calculateEquivalencies } from "@/lib/co2-calculator";
+import { calculateEquivalencies, calculateWaterSaved } from "@/lib/co2-calculator";
 import { checkFeatureAccess } from "@/lib/plans";
 
 export async function GET(
@@ -93,6 +93,10 @@ export async function GET(
   }
   const equivalencies = calculateEquivalencies(totalCo2, customEq);
 
+  // Calculate water saved from material distribution
+  const waterMaterials = Object.entries(materialDist).map(([material, kg]) => ({ material, kg }));
+  const waterSaved = calculateWaterSaved(waterMaterials);
+
   // Build pickups list (grouped by date + location)
   const pickups = records.map((r) => ({
     date: r.pickupDate.toISOString(),
@@ -113,6 +117,7 @@ export async function GET(
       totalPickups: records.length,
     },
     equivalencies,
+    waterSaved,
     materialDistribution: Object.entries(materialDist).map(
       ([name, value]) => ({ name, value: Math.round(value) })
     ),

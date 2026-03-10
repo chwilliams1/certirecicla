@@ -20,6 +20,7 @@ import {
   ChevronDown,
   Building2,
   Store,
+  Droplets,
 } from "lucide-react";
 import {
   AreaChart,
@@ -52,6 +53,7 @@ interface PortalData {
     homesEnergized: number;
     smartphonesCharged: number;
   };
+  waterSaved: number;
   materialDistribution: { name: string; value: number }[];
   monthlyCo2: { month: string; co2: number }[];
   certificates: {
@@ -254,7 +256,7 @@ export default function PortalPage() {
   if (loading) return <LoadingSkeleton />;
   if (error || !data) return <ErrorState message={error || "Error desconocido"} />;
 
-  const { client, parentClient, branches, company, kpis, equivalencies, materialDistribution, monthlyCo2, certificates, pickups } = data;
+  const { client, parentClient, branches, company, kpis, equivalencies, waterSaved, materialDistribution, monthlyCo2, certificates, pickups } = data;
   const pickupGroups = groupPickups(pickups || []);
 
   // Group pickups by month for collapsible sections
@@ -365,10 +367,11 @@ export default function PortalPage() {
             </div>
             <h3 className="font-semibold text-[#1a1a1a]">Tu impacto equivale a</h3>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {[
               { icon: TreePine, value: formatNumber(equivalencies.trees), label: "Árboles preservados", color: "text-emerald-600", bg: "bg-emerald-50" },
               { icon: Car, value: formatNumber(equivalencies.kmNotDriven), label: "Km no conducidos", color: "text-blue-600", bg: "bg-blue-50" },
+              { icon: Droplets, value: formatNumber(waterSaved), label: "Litros de agua ahorrados", color: "text-cyan-600", bg: "bg-cyan-50" },
               { icon: Home, value: String(equivalencies.homesEnergized), label: "Hogares energizados/año", color: "text-amber-600", bg: "bg-amber-50" },
               { icon: Smartphone, value: formatNumber(equivalencies.smartphonesCharged), label: "Smartphones cargados", color: "text-purple-600", bg: "bg-purple-50" },
             ].map((item) => (

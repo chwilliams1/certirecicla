@@ -12,6 +12,7 @@ import {
   TreePine,
   Car,
   Smartphone,
+  Droplets,
   Trash2,
   Pencil,
   X,
@@ -26,7 +27,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { calculateEquivalencies, DEFAULT_CO2_FACTORS, VALID_MATERIALS } from "@/lib/co2-calculator";
+import { calculateEquivalencies, calculateWaterSaved, DEFAULT_CO2_FACTORS, VALID_MATERIALS } from "@/lib/co2-calculator";
 import { formatPeriod } from "@/lib/format-period";
 import { derivePalette, DEFAULT_PALETTE, type BrandingPalette } from "@/lib/pdf/branding-colors";
 import { checkFeatureAccess } from "@/lib/plans";
@@ -274,6 +275,8 @@ export default function CertificateDetailPage() {
     ? Object.values(editMaterials).reduce((s, v) => s + v.co2, 0)
     : cert.totalCo2;
   const eq = calculateEquivalencies(totalCo2);
+  const waterMaterials = Object.entries(editing ? editMaterials : JSON.parse(cert.materials) as Record<string, { kg: number }>).map(([material, v]) => ({ material, kg: v.kg }));
+  const waterSaved = calculateWaterSaved(waterMaterials);
   const isDraft = cert.status === "draft";
 
   const canBrand = checkFeatureAccess(cert.company.plan || "starter", "customBranding");
@@ -558,10 +561,11 @@ export default function CertificateDetailPage() {
             <>
               <h3 className="font-serif text-lg mt-6 mb-2" style={{ color: palette.primary }}>Equivalencias Ecológicas</h3>
               <p className="text-xs mb-4" style={{ color: palette.gray }}>El correcto manejo de estos residuos permitió generar el siguiente impacto ambiental positivo:</p>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 rounded-xl p-4" style={{ backgroundColor: palette.primaryBg }}>
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 rounded-xl p-4" style={{ backgroundColor: palette.primaryBg }}>
                 {[
                   { icon: TreePine, value: eq.trees, label: "Árboles preservados" },
                   { icon: Car, value: eq.kmNotDriven.toLocaleString("es-CL"), label: "Km no conducidos" },
+                  { icon: Droplets, value: waterSaved.toLocaleString("es-CL"), label: "Litros de agua ahorrados" },
                   { icon: Smartphone, value: eq.smartphonesCharged.toLocaleString("es-CL"), label: "Smartphones cargados" },
                 ].map((item) => (
                   <div key={item.label} className="text-center">

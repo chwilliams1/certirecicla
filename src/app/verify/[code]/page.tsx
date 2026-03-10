@@ -17,8 +17,9 @@ import {
   AlertCircle,
   Loader2,
   Recycle,
+  Droplets,
 } from "lucide-react";
-import { calculateEquivalencies } from "@/lib/co2-calculator";
+import { calculateEquivalencies, calculateWaterSaved } from "@/lib/co2-calculator";
 import { formatPeriod } from "@/lib/format-period";
 
 interface PickupDetail {
@@ -98,6 +99,8 @@ export default function VerifyCertificatePage() {
   }
 
   const eq = calculateEquivalencies(cert.totalCo2);
+  const waterMaterials = Object.entries(cert.materials).map(([material, v]: [string, { kg: number }]) => ({ material, kg: v.kg }));
+  const waterSaved = calculateWaterSaved(waterMaterials);
   const materialEntries = Object.entries(cert.materials);
 
   return (
@@ -219,10 +222,11 @@ export default function VerifyCertificatePage() {
             Impacto Ambiental Positivo
           </h2>
           <p className="text-xs text-gray-400 mb-5">El correcto manejo de estos residuos permitió generar el siguiente impacto:</p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
             {[
               { icon: TreePine, value: eq.trees, label: "Árboles preservados", color: "bg-green-50 text-green-600" },
               { icon: Car, value: eq.kmNotDriven.toLocaleString("es-CL"), label: "Km no conducidos", color: "bg-blue-50 text-blue-600" },
+              { icon: Droplets, value: waterSaved.toLocaleString("es-CL"), label: "Litros de agua ahorrados", color: "bg-cyan-50 text-cyan-600" },
               { icon: Home, value: eq.homesEnergized, label: "Hogares energizados", color: "bg-amber-50 text-amber-600" },
               { icon: Smartphone, value: eq.smartphonesCharged.toLocaleString("es-CL"), label: "Smartphones cargados", color: "bg-purple-50 text-purple-600" },
             ].map((item) => (
