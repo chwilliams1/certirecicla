@@ -53,7 +53,7 @@ function BillingContent() {
         alert(data.error || "Error al cancelar");
         return;
       }
-      setBilling((prev) => prev ? { ...prev, subscriptionStatus: "cancelled" } : prev);
+      window.location.reload();
     } catch {
       alert("Error de conexion. Intenta de nuevo.");
     } finally {

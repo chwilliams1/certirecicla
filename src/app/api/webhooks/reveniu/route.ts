@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
         data: {
           plan: "trial",
           subscriptionStatus: "cancelled",
-          trialEndsAt: new Date(),
+          trialEndsAt: new Date(Date.now() - 1000),
           maxClients: 60,
           maxCertificatesPerMonth: -1,
         },
@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
         data: {
           plan: "trial",
           subscriptionStatus: "cancelled",
-          trialEndsAt: new Date(),
+          trialEndsAt: new Date(Date.now() - 1000),
           maxClients: 60,
           maxCertificatesPerMonth: -1,
         },

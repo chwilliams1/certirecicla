@@ -29,10 +29,12 @@ export async function GET() {
   }
 
   // Sync con Reveniu en paralelo con los counts para no agregar latencia
+  let syncDebug: { action?: string; reveniuStatus?: string; reveniuPlanId?: number; error?: string } = {};
   const syncReveniu = async () => {
     // Plan cancelado pero nunca revertido a trial (estado inconsistente)
     if (!company.reveniuSubscriptionId) {
       if (company.subscriptionStatus !== "active" && company.plan !== "trial") {
+        syncDebug = { action: "revert_to_expired_trial_no_sub_id" };
         const trialConfig = getPlanConfig("trial");
         await prisma.company.update({
           where: { id: session.user.companyId },
@@ -46,15 +48,20 @@ export async function GET() {
         });
         company.plan = "trial";
         company.trialEndsAt = new Date(Date.now() - 1000);
+      } else {
+        syncDebug = { action: "skip_no_sub_id" };
       }
       return;
     }
     try {
       const sub = await getSubscription(company.reveniuSubscriptionId);
+      syncDebug.reveniuStatus = sub.status;
+      syncDebug.reveniuPlanId = sub.plan_id;
       const reveniuPlanKey = getReveniuPlanKey(sub.plan_id);
 
       // Reveniu dice active pero DB no lo refleja
       if (sub.status === "active" && company.subscriptionStatus !== "active" && reveniuPlanKey) {
+        syncDebug.action = "activate_from_reveniu";
         const planConfig = getPlanConfig(reveniuPlanKey);
         await prisma.company.update({
           where: { id: session.user.companyId },
@@ -72,6 +79,7 @@ export async function GET() {
 
       // Reveniu dice inactive/cancelled pero plan no revertido a trial
       if ((sub.status === "inactive" || sub.status === "cancelled") && company.plan !== "trial") {
+        syncDebug.action = "revert_to_trial_reveniu_cancelled";
         const trialConfig = getPlanConfig("trial");
         await prisma.company.update({
           where: { id: session.user.companyId },
@@ -88,8 +96,10 @@ export async function GET() {
         company.subscriptionStatus = "cancelled";
         company.trialEndsAt = new Date(Date.now() - 1000);
       }
-    } catch {
-      // Reveniu no disponible, seguir con datos de DB
+
+      if (!syncDebug.action) syncDebug.action = "no_change";
+    } catch (e) {
+      syncDebug = { action: "reveniu_api_error", error: e instanceof Error ? e.message : String(e) };
     }
   };
 
@@ -129,6 +139,7 @@ export async function GET() {
       trialEndsAt: company.trialEndsAt,
       rawPlan: company.plan,
       rawStatus: company.subscriptionStatus,
+      sync: syncDebug,
     },
     limits: {
       maxClients: config.maxClients,

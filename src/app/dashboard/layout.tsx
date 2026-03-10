@@ -134,6 +134,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
 function TrialTopBar() {
   const [trialDays, setTrialDays] = useState<number | null>(null);
   const [expired, setExpired] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     fetch("/api/plan")
@@ -144,10 +145,13 @@ function TrialTopBar() {
         } else if (d.plan === "trial") {
           setTrialDays(d.trialDaysRemaining);
           setExpired(d.trialExpired);
+        } else {
+          setExpired(false);
+          setTrialDays(null);
         }
       })
       .catch(() => {});
-  }, []);
+  }, [pathname]);
 
   if (trialDays === null && !expired) return null;
 
@@ -184,10 +188,12 @@ function TrialBlockOverlay() {
       .then((d) => {
         if (d.trialExpired && d.subscriptionStatus !== "active") {
           setBlocked(true);
+        } else {
+          setBlocked(false);
         }
       })
       .catch(() => {});
-  }, []);
+  }, [pathname]);
 
   // Allow access to billing page even when blocked
   if (!blocked || pathname === "/dashboard/billing") return null;

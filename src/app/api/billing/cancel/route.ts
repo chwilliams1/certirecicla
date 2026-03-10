@@ -31,7 +31,7 @@ export async function POST() {
     data: {
       plan: "trial",
       subscriptionStatus: "cancelled",
-      trialEndsAt: new Date(),
+      trialEndsAt: new Date(Date.now() - 1000),
       reveniuSubscriptionId: null,
       maxClients: trialConfig.maxClients,
       maxCertificatesPerMonth: trialConfig.maxCertificatesPerMonth,
