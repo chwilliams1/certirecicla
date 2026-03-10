@@ -15,8 +15,12 @@ import {
   AlertTriangle,
   Mail,
   FileSpreadsheet,
+  Calculator,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import InteractiveDemo from "@/components/landing/interactive-demo";
+import FaqSection from "@/components/landing/faq-section";
 
 const VALORIZACION_METAS = [
   { material: "Vidrio", meta2025: "19%", meta2026: "22%" },
@@ -39,6 +43,7 @@ export default function Home() {
           <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
             <a href="#problema" className="hover:text-sage-600 transition-colors">El problema</a>
             <a href="#funcionalidades" className="hover:text-sage-600 transition-colors">Funcionalidades</a>
+            <a href="#demo" className="hover:text-sage-600 transition-colors">Demo</a>
             <a href="#planes" className="hover:text-sage-600 transition-colors">Planes</a>
             <a href="#regulacion" className="hover:text-sage-600 transition-colors">Regulacion</a>
           </nav>
@@ -80,9 +85,10 @@ export default function Home() {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <a href="#planes" className="w-full sm:w-auto">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto text-base px-8 py-6">
-                  Ver planes desde $19.900/mes
+              <a href="#demo" className="w-full sm:w-auto">
+                <Button variant="outline" size="lg" className="w-full sm:w-auto text-base px-8 py-6 gap-2">
+                  <Calculator className="h-5 w-5" />
+                  Probar calculadora gratis
                 </Button>
               </a>
             </div>
@@ -189,7 +195,7 @@ export default function Home() {
         </section>
 
         {/* Features */}
-        <section id="funcionalidades" className="bg-sand-50 border-y border-border/50 py-16 md:py-20">
+        <section id="funcionalidades" className="py-16 md:py-20">
           <div className="container mx-auto px-6">
             <div className="mx-auto max-w-3xl text-center mb-12">
               <h2 className="font-serif text-3xl font-bold text-sage-900 mb-4">
@@ -254,6 +260,93 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Product preview */}
+        <section className="bg-sand-50 border-y border-border/50 py-16 md:py-20">
+          <div className="container mx-auto px-6">
+            <div className="mx-auto max-w-3xl text-center mb-10">
+              <h2 className="font-serif text-3xl font-bold text-sage-900 mb-4">
+                Asi se ve por dentro
+              </h2>
+              <p className="text-muted-foreground">
+                Dashboard, certificados y gestion de clientes — todo en un mismo lugar.
+              </p>
+            </div>
+            <div className="mx-auto max-w-5xl">
+              {/* Browser mockup */}
+              <div className="rounded-xl border shadow-lg overflow-hidden bg-white">
+                {/* Browser bar */}
+                <div className="flex items-center gap-2 px-4 py-3 bg-gray-100 border-b">
+                  <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-red-400" />
+                    <div className="w-3 h-3 rounded-full bg-amber-400" />
+                    <div className="w-3 h-3 rounded-full bg-green-400" />
+                  </div>
+                  <div className="flex-1 mx-4">
+                    <div className="bg-white rounded-md border px-3 py-1 text-xs text-muted-foreground max-w-xs mx-auto text-center">
+                      app.certirecicla.cl/dashboard
+                    </div>
+                  </div>
+                </div>
+                {/* Dashboard mockup */}
+                <div className="p-6 md:p-8">
+                  <div className="flex items-center gap-2 mb-6">
+                    <Leaf className="h-5 w-5 text-sage-500" />
+                    <span className="font-serif text-sm font-bold text-sage-800">CertiRecicla</span>
+                    <span className="text-xs text-muted-foreground ml-2">/ Dashboard</span>
+                  </div>
+                  {/* KPI row */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                    <div className="rounded-lg border p-3">
+                      <p className="text-[10px] text-muted-foreground">Total reciclado</p>
+                      <p className="text-lg font-bold text-sage-800">24.580 kg</p>
+                      <p className="text-[10px] text-sage-500">+12% vs mes anterior</p>
+                    </div>
+                    <div className="rounded-lg border p-3">
+                      <p className="text-[10px] text-muted-foreground">CO&#x2082; evitado</p>
+                      <p className="text-lg font-bold text-sage-800">18.435 kg</p>
+                      <p className="text-[10px] text-sage-500">GHG Protocol</p>
+                    </div>
+                    <div className="rounded-lg border p-3">
+                      <p className="text-[10px] text-muted-foreground">Clientes activos</p>
+                      <p className="text-lg font-bold text-sage-800">38</p>
+                      <p className="text-[10px] text-sage-500">3 nuevos este mes</p>
+                    </div>
+                    <div className="rounded-lg border p-3">
+                      <p className="text-[10px] text-muted-foreground">Certificados emitidos</p>
+                      <p className="text-lg font-bold text-sage-800">142</p>
+                      <p className="text-[10px] text-sage-500">Marzo 2026</p>
+                    </div>
+                  </div>
+                  {/* Mini table */}
+                  <div className="rounded-lg border overflow-hidden">
+                    <div className="bg-sage-50 px-4 py-2 border-b">
+                      <p className="text-xs font-medium text-sage-700">Ultimos certificados</p>
+                    </div>
+                    <div className="divide-y text-xs">
+                      {[
+                        { client: "Supermercados del Sur", date: "08 mar", kg: "1.200", status: "Enviado" },
+                        { client: "Hotel Patagonia", date: "07 mar", kg: "340", status: "Publicado" },
+                        { client: "Restaurant La Leña", date: "05 mar", kg: "180", status: "Borrador" },
+                      ].map((row) => (
+                        <div key={row.client} className="flex items-center justify-between px-4 py-2.5">
+                          <span className="text-sage-700 font-medium">{row.client}</span>
+                          <span className="text-muted-foreground hidden sm:inline">{row.date}</span>
+                          <span className="text-muted-foreground">{row.kg} kg</span>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                            row.status === "Enviado" ? "bg-blue-50 text-blue-700" :
+                            row.status === "Publicado" ? "bg-sage-50 text-sage-700" :
+                            "bg-amber-50 text-amber-700"
+                          }`}>{row.status}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* How it works */}
         <section className="container mx-auto px-6 py-16 md:py-20">
           <div className="mx-auto max-w-3xl text-center mb-12">
@@ -282,6 +375,62 @@ export default function Home() {
               <p className="text-sm text-muted-foreground">
                 Envia los certificados por email directo. Cada uno tiene un codigo unico con pagina de verificacion publica.
               </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Interactive Demo */}
+        <InteractiveDemo />
+
+        {/* Comparison table */}
+        <section className="bg-sand-50 border-y border-border/50 py-16 md:py-20">
+          <div className="container mx-auto px-6">
+            <div className="mx-auto max-w-3xl text-center mb-10">
+              <h2 className="font-serif text-3xl font-bold text-sage-900 mb-4">
+                CertiRecicla vs tu proceso actual
+              </h2>
+              <p className="text-muted-foreground">
+                Comparacion real de lo que haces hoy con Excel + Word vs lo que puedes hacer con CertiRecicla.
+              </p>
+            </div>
+            <div className="mx-auto max-w-3xl overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b-2 border-sage-200">
+                    <th className="text-left py-3 px-4 font-serif font-bold text-sage-800 w-1/3"></th>
+                    <th className="text-center py-3 px-4 font-medium text-muted-foreground w-1/3">
+                      <span className="flex items-center justify-center gap-1.5">
+                        <Clock className="h-4 w-4" />
+                        Excel + Word
+                      </span>
+                    </th>
+                    <th className="text-center py-3 px-4 font-bold text-sage-800 w-1/3">
+                      <span className="flex items-center justify-center gap-1.5">
+                        <Leaf className="h-4 w-4 text-sage-500" />
+                        CertiRecicla
+                      </span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {[
+                    { feature: "Tiempo por certificado", old: "1-2 horas", new: "2 minutos" },
+                    { feature: "Calculo CO₂", old: "Formula manual sin fuente", new: "GHG Protocol automatico" },
+                    { feature: "Verificacion online", old: "No existe", new: "Codigo unico + pagina publica" },
+                    { feature: "Reporte SINADER", old: "Copiar datos a mano", new: "Exportacion directa" },
+                    { feature: "Historial de retiros", old: "Planilla desordenada", new: "Trazabilidad completa" },
+                    { feature: "Envio a clientes", old: "WhatsApp / email manual", new: "Envio directo desde la plataforma" },
+                    { feature: "Branding propio", old: "Logo pegado en Word", new: "Logo, colores y firma personalizados" },
+                    { feature: "Auditorias", old: "Buscar en carpetas", new: "Todo centralizado y exportable" },
+                  ].map((row) => (
+                    <tr key={row.feature}>
+                      <td className="py-3 px-4 font-medium text-sage-700">{row.feature}</td>
+                      <td className="py-3 px-4 text-center text-muted-foreground">{row.old}</td>
+                      <td className="py-3 px-4 text-center font-medium text-sage-700">{row.new}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </section>
@@ -399,6 +548,55 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Para quien es */}
+        <section className="container mx-auto px-6 py-16 md:py-20">
+          <div className="mx-auto max-w-4xl">
+            <h2 className="font-serif text-3xl font-bold text-sage-900 text-center mb-10">
+              Hecho para gestoras de reciclaje. Nadie mas.
+            </h2>
+            <div className="rounded-2xl border bg-card overflow-hidden">
+              <div className="grid md:grid-cols-5">
+                {/* Para ti */}
+                <div className="md:col-span-3 p-6 md:p-8">
+                  <p className="text-xs font-medium text-sage-500 uppercase tracking-wider mb-3">Es para ti si</p>
+                  <div className="grid sm:grid-cols-2 gap-x-6 gap-y-2.5">
+                    {[
+                      "Eres gestora de reciclaje en Chile",
+                      "Emites certificados a generadores",
+                      "Necesitas reportar a SINADER",
+                      "Tienes entre 5 y 200 clientes",
+                      "Quieres dejar Excel + Word",
+                      "Necesitas cumplir con Ley REP",
+                    ].map((item) => (
+                      <div key={item} className="flex items-center gap-2 text-sm text-sage-700">
+                        <Check className="h-4 w-4 text-sage-500 flex-shrink-0" />
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {/* No es para ti */}
+                <div className="md:col-span-2 p-6 md:p-8 bg-sand-50 border-t md:border-t-0 md:border-l">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">No es para ti si</p>
+                  <div className="space-y-2.5">
+                    {[
+                      "Eres generador buscando donde reciclar",
+                      "Necesitas un marketplace",
+                      "Buscas un ERP con facturacion",
+                      "Operas fuera de Chile",
+                    ].map((item) => (
+                      <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <X className="h-3.5 w-3.5 flex-shrink-0" />
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Pricing */}
         <section id="planes" className="bg-sand-50 border-y border-border/50 py-16 md:py-20">
           <div className="container mx-auto px-6">
@@ -409,11 +607,6 @@ export default function Home() {
               <p className="text-muted-foreground">
                 Precio por rango de clientes. Sin cobro por certificado, sin cobro por usuario.
               </p>
-              <div className="inline-flex items-center gap-2 mt-4 rounded-full bg-amber-50 border border-amber-200 px-4 py-1.5">
-                <span className="text-sm text-amber-700 font-medium">
-                  Early adopter: 50% off por 6 meses para las primeras 20 gestoras
-                </span>
-              </div>
             </div>
 
             <div className="grid gap-4 md:grid-cols-3 md:gap-6 max-w-5xl mx-auto">
@@ -525,8 +718,14 @@ export default function Home() {
                 </Link>
               </div>
             </div>
+            <p className="text-center text-sm text-muted-foreground mt-8">
+              Sin tarjeta de credito. Cancela cuando quieras.
+            </p>
           </div>
         </section>
+
+        {/* FAQ */}
+        <FaqSection />
 
         {/* Final CTA */}
         <section className="container mx-auto px-6 py-16 md:py-20">

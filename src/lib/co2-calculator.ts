@@ -7,6 +7,11 @@
  * - BIR CO₂ Report: https://www.mgg-recycling.com/wp-content/uploads/2013/06/BIR_CO2_report.pdf
  * - DEFRA Emission Factors (2025): https://ghgprotocol.org/Third-Party-Databases/Defra
  * - Tetra Pak Environmental Data: https://www.tetrapak.com/sustainability
+ *
+ * Water savings:
+ * - Water Footprint Network / UNESCO-IHE: https://waterfootprint.org
+ * - EPA WARM v16 (process water avoided)
+ * - FEVE Glass LCA (process water)
  */
 
 // kg CO₂ evitados por kg de material reciclado
@@ -75,4 +80,41 @@ export function calculateEquivalencies(co2Kg: number, custom?: Partial<EcoEquiva
     homesEnergized: parseFloat((co2Kg / eq.homesKgCo2PerYear).toFixed(2)),
     smartphonesCharged: Math.round(co2Kg / eq.smartphoneKgCo2PerCharge),
   };
+}
+
+/**
+ * Litros de agua ahorrados por kg de material reciclado
+ * Fuentes: Water Footprint Network, EPA WARM v16, FEVE Glass LCA
+ */
+export const DEFAULT_WATER_FACTORS: Record<string, number> = {
+  "Plástico PET": 17,
+  "Plástico HDPE": 15,
+  "Plástico LDPE": 14,
+  "Plástico PP": 15,
+  "Plástico PS": 16,
+  "Cartón": 26,
+  "Papel": 26,
+  "Vidrio": 2.5,
+  "Aluminio": 40,
+  "Acero": 8,
+  "Madera": 3,
+  "Electrónicos": 20,
+  "RAE": 20,
+  "TetraPak": 10,
+  "Textil": 30,
+  "Aceite vegetal": 5,
+  "Orgánico": 1,
+  "Neumáticos": 7,
+  "Baterías": 25,
+  "Escombros": 0.5,
+};
+
+export function calculateWaterSaved(
+  materials: { material: string; kg: number }[],
+  customFactors?: Record<string, number>
+): number {
+  const factors = customFactors || DEFAULT_WATER_FACTORS;
+  return Math.round(
+    materials.reduce((sum, m) => sum + (factors[m.material] || 0) * m.kg, 0)
+  );
 }
