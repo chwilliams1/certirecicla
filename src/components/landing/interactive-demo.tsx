@@ -20,6 +20,7 @@ import {
 } from "@/lib/co2-calculator";
 import DemoImpactStats from "./demo-impact-stats";
 import DemoCertificatePreview from "./demo-certificate-preview";
+import { analytics } from "@/lib/analytics";
 
 type MaterialEntry = { id: string; material: string; kg: number };
 
@@ -175,12 +176,12 @@ export default function InteractiveDemo() {
           {/* Gate CTA */}
           <div className="space-y-3">
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link href="/calculadora" className="flex-1">
+              <Link href="/calculadora" className="flex-1" onClick={() => analytics.ctaClick("demo_calculadora")}>
                 <Button className="w-full gap-2">
                   Probar calculadora completa
                 </Button>
               </Link>
-              <Link href="/register?ref=demo" className="flex-1">
+              <Link href="/register?ref=demo" className="flex-1" onClick={() => analytics.ctaClick("demo_register")}>
                 <Button variant="outline" className="w-full gap-2">
                   Crear cuenta gratis
                 </Button>

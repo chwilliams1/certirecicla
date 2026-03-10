@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
+import GoogleAnalytics from "@/components/google-analytics";
 
 const SITE_URL = "https://certirecicla.cl";
 
@@ -66,6 +67,9 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
     apple: "/apple-icon.png",
   },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
   alternates: {
     canonical: SITE_URL,
   },
@@ -79,6 +83,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className="font-sans antialiased">
+        <GoogleAnalytics />
         <Providers>
           {children}
           <Toaster />
