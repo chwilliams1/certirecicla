@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Plus, Search, Upload, AlertTriangle, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,6 +38,8 @@ export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const router = useRouter();
 
   useEffect(() => {
     fetchClients();
@@ -49,10 +52,16 @@ export default function ClientsPage() {
     setLoading(false);
   }
 
-  const matchesSearch = (c: Client) =>
-    c.name.toLowerCase().includes(search.toLowerCase()) ||
-    c.rut?.toLowerCase().includes(search.toLowerCase()) ||
-    c.email?.toLowerCase().includes(search.toLowerCase());
+  const matchesSearch = (c: Client) => {
+    const q = search.toLowerCase();
+    return (
+      c.name.toLowerCase().includes(q) ||
+      c.rut?.toLowerCase().includes(q) ||
+      c.email?.toLowerCase().includes(q) ||
+      c.contactName?.toLowerCase().includes(q) ||
+      c.address?.toLowerCase().includes(q)
+    );
+  };
 
   // Build parent-child grouping: top-level clients with their branches
   const topLevelClients = clients.filter((c) => !c.parentClientId);
@@ -75,17 +84,39 @@ export default function ClientsPage() {
   const incompleteCount = incompleteClients.length;
 
   // Filter: show parent if it matches OR if any of its branches match
-  const filtered = groupedClients
-    .map((parent) => {
-      const parentMatches = matchesSearch(parent);
-      const matchingBranches = (parent.branches || []).filter(matchesSearch);
+  const filtered = useMemo(() => {
+    const result = groupedClients
+      .map((parent) => {
+        const parentMatches = matchesSearch(parent);
+        const matchingBranches = (parent.branches || []).filter(matchesSearch);
 
-      if (parentMatches) return parent; // show parent with all branches
-      if (matchingBranches.length > 0)
-        return { ...parent, branches: matchingBranches }; // show parent with matching branches only
-      return null;
-    })
-    .filter((c) => c !== null) as (Client & { branches: Client[] })[];
+        if (parentMatches) return parent;
+        if (matchingBranches.length > 0)
+          return { ...parent, branches: matchingBranches };
+        return null;
+      })
+      .filter((c) => c !== null) as (Client & { branches: Client[] })[];
+
+    // Auto-expand cards that matched via branch when searching
+    if (search) {
+      const autoExpand = new Set<string>();
+      for (const parent of result) {
+        const parentMatches = matchesSearch(parent);
+        if (!parentMatches && parent.branches.length > 0) {
+          autoExpand.add(parent.id);
+        }
+      }
+      if (autoExpand.size > 0) {
+        setExpanded((prev) => {
+          const next = new Set(prev);
+          autoExpand.forEach((id) => next.add(id));
+          return next;
+        });
+      }
+    }
+
+    return result;
+  }, [groupedClients, search]);
 
   return (
     <div className="space-y-6 page-fade-in">
@@ -161,102 +192,116 @@ export default function ClientsPage() {
           )}
         </div>
       ) : (
-        <div className="bg-sand-50 border border-sand-300 rounded-[14px] overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-sand-100">
-                  <th className="text-left py-3 px-3 sm:px-4 text-xs font-medium text-sage-800/40 uppercase tracking-wider">Cliente</th>
-                  <th className="text-left py-3 px-3 sm:px-4 text-xs font-medium text-sage-800/40 uppercase tracking-wider hidden md:table-cell">Contacto</th>
-                  <th className="text-left py-3 px-3 sm:px-4 text-xs font-medium text-sage-800/40 uppercase tracking-wider hidden sm:table-cell">Email</th>
-                  <th className="text-right py-3 px-3 sm:px-4 text-xs font-medium text-sage-800/40 uppercase tracking-wider">Retiros</th>
-                  <th className="text-right py-3 px-3 sm:px-4 text-xs font-medium text-sage-800/40 uppercase tracking-wider hidden sm:table-cell">Certificados</th>
-                  <th className="w-10 py-3 px-2"></th>
-                </tr>
-              </thead>
-              <tbody className="stagger-rows">
-                {filtered.map((client) => (
-                  <ClientRows key={client.id} client={client} />
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <div className="space-y-3 stagger-cards">
+          {filtered.map((client) => {
+            const hasBranches = client.branches.length > 0;
+            const isExpanded = expanded.has(client.id);
+            const totalRetiros = client.pickupCount + (client.branches.reduce((s, b) => s + b.pickupCount, 0));
+            const totalCerts = client._count.certificates + (client.branches.reduce((s, b) => s + b._count.certificates, 0));
+            const anyIncomplete = hasIncompleteData(client) || client.branches.some(hasIncompleteData);
+
+            return (
+              <div
+                key={client.id}
+                className="bg-sand-50 border border-sand-300 rounded-[14px] overflow-hidden"
+              >
+                {/* Header empresa */}
+                <div
+                  className="flex items-center gap-3 p-4 cursor-pointer hover:bg-white/40 transition-colors"
+                  onClick={() => {
+                    if (!hasBranches) {
+                      router.push(`/dashboard/clients/${client.id}`);
+                      return;
+                    }
+                    setExpanded((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(client.id)) next.delete(client.id);
+                      else next.add(client.id);
+                      return next;
+                    });
+                  }}
+                >
+                  <div className="h-8 w-8 rounded-full bg-sage-100 flex items-center justify-center flex-shrink-0">
+                    <span className="text-[11px] font-medium text-sage-500">{client.name.charAt(0)}</span>
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-sm text-sage-800 truncate">{client.name}</span>
+                      {hasBranches && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sage-50 text-sage-500 border border-sage-200 whitespace-nowrap flex-shrink-0">
+                          {client.branches.length} suc.
+                        </span>
+                      )}
+                    </div>
+                    {anyIncomplete && (
+                      <span className="text-[10px] text-amber-600 flex items-center gap-0.5 mt-0.5">
+                        <AlertTriangle className="h-2.5 w-2.5 flex-shrink-0" />
+                        {hasIncompleteData(client)
+                          ? getMissingFields(client).join(", ")
+                          : "sucursal con datos pendientes"}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-4 flex-shrink-0">
+                    <span className="text-xs text-sage-800/60 tabular-nums">{totalRetiros} retiros</span>
+                    <span className="text-xs text-sage-800/60 tabular-nums hidden md:inline">{totalCerts} cert.</span>
+                    <ChevronRight
+                      className={`h-4 w-4 text-sage-300 transition-transform duration-200 ${
+                        hasBranches && isExpanded ? "rotate-90" : ""
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                {/* Sucursales expandidas */}
+                {hasBranches && isExpanded && (
+                  <div className="border-t border-sand-200">
+                    <div className="border-l-2 border-sage-200 ml-6">
+                      {client.branches.map((branch) => (
+                        <Link
+                          key={branch.id}
+                          href={`/dashboard/clients/${branch.id}`}
+                          className="flex items-center gap-3 px-4 py-3 border-b border-sand-100 last:border-b-0 hover:bg-white/40 transition-colors"
+                        >
+                          <div className="h-5 w-5 rounded-full bg-sage-50 border border-sage-200 flex items-center justify-center flex-shrink-0">
+                            <span className="text-[9px] font-medium text-sage-500">{branch.name.charAt(0)}</span>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <span className="text-xs font-medium text-sage-800 truncate block">{branch.name}</span>
+                            {hasIncompleteData(branch) && (
+                              <span className="text-[10px] text-amber-600 flex items-center gap-0.5">
+                                <AlertTriangle className="h-2.5 w-2.5" />
+                                {getMissingFields(branch).join(", ")}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-xs text-sage-800/40 truncate max-w-[180px] hidden sm:inline">
+                            {branch.email || "sin email"}
+                          </span>
+                          <span className="text-xs text-sage-800/60 tabular-nums flex-shrink-0">{branch.pickupCount} retiros</span>
+                          <ChevronRight className="h-3.5 w-3.5 text-sage-300 flex-shrink-0" />
+                        </Link>
+                      ))}
+                      <PermissionGate permission="clients:create">
+                        <Link
+                          href={`/dashboard/clients/new?parentId=${client.id}`}
+                          className="flex items-center gap-2 px-4 py-2.5 text-xs text-sage-500 hover:text-sage-700 hover:bg-white/40 transition-colors"
+                        >
+                          <Plus className="h-3.5 w-3.5" />
+                          Agregar sucursal
+                        </Link>
+                      </PermissionGate>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
   );
 }
 
-function ClientRow({ client, isBranch }: { client: Client; isBranch?: boolean }) {
-  const totalRetiros = isBranch
-    ? client.pickupCount
-    : client.pickupCount + (client.branches?.reduce((s, b) => s + b.pickupCount, 0) || 0);
-  const totalCerts = isBranch
-    ? client._count.certificates
-    : client._count.certificates + (client.branches?.reduce((s, b) => s + b._count.certificates, 0) || 0);
-
-  return (
-    <tr className={`border-t border-sand-200 hover:bg-white/50 transition-colors ${isBranch ? "bg-sand-50/50" : ""}`}>
-      <td className="py-3 px-3 sm:px-4">
-        <Link href={`/dashboard/clients/${client.id}`} className="flex items-center gap-2">
-          {isBranch && (
-            <span className="ml-3 mr-0.5 text-sage-300 flex-shrink-0">
-              <svg width="12" height="16" viewBox="0 0 12 16" className="text-sage-300">
-                <path d="M1 0V10C1 12 3 12 5 12H12" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-              </svg>
-            </span>
-          )}
-          <div className={`${isBranch ? "h-5 w-5" : "h-6 w-6"} rounded-full ${isBranch ? "bg-sage-50 border border-sage-200" : "bg-sage-100"} flex items-center justify-center flex-shrink-0`}>
-            <span className={`${isBranch ? "text-[9px]" : "text-[10px]"} font-medium text-sage-500`}>
-              {client.name.charAt(0)}
-            </span>
-          </div>
-          <div className="min-w-0">
-            <span className={`font-medium text-sage-800 truncate block ${isBranch ? "text-xs" : "text-sm"}`}>
-              {client.name}
-            </span>
-            {hasIncompleteData(client) && (
-              <span className="text-[10px] text-amber-600 flex items-center gap-0.5">
-                <AlertTriangle className="h-2.5 w-2.5" />
-                {getMissingFields(client).join(", ")}
-              </span>
-            )}
-          </div>
-          {!isBranch && (client.branches?.length ?? 0) > 0 && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sage-50 text-sage-500 border border-sage-200 whitespace-nowrap">
-              {client.branches!.length} suc.
-            </span>
-          )}
-        </Link>
-      </td>
-      <td className="py-3 px-3 sm:px-4 text-xs text-sage-800/60 hidden md:table-cell">
-        {client.contactName || "—"}
-      </td>
-      <td className="py-3 px-3 sm:px-4 text-xs text-sage-800/60 truncate max-w-[180px] hidden sm:table-cell">
-        {client.email || <span className="text-sage-800/30">Sin email</span>}
-      </td>
-      <td className="py-3 px-3 sm:px-4 text-right text-xs font-medium text-sage-800 tabular-nums">
-        {totalRetiros}
-      </td>
-      <td className="py-3 px-3 sm:px-4 text-right text-xs text-sage-500 tabular-nums hidden sm:table-cell">
-        {totalCerts}
-      </td>
-      <td className="py-3 px-2 text-center">
-        <Link href={`/dashboard/clients/${client.id}`}>
-          <ChevronRight className="h-4 w-4 text-sage-300" />
-        </Link>
-      </td>
-    </tr>
-  );
-}
-
-function ClientRows({ client }: { client: Client & { branches: Client[] } }) {
-  return (
-    <>
-      <ClientRow client={client} />
-      {client.branches?.map((branch) => (
-        <ClientRow key={branch.id} client={branch} isBranch />
-      ))}
-    </>
-  );
-}

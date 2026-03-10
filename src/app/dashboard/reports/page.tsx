@@ -121,7 +121,7 @@ function SinaderTab({ planData }: { planData: PlanData | null }) {
   const [year, setYear] = useState(String(currentYear));
   const [month, setMonth] = useState("");
   const [clientId, setClientId] = useState("");
-  const [clients, setClients] = useState<{ id: string; name: string }[]>([]);
+  const [clients, setClients] = useState<{ id: string; name: string; parentClient?: { name: string } | null }[]>([]);
   const [recordCount, setRecordCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingCount, setLoadingCount] = useState(false);
@@ -131,7 +131,7 @@ function SinaderTab({ planData }: { planData: PlanData | null }) {
       .then((r) => r.json())
       .then((data) => {
         if (Array.isArray(data)) {
-          setClients(data.map((c: { id: string; name: string }) => ({ id: c.id, name: c.name })));
+          setClients(data.map((c: { id: string; name: string; parentClient?: { name: string } | null }) => ({ id: c.id, name: c.name, parentClient: c.parentClient })));
         }
       })
       .catch(() => {});
@@ -254,7 +254,7 @@ function SinaderTab({ planData }: { planData: PlanData | null }) {
               <SelectItem value="all">Todos los clientes</SelectItem>
               {clients.map((c) => (
                 <SelectItem key={c.id} value={c.id}>
-                  {c.name}
+                  {c.parentClient ? `${c.parentClient.name} - ${c.name}` : c.name}
                 </SelectItem>
               ))}
             </SelectContent>

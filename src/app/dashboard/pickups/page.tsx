@@ -80,7 +80,8 @@ export default function PickupsPage() {
       // Search
       if (search) {
         const q = search.toLowerCase();
-        const matchClient = p.clientName.toLowerCase().includes(q);
+        const displayName = p.parentClientName ? `${p.parentClientName} - ${p.clientName}` : p.clientName;
+        const matchClient = displayName.toLowerCase().includes(q);
         const matchLocation = (p.location || "").toLowerCase().includes(q);
         const matchMaterial = p.materials.some((m) => m.material.toLowerCase().includes(q));
         const matchDate = p.date.includes(q);

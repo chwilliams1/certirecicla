@@ -1,6 +1,6 @@
 import React from "react";
 import { Document, Page, Text, View, Image, StyleSheet } from "@react-pdf/renderer";
-import { calculateEquivalencies } from "@/lib/co2-calculator";
+import { calculateEquivalencies, calculateWaterSaved } from "@/lib/co2-calculator";
 import { formatPeriod } from "@/lib/format-period";
 import type { CertificateData, PickupDetail } from "./generate-certificate-pdf";
 import type { BrandingConfig } from "./branding-config";
@@ -177,7 +177,7 @@ function createStyles(palette: BrandingPalette, fontFamily: FontFamily) {
     },
     eqBox: {
       alignItems: "center",
-      width: "23%",
+      width: "18%",
     },
     eqIcon: {
       fontSize: 16,
@@ -265,6 +265,8 @@ interface Props {
 export function CertificatePDFDocument({ data, qrDataUrl, branding = DEFAULT_BRANDING }: Props) {
   const styles = createStyles(branding.palette, branding.fontFamily);
   const eq = calculateEquivalencies(data.totalCo2);
+  const waterMaterials = Object.entries(data.materials).map(([material, v]) => ({ material, kg: v.kg }));
+  const waterSaved = calculateWaterSaved(waterMaterials);
   const formatDate = (d: string) => new Date(d).toLocaleDateString("es-CL");
   const materialEntries = Object.entries(data.materials);
 
@@ -366,6 +368,10 @@ export function CertificatePDFDocument({ data, qrDataUrl, branding = DEFAULT_BRA
             <View style={styles.eqBox}>
               <Text style={styles.eqValue}>{eq.kmNotDriven.toLocaleString("es-CL")}</Text>
               <Text style={styles.eqLabel}>Km no conducidos</Text>
+            </View>
+            <View style={styles.eqBox}>
+              <Text style={styles.eqValue}>{waterSaved.toLocaleString("es-CL")}</Text>
+              <Text style={styles.eqLabel}>Litros de agua ahorrados</Text>
             </View>
             <View style={styles.eqBox}>
               <Text style={styles.eqValue}>{eq.homesEnergized}</Text>

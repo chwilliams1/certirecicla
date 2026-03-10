@@ -97,6 +97,27 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: certLimitCheck.reason }, { status: 403 });
   }
 
+  // Validate client has complete data for certificate emission
+  const clientCheck = await prisma.client.findFirst({
+    where: { id: clientId, companyId: session.user.companyId },
+    select: { id: true, email: true, rut: true, name: true },
+  });
+
+  if (!clientCheck) {
+    return NextResponse.json({ error: "Cliente no encontrado" }, { status: 404 });
+  }
+
+  const missingFields: string[] = [];
+  if (!clientCheck.email) missingFields.push("email");
+  if (!clientCheck.rut) missingFields.push("RUT");
+
+  if (missingFields.length > 0) {
+    return NextResponse.json(
+      { error: `No se puede emitir certificado: el cliente "${clientCheck.name}" no tiene ${missingFields.join(" ni ")}. Completa sus datos antes de continuar.` },
+      { status: 400 }
+    );
+  }
+
   const records = await prisma.recyclingRecord.findMany({
     where: {
       clientId,

@@ -11,6 +11,7 @@ import {
   FileCheck,
   Loader2,
   AlertCircle,
+  AlertTriangle,
   Package,
   CalendarDays,
   Users,
@@ -34,9 +35,22 @@ type Step = "select" | "preview" | "creating" | "done";
 interface ClientItem {
   id: string;
   name: string;
+  email: string | null;
+  rut: string | null;
   parentClientId: string | null;
   branches?: ClientItem[];
   _count: { records: number };
+}
+
+function clientMissingFields(c: ClientItem): string[] {
+  const missing: string[] = [];
+  if (!c.email) missing.push("email");
+  if (!c.rut) missing.push("RUT");
+  return missing;
+}
+
+function isClientIncomplete(c: ClientItem): boolean {
+  return !c.email || !c.rut;
 }
 
 interface CertPreview {
@@ -170,7 +184,21 @@ function NewCertificateContent() {
     return ids;
   }, [parentClients, standaloneClients]);
 
+  // All selectable IDs excluding incomplete clients
+  const completeSelectableIds = useMemo(() => {
+    return allSelectableIds.filter((id) => {
+      const all = [...standaloneClients, ...parentClients.flatMap((p) => p.branches || [])];
+      const client = all.find((c) => c.id === id);
+      return client && !isClientIncomplete(client);
+    });
+  }, [allSelectableIds, standaloneClients, parentClients]);
+
   function toggleClient(id: string) {
+    // Find the client to check completeness
+    const all = [...standaloneClients, ...parentClients.flatMap((p) => p.branches || [])];
+    const client = all.find((c) => c.id === id);
+    if (client && isClientIncomplete(client)) return; // Block incomplete clients
+
     setSelectedClients((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -182,24 +210,27 @@ function NewCertificateContent() {
   function toggleParent(parentId: string) {
     const parent = parentClients.find((p) => p.id === parentId);
     if (!parent || !parent.branches) return;
-    const branchIds = parent.branches.map((b) => b.id);
+    // Only toggle complete branches
+    const completeBranchIds = parent.branches.filter((b) => !isClientIncomplete(b)).map((b) => b.id);
+    if (completeBranchIds.length === 0) return;
+
     setSelectedClients((prev) => {
       const next = new Set(prev);
-      const allSelected = branchIds.every((id) => next.has(id));
+      const allSelected = completeBranchIds.every((id) => next.has(id));
       if (allSelected) {
-        branchIds.forEach((id) => next.delete(id));
+        completeBranchIds.forEach((id) => next.delete(id));
       } else {
-        branchIds.forEach((id) => next.add(id));
+        completeBranchIds.forEach((id) => next.add(id));
       }
       return next;
     });
   }
 
   function toggleAll() {
-    if (selectedClients.size === allSelectableIds.length) {
+    if (selectedClients.size === completeSelectableIds.length) {
       setSelectedClients(new Set());
     } else {
-      setSelectedClients(new Set(allSelectableIds));
+      setSelectedClients(new Set(completeSelectableIds));
     }
   }
 
@@ -408,6 +439,27 @@ function NewCertificateContent() {
               </button>
             </div>
 
+            {(() => {
+              const allClients = [...standaloneClients, ...parentClients.flatMap((p) => p.branches || [])];
+              const incompleteCount = allClients.filter(isClientIncomplete).length;
+              if (incompleteCount > 0) {
+                return (
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4 flex items-start gap-2.5">
+                    <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-xs font-medium text-amber-800">
+                        {incompleteCount} {incompleteCount === 1 ? "cliente no puede" : "clientes no pueden"} recibir certificados
+                      </p>
+                      <p className="text-[11px] text-amber-600 mt-0.5">
+                        Necesitan email y RUT completos. <Link href="/dashboard/clients" className="underline hover:text-amber-800">Ir a completar datos</Link>
+                      </p>
+                    </div>
+                  </div>
+                );
+              }
+              return null;
+            })()}
+
             {clients.length === 0 ? (
               <p className="text-sage-800/40 text-sm text-center py-4">No hay clientes registrados</p>
             ) : (
@@ -448,24 +500,35 @@ function NewCertificateContent() {
                       {/* Branch items */}
                       {parent.branches!.map((branch) => {
                         const isSelected = selectedClients.has(branch.id);
+                        const incomplete = isClientIncomplete(branch);
+                        const missing = clientMissingFields(branch);
                         return (
                           <button
                             key={branch.id}
                             onClick={() => toggleClient(branch.id)}
+                            disabled={incomplete}
                             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-left ml-8 ${
-                              isSelected
+                              incomplete
+                                ? "bg-amber-50/50 border border-amber-200/50 cursor-not-allowed opacity-70"
+                                : isSelected
                                 ? "bg-sage-50 border border-sage-200"
                                 : "bg-white border border-sand-200 hover:border-sage-200"
                             }`}
                             style={{ width: "calc(100% - 2rem)" }}
                           >
                             <div className={`h-5 w-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-all ${
-                              isSelected ? "bg-sage-500 border-sage-500" : "border-sand-300"
+                              incomplete
+                                ? "border-amber-300 bg-amber-50"
+                                : isSelected ? "bg-sage-500 border-sage-500" : "border-sand-300"
                             }`}>
-                              {isSelected && <Check className="h-3 w-3 text-white" />}
+                              {incomplete && <AlertTriangle className="h-3 w-3 text-amber-400" />}
+                              {!incomplete && isSelected && <Check className="h-3 w-3 text-white" />}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-sage-800 truncate">{branch.name}</p>
+                              <p className={`text-sm font-medium truncate ${incomplete ? "text-sage-800/50" : "text-sage-800"}`}>{branch.name}</p>
+                              {incomplete && (
+                                <p className="text-[10px] text-amber-600">Falta {missing.join(" y ")} — no se puede certificar</p>
+                              )}
                             </div>
                             <span className="text-xs text-sage-800/30">{branch._count.records} registros</span>
                           </button>
@@ -477,23 +540,34 @@ function NewCertificateContent() {
                 {/* Standalone clients */}
                 {standaloneClients.map((client) => {
                   const isSelected = selectedClients.has(client.id);
+                  const incomplete = isClientIncomplete(client);
+                  const missing = clientMissingFields(client);
                   return (
                     <button
                       key={client.id}
                       onClick={() => toggleClient(client.id)}
+                      disabled={incomplete}
                       className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-left ${
-                        isSelected
+                        incomplete
+                          ? "bg-amber-50/50 border border-amber-200/50 cursor-not-allowed opacity-70"
+                          : isSelected
                           ? "bg-sage-50 border border-sage-200"
                           : "bg-white border border-sand-200 hover:border-sage-200"
                       }`}
                     >
                       <div className={`h-5 w-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-all ${
-                        isSelected ? "bg-sage-500 border-sage-500" : "border-sand-300"
+                        incomplete
+                          ? "border-amber-300 bg-amber-50"
+                          : isSelected ? "bg-sage-500 border-sage-500" : "border-sand-300"
                       }`}>
-                        {isSelected && <Check className="h-3 w-3 text-white" />}
+                        {incomplete && <AlertTriangle className="h-3 w-3 text-amber-400" />}
+                        {!incomplete && isSelected && <Check className="h-3 w-3 text-white" />}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-sage-800 truncate">{client.name}</p>
+                        <p className={`text-sm font-medium truncate ${incomplete ? "text-sage-800/50" : "text-sage-800"}`}>{client.name}</p>
+                        {incomplete && (
+                          <p className="text-[10px] text-amber-600">Falta {missing.join(" y ")} — no se puede certificar</p>
+                        )}
                       </div>
                       <span className="text-xs text-sage-800/30">{client._count.records} registros</span>
                     </button>
