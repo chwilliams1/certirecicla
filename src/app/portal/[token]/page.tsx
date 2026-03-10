@@ -297,9 +297,13 @@ export default function PortalPage() {
               )}
               <span className="text-white/70 text-sm font-medium">{company.name}</span>
             </div>
-            <h1 className="text-white text-2xl md:text-4xl font-bold tracking-tight mb-2">
-              Portal de Impacto Ambiental
+            <p className="text-white/60 text-sm mb-1">Bienvenido,</p>
+            <h1 className="text-white text-2xl md:text-4xl font-bold tracking-tight mb-1">
+              {empresaName || client.name}
             </h1>
+            <p className="text-white/50 text-sm md:text-base max-w-xl">
+              Gracias por ser parte del cambio. Cada kilo reciclado cuenta y tu compromiso marca la diferencia.
+            </p>
             <div className="flex flex-wrap items-start gap-3 mt-5">
               {/* Empresa madre (si aplica) */}
               {empresaName ? (
@@ -593,6 +597,28 @@ export default function PortalPage() {
             </div>
           </div>
         )}
+
+        {/* Motivational banner */}
+        <div className="rounded-2xl overflow-hidden mb-6" style={{ background: `linear-gradient(135deg, ${palette.dark}, ${palette.primary})` }}>
+          <div className="px-6 py-8 md:px-10 md:py-10 text-center">
+            <Leaf className="w-8 h-8 text-white/30 mx-auto mb-3" />
+            <p className="text-white text-lg md:text-xl font-semibold mb-2">
+              Cada acción suma. Cada kilo importa.
+            </p>
+            <p className="text-white/60 text-sm max-w-lg mx-auto leading-relaxed">
+              Tu compromiso con el reciclaje no solo reduce residuos — transforma el futuro.
+              Sigue así, porque el planeta necesita empresas como la tuya.
+            </p>
+            {kpis.totalKg > 0 && (
+              <div className="mt-5 inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-5 py-2 border border-white/10">
+                <Recycle className="w-4 h-4 text-white/70" />
+                <span className="text-white/90 text-sm font-medium">
+                  {formatNumber(Math.round(kpis.totalKg))} kg reciclados y contando
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Footer */}
         <div className="text-center py-8">
