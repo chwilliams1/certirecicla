@@ -204,8 +204,8 @@ export function ReportPDFDocument({ data }: { data: ReportPDFData }) {
             <Text style={styles.eqLabel}>Km no conducidos</Text>
           </View>
           <View style={styles.eqBox}>
-            <Text style={styles.eqValue}>{eq.homesEnergized}</Text>
-            <Text style={styles.eqLabel}>Hogares energizados</Text>
+            <Text style={styles.eqValue}>{eq.homesEnergized.toLocaleString("es-CL")}</Text>
+            <Text style={styles.eqLabel}>Dias de hogar energizado</Text>
           </View>
           <View style={styles.eqBox}>
             <Text style={styles.eqValue}>{formatNum(eq.smartphonesCharged)}</Text>

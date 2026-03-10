@@ -380,7 +380,7 @@ export default function PortalPage() {
               { icon: TreePine, value: formatNumber(equivalencies.trees), label: "Árboles preservados" },
               { icon: Car, value: formatNumber(equivalencies.kmNotDriven), label: "Km no conducidos" },
               { icon: Droplets, value: formatNumber(waterSaved), label: "Litros de agua ahorrados" },
-              { icon: Home, value: String(equivalencies.homesEnergized), label: "Hogares energizados/año" },
+              { icon: Home, value: formatNumber(equivalencies.homesEnergized), label: "Días de hogar energizado" },
               { icon: Smartphone, value: formatNumber(equivalencies.smartphonesCharged), label: "Smartphones cargados" },
             ].map((item) => (
               <div key={item.label} className="rounded-xl p-4 text-center" style={{ backgroundColor: palette.primaryBg }}>

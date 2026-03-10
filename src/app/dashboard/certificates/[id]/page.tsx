@@ -568,7 +568,7 @@ export default function CertificateDetailPage() {
                   { icon: Car, value: eq.kmNotDriven.toLocaleString("es-CL"), label: "Km no conducidos" },
                   { icon: Droplets, value: waterSaved.toLocaleString("es-CL"), label: "Litros de agua ahorrados" },
                   { icon: Smartphone, value: eq.smartphonesCharged.toLocaleString("es-CL"), label: "Smartphones cargados" },
-                  { icon: Home, value: eq.homesEnergized, label: "Hogares energizados" },
+                  { icon: Home, value: eq.homesEnergized.toLocaleString("es-CL"), label: "Días de hogar energizado" },
                 ].map((item) => (
                   <div key={item.label} className="text-center">
                     <item.icon className="h-6 w-6 mx-auto mb-1" style={{ color: palette.primaryLight }} strokeWidth={1.5} />

@@ -20,7 +20,7 @@ const EQ_LABELS: Record<keyof EcoEquivalencies, { label: string; unit: string; s
     source: "EPA — 0.396 kg CO₂/mi convertido a km",
   },
   homesKgCo2PerYear: {
-    label: "Hogares energizados",
+    label: "Días de hogar energizado",
     unit: "kg CO₂ emitidos por hogar al año",
     source: "EPA — 7.27 metric tons CO₂/home/year",
   },

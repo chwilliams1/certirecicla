@@ -77,7 +77,7 @@ export function calculateEquivalencies(co2Kg: number, custom?: Partial<EcoEquiva
   return {
     trees: Math.round(co2Kg / eq.treesKgCo2PerYear),
     kmNotDriven: Math.round(co2Kg / eq.kmCo2PerKm),
-    homesEnergized: parseFloat((co2Kg / eq.homesKgCo2PerYear).toFixed(2)),
+    homesEnergized: Math.round((co2Kg / eq.homesKgCo2PerYear) * 365),
     smartphonesCharged: Math.round(co2Kg / eq.smartphoneKgCo2PerCharge),
   };
 }

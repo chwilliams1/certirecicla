@@ -227,7 +227,7 @@ export default function VerifyCertificatePage() {
               { icon: TreePine, value: eq.trees, label: "Árboles preservados", color: "bg-green-50 text-green-600" },
               { icon: Car, value: eq.kmNotDriven.toLocaleString("es-CL"), label: "Km no conducidos", color: "bg-blue-50 text-blue-600" },
               { icon: Droplets, value: waterSaved.toLocaleString("es-CL"), label: "Litros de agua ahorrados", color: "bg-cyan-50 text-cyan-600" },
-              { icon: Home, value: eq.homesEnergized, label: "Hogares energizados", color: "bg-amber-50 text-amber-600" },
+              { icon: Home, value: eq.homesEnergized.toLocaleString("es-CL"), label: "Días de hogar energizado", color: "bg-amber-50 text-amber-600" },
               { icon: Smartphone, value: eq.smartphonesCharged.toLocaleString("es-CL"), label: "Smartphones cargados", color: "bg-purple-50 text-purple-600" },
             ].map((item) => (
               <div key={item.label} className="text-center">

@@ -373,7 +373,7 @@ export default function ClientDetailPage() {
           { emoji: "🌳", value: eq.trees, label: "árboles preservados" },
           { emoji: "🚗", value: eq.kmNotDriven, label: "km no recorridos" },
           { emoji: "📱", value: eq.smartphonesCharged, label: "smartphones cargados" },
-          { emoji: "🏠", value: eq.homesEnergized, label: "hogares energizados" },
+          { emoji: "🏠", value: eq.homesEnergized, label: "días de hogar energizado" },
         ].sort((a, b) => b.value - a.value)[0];
         return (
           <p className="text-center text-sm text-sage-500">

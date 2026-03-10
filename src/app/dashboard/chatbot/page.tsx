@@ -335,8 +335,8 @@ function EquivalenciesPreview({ co2 }: { co2: number }) {
         <p className="text-sage-800/40">km no conducidos</p>
       </div>
       <div className="bg-sage-50/50 rounded-lg p-2 text-center">
-        <p className="font-bold text-sage-600">{eq.homesEnergized}</p>
-        <p className="text-sage-800/40">hogares energizados</p>
+        <p className="font-bold text-sage-600">{eq.homesEnergized.toLocaleString("es-CL")}</p>
+        <p className="text-sage-800/40">días de hogar energizado</p>
       </div>
       <div className="bg-sage-50/50 rounded-lg p-2 text-center">
         <p className="font-bold text-sage-600">{eq.smartphonesCharged.toLocaleString("es-CL")}</p>
