@@ -28,15 +28,26 @@ export async function GET() {
     return NextResponse.json({ error: "Empresa no encontrada" }, { status: 404 });
   }
 
-  const config = getPlanConfig(company.plan);
-  const trialExpired = company.plan === "trial" && isTrialExpired(company.trialEndsAt);
-  const trialDaysRemaining = company.plan === "trial"
-    ? getTrialDaysRemaining(company.trialEndsAt)
-    : null;
-
   // Sync con Reveniu en paralelo con los counts para no agregar latencia
   const syncReveniu = async () => {
-    if (!company.reveniuSubscriptionId) return;
+    if (!company.reveniuSubscriptionId) {
+      // Plan cancelado pero nunca revertido a trial (estado inconsistente)
+      if (company.subscriptionStatus === "cancelled" && company.plan !== "trial") {
+        const trialConfig = getPlanConfig("trial");
+        await prisma.company.update({
+          where: { id: session.user.companyId },
+          data: {
+            plan: "trial",
+            trialEndsAt: new Date(),
+            maxClients: trialConfig.maxClients,
+            maxCertificatesPerMonth: trialConfig.maxCertificatesPerMonth,
+          },
+        });
+        company.plan = "trial";
+        company.trialEndsAt = new Date();
+      }
+      return;
+    }
     try {
       const sub = await getSubscription(company.reveniuSubscriptionId);
       const reveniuPlanKey = getReveniuPlanKey(sub.plan_id);
@@ -58,8 +69,8 @@ export async function GET() {
         company.subscriptionStatus = "active";
       }
 
-      // Reveniu dice inactive/cancelled pero DB sigue active
-      if ((sub.status === "inactive" || sub.status === "cancelled") && company.subscriptionStatus === "active") {
+      // Reveniu dice inactive/cancelled pero plan no revertido a trial
+      if ((sub.status === "inactive" || sub.status === "cancelled") && company.plan !== "trial") {
         const trialConfig = getPlanConfig("trial");
         await prisma.company.update({
           where: { id: session.user.companyId },
@@ -96,6 +107,13 @@ export async function GET() {
     }),
     syncReveniu(),
   ]);
+
+  // Calcular después del sync para reflejar cambios
+  const config = getPlanConfig(company.plan);
+  const trialExpired = company.plan === "trial" && isTrialExpired(company.trialEndsAt);
+  const trialDaysRemaining = company.plan === "trial"
+    ? getTrialDaysRemaining(company.trialEndsAt)
+    : null;
 
   return NextResponse.json({
     plan: company.plan,
