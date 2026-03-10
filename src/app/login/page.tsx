@@ -41,7 +41,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center">
-            <Image src="/logo.png" alt="CertiRecicla" width={40} height={40} />
+            <Image src="/logo.png" alt="CertiRecicla" width={56} height={56} />
           </div>
           <CardTitle className="text-2xl">CertiRecicla</CardTitle>
           <CardDescription>Ingresa a tu cuenta para continuar</CardDescription>

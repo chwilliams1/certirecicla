@@ -129,7 +129,7 @@ export default function Home() {
       <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-2">
-            <Image src="/logo.png" alt="CertiRecicla" width={28} height={28} className="animate-breathe" />
+            <Image src="/logo.png" alt="CertiRecicla" width={36} height={36} className="animate-breathe" />
             <span className="font-serif text-xl font-bold text-sage-800">CertiRecicla</span>
           </div>
           <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
@@ -920,7 +920,7 @@ export default function Home() {
           <div className="grid gap-8 md:grid-cols-4">
             <div className="md:col-span-2">
               <div className="flex items-center gap-2 mb-3">
-                <Image src="/logo.png" alt="CertiRecicla" width={20} height={20} />
+                <Image src="/logo.png" alt="CertiRecicla" width={28} height={28} />
                 <span className="font-serif text-sage-800 font-bold">CertiRecicla</span>
               </div>
               <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">

@@ -57,7 +57,7 @@ export default function RegisterPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center px-4 sm:px-6">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center">
-            <Image src="/logo.png" alt="CertiRecicla" width={40} height={40} />
+            <Image src="/logo.png" alt="CertiRecicla" width={56} height={56} />
           </div>
           <CardTitle className="text-xl sm:text-2xl">Crear cuenta</CardTitle>
           <CardDescription>14 días gratis — sin tarjeta de crédito</CardDescription>

@@ -10,7 +10,7 @@ export default function BlogPage() {
       <header className="border-b border-border/50 bg-white/80 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group">
-            <Image src="/logo.png" alt="CertiRecicla" width={20} height={20} />
+            <Image src="/logo.png" alt="CertiRecicla" width={28} height={28} />
             <span className="font-serif text-sage-800 font-bold">CertiRecicla</span>
           </Link>
           <nav className="flex items-center gap-4">
