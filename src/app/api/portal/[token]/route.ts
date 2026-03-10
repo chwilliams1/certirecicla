@@ -37,9 +37,18 @@ export async function GET(
   const clientId = portalToken.clientId;
   const companyId = portalToken.companyId;
 
-  // Get all records for this client
+  // Check if this client is a parent company with branches
+  const branches = await prisma.client.findMany({
+    where: { parentClientId: clientId, companyId, active: true },
+    select: { id: true, name: true },
+  });
+
+  // Include records from parent + all branches
+  const clientIds = [clientId, ...branches.map((b) => b.id)];
+
+  // Get all records for this client (and branches if parent)
   const records = await prisma.recyclingRecord.findMany({
-    where: { clientId, companyId },
+    where: { clientId: { in: clientIds }, companyId },
     orderBy: { pickupDate: "desc" },
   });
 
@@ -56,9 +65,9 @@ export async function GET(
     monthlyData[month] = (monthlyData[month] || 0) + r.co2Saved;
   });
 
-  // Get certificates
+  // Get certificates (parent + branches)
   const certificates = await prisma.certificate.findMany({
-    where: { clientId, companyId, status: { in: ["published", "sent"] } },
+    where: { clientId: { in: clientIds }, companyId, status: { in: ["published", "sent"] } },
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
@@ -95,6 +104,7 @@ export async function GET(
 
   return NextResponse.json({
     client: portalToken.client,
+    branches: branches.map((b) => ({ id: b.id, name: b.name })),
     company: { name: portalToken.company.name, logo: portalToken.company.logo },
     kpis: {
       totalKg,

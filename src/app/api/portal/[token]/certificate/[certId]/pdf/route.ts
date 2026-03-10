@@ -18,10 +18,17 @@ export async function GET(
     return NextResponse.json({ error: "Enlace invalido" }, { status: 404 });
   }
 
+  // Allow access to certificates from this client and its branches
+  const branchIds = await prisma.client.findMany({
+    where: { parentClientId: portalToken.clientId, companyId: portalToken.companyId, active: true },
+    select: { id: true },
+  });
+  const allowedClientIds = [portalToken.clientId, ...branchIds.map((b) => b.id)];
+
   const certificate = await prisma.certificate.findFirst({
     where: {
       id: params.certId,
-      clientId: portalToken.clientId,
+      clientId: { in: allowedClientIds },
       companyId: portalToken.companyId,
       status: { in: ["published", "sent"] },
     },
@@ -53,10 +60,10 @@ export async function GET(
     );
   }
 
-  // Fetch pickups for the period
+  // Fetch pickups for the period (use certificate's actual clientId)
   const pickupRecords = await prisma.recyclingRecord.findMany({
     where: {
-      clientId: portalToken.clientId,
+      clientId: certificate.clientId,
       companyId: portalToken.companyId,
       pickupDate: {
         gte: certificate.periodStart,

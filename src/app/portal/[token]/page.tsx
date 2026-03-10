@@ -39,6 +39,7 @@ interface PickupRecord {
 
 interface PortalData {
   client: { id: string; name: string; rut: string | null };
+  branches: { id: string; name: string }[];
   company: { name: string; logo: string | null };
   kpis: { totalKg: number; totalCo2: number; totalPickups: number };
   equivalencies: {
@@ -231,7 +232,7 @@ export default function PortalPage() {
   if (loading) return <LoadingSkeleton />;
   if (error || !data) return <ErrorState message={error || "Error desconocido"} />;
 
-  const { client, company, kpis, equivalencies, materialDistribution, monthlyCo2, certificates, pickups } = data;
+  const { client, branches, company, kpis, equivalencies, materialDistribution, monthlyCo2, certificates, pickups } = data;
   const pickupGroups = groupPickups(pickups || []);
 
   return (
@@ -265,6 +266,12 @@ export default function PortalPage() {
                 <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2.5 border border-white/10">
                   <p className="text-white/60 text-xs">RUT</p>
                   <p className="text-white font-semibold">{client.rut}</p>
+                </div>
+              )}
+              {branches && branches.length > 0 && (
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2.5 border border-white/10">
+                  <p className="text-white/60 text-xs">{branches.length} {branches.length === 1 ? "Sucursal" : "Sucursales"}</p>
+                  <p className="text-white font-semibold text-sm">{branches.map((b) => b.name).join(", ")}</p>
                 </div>
               )}
             </div>
