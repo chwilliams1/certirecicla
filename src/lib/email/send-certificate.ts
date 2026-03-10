@@ -2,6 +2,7 @@ import { getResend } from "@/lib/resend";
 import { formatPeriod } from "@/lib/format-period";
 import { prisma } from "@/lib/prisma";
 import { generateCertificatePDF } from "@/lib/pdf/generate-certificate-pdf";
+import { groupRecordsIntoPickups, formatPickupsForPdf } from "@/lib/pickup-grouping";
 
 interface CertificateWithRelations {
   id: string;
@@ -80,29 +81,8 @@ export async function sendCertificateEmail(
       orderBy: { pickupDate: "asc" },
     });
 
-    const pickupMap = new Map<string, { date: string; location: string; materials: string[]; kg: number }>();
-    for (const r of pickupRecords) {
-      const key = `${r.pickupDate.toISOString().slice(0, 10)}_${r.location || ""}`;
-      const existing = pickupMap.get(key);
-      if (existing) {
-        existing.materials.push(r.material);
-        existing.kg += r.quantityKg;
-      } else {
-        pickupMap.set(key, {
-          date: r.pickupDate.toISOString(),
-          location: r.location || "",
-          materials: [r.material],
-          kg: r.quantityKg,
-        });
-      }
-    }
-
-    const pickups = Array.from(pickupMap.values()).map((p) => ({
-      date: p.date,
-      location: p.location,
-      materials: Array.from(new Set(p.materials)).join(", "),
-      kg: p.kg,
-    }));
+    const grouped = groupRecordsIntoPickups(pickupRecords);
+    const pickups = formatPickupsForPdf(grouped);
 
     const pdfBuffer = await generateCertificatePDF({
       uniqueCode: certificate.uniqueCode,

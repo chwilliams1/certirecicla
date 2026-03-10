@@ -1,33 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Clock, ArrowRight } from "lucide-react";
 import Link from "next/link";
-
-interface PlanInfo {
-  plan: string;
-  displayName: string;
-  trialExpired: boolean;
-  trialDaysRemaining: number | null;
-  limits: {
-    maxClients: number;
-    maxCertificatesPerMonth: number;
-  };
-  usage: {
-    activeClients: number;
-    monthCertificates: number;
-  };
-}
+import { usePlan } from "@/components/plan-provider";
 
 export function TrialBanner() {
-  const [planInfo, setPlanInfo] = useState<PlanInfo | null>(null);
-
-  useEffect(() => {
-    fetch("/api/plan")
-      .then((r) => r.json())
-      .then(setPlanInfo)
-      .catch(() => {});
-  }, []);
+  const planInfo = usePlan();
 
   if (!planInfo || planInfo.plan !== "trial") return null;
 

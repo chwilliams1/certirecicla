@@ -22,7 +22,17 @@ export async function GET(req: NextRequest) {
 
   const where: Record<string, unknown> = { companyId: session.user.companyId };
   if (status) where.status = status;
-  if (clientId) where.clientId = clientId;
+  if (clientId) {
+    // IDOR prevention: validate clientId belongs to this company
+    const client = await prisma.client.findFirst({
+      where: { id: clientId, companyId: session.user.companyId },
+      select: { id: true },
+    });
+    if (!client) {
+      return NextResponse.json({ error: "Cliente no encontrado" }, { status: 404 });
+    }
+    where.clientId = clientId;
+  }
   if (search) {
     where.OR = [
       { uniqueCode: { contains: search } },

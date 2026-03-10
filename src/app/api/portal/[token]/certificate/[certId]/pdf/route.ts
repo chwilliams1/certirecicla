@@ -4,6 +4,7 @@ import { generateCertificatePDF } from "@/lib/pdf/generate-certificate-pdf";
 import { checkFeatureAccess } from "@/lib/plans";
 import { derivePalette, DEFAULT_PALETTE } from "@/lib/pdf/branding-colors";
 import { DEFAULT_BRANDING, type BrandingConfig } from "@/lib/pdf/branding-config";
+import { groupRecordsIntoPickups, formatPickupsForPdf } from "@/lib/pickup-grouping";
 
 export async function GET(
   req: NextRequest,
@@ -59,29 +60,8 @@ export async function GET(
     orderBy: { pickupDate: "asc" },
   });
 
-  const pickupMap = new Map<string, { date: string; location: string; materials: string[]; kg: number }>();
-  for (const r of pickupRecords) {
-    const key = `${r.pickupDate.toISOString().slice(0, 10)}_${r.location || ""}`;
-    const existing = pickupMap.get(key);
-    if (existing) {
-      existing.materials.push(r.material);
-      existing.kg += r.quantityKg;
-    } else {
-      pickupMap.set(key, {
-        date: r.pickupDate.toISOString(),
-        location: r.location || "",
-        materials: [r.material],
-        kg: r.quantityKg,
-      });
-    }
-  }
-
-  const pickups = Array.from(pickupMap.values()).map((p) => ({
-    date: p.date,
-    location: p.location,
-    materials: Array.from(new Set(p.materials)).join(", "),
-    kg: p.kg,
-  }));
+  const grouped = groupRecordsIntoPickups(pickupRecords);
+  const pickups = formatPickupsForPdf(grouped);
 
   // Build branding config
   const canBrand = checkFeatureAccess(certificate.company.plan, "customBranding");

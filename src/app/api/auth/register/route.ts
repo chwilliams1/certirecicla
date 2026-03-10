@@ -1,11 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_MIN_LENGTH = 8;
 
 export async function POST(req: NextRequest) {
+  // Rate limit: 5 registrations per IP per 15 minutes
+  const ip = getClientIp(req);
+  const rl = rateLimit(`register:${ip}`, { limit: 5, windowSeconds: 900 });
+  if (!rl.success) {
+    return NextResponse.json(
+      { error: "Demasiados intentos. Intenta nuevamente en unos minutos." },
+      { status: 429 }
+    );
+  }
+
   const body = await req.json();
   const { name, email, password, companyName, rut, phone } = body;
 

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { hasPermission } from "@/lib/roles";
+import { groupRecordsIntoPickups, formatPickupsForPdf } from "@/lib/pickup-grouping";
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
@@ -38,29 +39,8 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
     orderBy: { pickupDate: "asc" },
   });
 
-  const pickupMap = new Map<string, { date: string; location: string; materials: string[]; kg: number }>();
-  for (const r of pickupRecords) {
-    const key = `${r.pickupDate.toISOString().slice(0, 10)}_${r.location || ""}`;
-    const existing = pickupMap.get(key);
-    if (existing) {
-      existing.materials.push(r.material);
-      existing.kg += r.quantityKg;
-    } else {
-      pickupMap.set(key, {
-        date: r.pickupDate.toISOString(),
-        location: r.location || "",
-        materials: [r.material],
-        kg: r.quantityKg,
-      });
-    }
-  }
-
-  const pickups = Array.from(pickupMap.values()).map((p) => ({
-    date: p.date,
-    location: p.location,
-    materials: Array.from(new Set(p.materials)).join(", "),
-    kg: p.kg,
-  }));
+  const grouped = groupRecordsIntoPickups(pickupRecords);
+  const pickups = formatPickupsForPdf(grouped);
 
   return NextResponse.json({ ...certificate, pickups });
 }

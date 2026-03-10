@@ -48,12 +48,17 @@ export async function POST(req: NextRequest) {
 
   const { name, email, password, role } = await req.json();
 
-  if (!name || !email || !password) {
-    return NextResponse.json({ error: "Nombre, email y contraseña son requeridos" }, { status: 400 });
+  if (!name || !email || !password || !role) {
+    return NextResponse.json({ error: "Nombre, email, contraseña y rol son requeridos" }, { status: 400 });
+  }
+
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!EMAIL_REGEX.test(email)) {
+    return NextResponse.json({ error: "Email inválido" }, { status: 400 });
   }
 
   const validRoles = ["admin", "operator", "viewer"];
-  if (role && !validRoles.includes(role)) {
+  if (!validRoles.includes(role)) {
     return NextResponse.json({ error: "Rol inválido" }, { status: 400 });
   }
 

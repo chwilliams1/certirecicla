@@ -52,10 +52,13 @@ export async function POST(req: NextRequest) {
   });
 
   if (result.success) {
-    await prisma.certificate.update({
-      where: { id: certificateId },
-      data: { status: "sent", sentAt: new Date() },
-    });
+    // Use transaction to atomically update status
+    await prisma.$transaction([
+      prisma.certificate.update({
+        where: { id: certificateId },
+        data: { status: "sent", sentAt: new Date() },
+      }),
+    ]);
   }
 
   return NextResponse.json(result);

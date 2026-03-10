@@ -19,6 +19,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { NotificationBell } from "@/components/notification-bell";
 import { ProductTour } from "@/components/product-tour";
 import { usePermissions } from "@/hooks/use-permissions";
+import { PlanProvider, usePlan } from "@/components/plan-provider";
 import { Clock, ArrowRight, ShieldAlert, HeartHandshake } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -132,30 +133,13 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 function TrialTopBar() {
-  const [trialDays, setTrialDays] = useState<number | null>(null);
-  const [expired, setExpired] = useState(false);
-  const [cancelled, setCancelled] = useState(false);
-  const pathname = usePathname();
+  const plan = usePlan();
 
-  useEffect(() => {
-    fetch("/api/plan")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.trialExpired) {
-          setExpired(true);
-          setCancelled(d.subscriptionStatus === "cancelled");
-        } else if (d.plan === "trial") {
-          setTrialDays(d.trialDaysRemaining);
-          setExpired(false);
-          setCancelled(false);
-        } else {
-          setExpired(false);
-          setCancelled(false);
-          setTrialDays(null);
-        }
-      })
-      .catch(() => {});
-  }, [pathname]);
+  if (!plan) return null;
+
+  const expired = plan.trialExpired;
+  const cancelled = plan.subscriptionStatus === "cancelled";
+  const trialDays = plan.plan === "trial" ? plan.trialDaysRemaining : null;
 
   if (trialDays === null && !expired) return null;
 
@@ -195,21 +179,14 @@ function TrialTopBar() {
 }
 
 function TrialBlockOverlay() {
-  const [blockReason, setBlockReason] = useState<"trial_expired" | "cancelled" | null>(null);
+  const plan = usePlan();
   const pathname = usePathname();
 
-  useEffect(() => {
-    fetch("/api/plan")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.trialExpired && d.subscriptionStatus !== "active") {
-          setBlockReason(d.subscriptionStatus === "cancelled" ? "cancelled" : "trial_expired");
-        } else {
-          setBlockReason(null);
-        }
-      })
-      .catch(() => {});
-  }, [pathname]);
+  if (!plan) return null;
+
+  const blockReason = plan.trialExpired && plan.subscriptionStatus !== "active"
+    ? (plan.subscriptionStatus === "cancelled" ? "cancelled" : "trial_expired")
+    : null;
 
   // Allow access to billing page even when blocked
   if (!blockReason || pathname === "/dashboard/billing") return null;
@@ -281,6 +258,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [open, setOpen] = useState(false);
 
   return (
+    <PlanProvider>
     <div className="flex flex-col h-screen bg-sand-100">
       <TrialTopBar />
       <TrialBlockOverlay />
@@ -313,5 +291,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
       <ProductTour />
     </div>
+    </PlanProvider>
   );
 }
