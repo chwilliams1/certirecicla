@@ -4,6 +4,9 @@ import { generateReportPdfBuffer } from "@/lib/pdf/generate-report-pdf";
 import { formatClientName } from "@/lib/format-client-name";
 import { getResend } from "@/lib/resend";
 import { buildEmailHtml } from "@/lib/email/email-template";
+import { checkFeatureAccess } from "@/lib/plans";
+import { derivePalette, DEFAULT_PALETTE } from "@/lib/pdf/branding-colors";
+import { DEFAULT_BRANDING, type BrandingConfig } from "@/lib/pdf/branding-config";
 
 export async function GET(req: NextRequest) {
   // Verify cron secret
@@ -21,7 +24,12 @@ export async function GET(req: NextRequest) {
     },
     include: {
       client: { select: { name: true, rut: true, parentClient: { select: { name: true } } } },
-      company: { select: { name: true, rut: true, address: true } },
+      company: { select: {
+        name: true, rut: true, address: true, plan: true,
+        signatureUrl: true, brandPrimaryColor: true, brandHidePlatform: true,
+        brandSignatureUrl: true, brandSecondaryLogoUrl: true,
+        brandClosingText: true, brandFont: true,
+      } },
     },
   });
 
@@ -108,10 +116,26 @@ export async function GET(req: NextRequest) {
         ? formatClientName(schedule.client!.name, schedule.client!.parentClient?.name)
         : "Todos los clientes";
 
+      // Build branding config
+      const co = schedule.company;
+      const sigUrl = co.brandSignatureUrl || co.signatureUrl || undefined;
+      const canBrand = checkFeatureAccess(co.plan, "customBranding");
+      const branding: BrandingConfig = canBrand ? {
+        palette: co.brandPrimaryColor ? derivePalette(co.brandPrimaryColor) : DEFAULT_PALETTE,
+        fontFamily: (co.brandFont as BrandingConfig["fontFamily"]) || "Helvetica",
+        hidePlatformBranding: co.brandHidePlatform,
+        signatureImageUrl: sigUrl,
+        secondaryLogoUrl: co.brandSecondaryLogoUrl || undefined,
+        closingText: co.brandClosingText || undefined,
+      } : {
+        ...DEFAULT_BRANDING,
+        signatureImageUrl: sigUrl,
+      };
+
       const pdfBuffer = await generateReportPdfBuffer({
-        companyName: schedule.company.name,
-        companyRut: schedule.company.rut || "",
-        companyAddress: schedule.company.address || "",
+        companyName: co.name,
+        companyRut: co.rut || "",
+        companyAddress: co.address || "",
         clientName,
         clientRut: schedule.client?.rut || "",
         periodStart: periodStart.toISOString().slice(0, 10),
@@ -123,7 +147,7 @@ export async function GET(req: NextRequest) {
         materials,
         monthlyData,
         generatedAt: new Date().toISOString(),
-      });
+      }, branding);
 
       // Send email
       const emails: string[] = JSON.parse(schedule.emails);

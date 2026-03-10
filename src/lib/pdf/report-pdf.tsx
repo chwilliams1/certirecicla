@@ -1,73 +1,72 @@
 import React from "react";
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import { calculateEquivalencies } from "@/lib/co2-calculator";
+import { type BrandingPalette, DEFAULT_PALETTE } from "./branding-colors";
+import { type BrandingConfig, DEFAULT_BRANDING } from "./branding-config";
 
-const styles = StyleSheet.create({
-  page: { padding: 40, fontFamily: "Helvetica", fontSize: 10, color: "#2d3a2e" },
-  header: { flexDirection: "row", justifyContent: "space-between", marginBottom: 20 },
-  title: { fontSize: 20, fontFamily: "Helvetica-Bold", color: "#4a6b4e" },
-  subtitle: { fontSize: 10, color: "#7c9a82", marginTop: 4 },
-  companyInfo: { textAlign: "right", fontSize: 8, color: "#888" },
-  divider: { borderBottomWidth: 1, borderBottomColor: "#d4e4d6", marginVertical: 12 },
-  sectionTitle: { fontSize: 12, fontFamily: "Helvetica-Bold", color: "#4a6b4e", marginBottom: 8 },
-  row: { flexDirection: "row", justifyContent: "space-between", marginBottom: 4 },
-  label: { color: "#7c9a82", fontSize: 9 },
-  value: { fontFamily: "Helvetica-Bold" },
-  // KPI cards
-  kpiRow: { flexDirection: "row", justifyContent: "space-between", marginVertical: 10 },
-  kpiBox: {
-    width: "31%",
-    backgroundColor: "#f4f7f4",
-    padding: 12,
-    borderRadius: 6,
-    alignItems: "center",
-  },
-  kpiValue: { fontSize: 18, fontFamily: "Helvetica-Bold", color: "#4a6b4e" },
-  kpiLabel: { fontSize: 8, color: "#7c9a82", marginTop: 3, textAlign: "center" },
-  // Table
-  table: { marginTop: 8 },
-  tableHeader: { flexDirection: "row", backgroundColor: "#f4f7f4", padding: 8, borderRadius: 4 },
-  tableHeaderText: { fontFamily: "Helvetica-Bold", fontSize: 9, color: "#4a6b4e" },
-  tableRow: { flexDirection: "row", padding: 8, borderBottomWidth: 0.5, borderBottomColor: "#e0dbd3" },
-  col1: { width: "30%" },
-  col2: { width: "20%", textAlign: "right" },
-  col3: { width: "25%", textAlign: "right" },
-  col4: { width: "25%", textAlign: "right" },
-  // Equivalencies
-  equivalencies: { flexDirection: "row", justifyContent: "space-between", marginTop: 10 },
-  eqBox: { alignItems: "center", width: "23%" },
-  eqValue: { fontSize: 14, fontFamily: "Helvetica-Bold", color: "#5a7d5e" },
-  eqLabel: { fontSize: 7, color: "#888", textAlign: "center", marginTop: 2 },
-  // Monthly trend
-  trendRow: { flexDirection: "row", padding: 6, borderBottomWidth: 0.5, borderBottomColor: "#e0dbd3" },
-  trendHeader: { flexDirection: "row", backgroundColor: "#f4f7f4", padding: 6, borderRadius: 4 },
-  trendCol1: { width: "40%" },
-  trendCol2: { width: "30%", textAlign: "right" },
-  trendCol3: { width: "30%", textAlign: "right" },
-  // Footer
-  footer: {
-    position: "absolute",
-    bottom: 30,
-    left: 40,
-    right: 40,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    fontSize: 7,
-    color: "#aaa",
-  },
-  // Period badge
-  periodBadge: {
-    backgroundColor: "#4a6b4e",
-    color: "#ffffff",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 10,
-    fontSize: 9,
-    fontFamily: "Helvetica-Bold",
-    alignSelf: "flex-start",
-    marginTop: 6,
-  },
-});
+function createStyles(p: BrandingPalette, fontFamily: string) {
+  const bold = fontFamily === "Helvetica" ? "Helvetica-Bold" : fontFamily === "Times-Roman" ? "Times-Bold" : "Courier-Bold";
+  return StyleSheet.create({
+    page: { padding: 40, fontFamily, fontSize: 10, color: p.dark },
+    header: { flexDirection: "row", justifyContent: "space-between", marginBottom: 20 },
+    title: { fontSize: 20, fontFamily: bold, color: p.primary },
+    subtitle: { fontSize: 10, color: p.primaryLight, marginTop: 4 },
+    companyInfo: { textAlign: "right", fontSize: 8, color: p.gray },
+    divider: { borderBottomWidth: 1, borderBottomColor: p.border, marginVertical: 12 },
+    sectionTitle: { fontSize: 12, fontFamily: bold, color: p.primary, marginBottom: 8 },
+    row: { flexDirection: "row", justifyContent: "space-between", marginBottom: 4 },
+    label: { color: p.primaryLight, fontSize: 9 },
+    value: { fontFamily: bold },
+    kpiRow: { flexDirection: "row", justifyContent: "space-between", marginVertical: 10 },
+    kpiBox: {
+      width: "31%",
+      backgroundColor: p.primaryBg,
+      padding: 12,
+      borderRadius: 6,
+      alignItems: "center",
+    },
+    kpiValue: { fontSize: 18, fontFamily: bold, color: p.primary },
+    kpiLabel: { fontSize: 8, color: p.primaryLight, marginTop: 3, textAlign: "center" },
+    table: { marginTop: 8 },
+    tableHeader: { flexDirection: "row", backgroundColor: p.primaryBg, padding: 8, borderRadius: 4 },
+    tableHeaderText: { fontFamily: bold, fontSize: 9, color: p.primary },
+    tableRow: { flexDirection: "row", padding: 8, borderBottomWidth: 0.5, borderBottomColor: "#e0dbd3" },
+    col1: { width: "30%" },
+    col2: { width: "20%", textAlign: "right" },
+    col3: { width: "25%", textAlign: "right" },
+    col4: { width: "25%", textAlign: "right" },
+    equivalencies: { flexDirection: "row", justifyContent: "space-between", marginTop: 10 },
+    eqBox: { alignItems: "center", width: "23%" },
+    eqValue: { fontSize: 14, fontFamily: bold, color: p.primaryLight },
+    eqLabel: { fontSize: 7, color: p.gray, textAlign: "center", marginTop: 2 },
+    trendRow: { flexDirection: "row", padding: 6, borderBottomWidth: 0.5, borderBottomColor: "#e0dbd3" },
+    trendHeader: { flexDirection: "row", backgroundColor: p.primaryBg, padding: 6, borderRadius: 4 },
+    trendCol1: { width: "40%" },
+    trendCol2: { width: "30%", textAlign: "right" },
+    trendCol3: { width: "30%", textAlign: "right" },
+    footer: {
+      position: "absolute",
+      bottom: 30,
+      left: 40,
+      right: 40,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      fontSize: 7,
+      color: "#aaa",
+    },
+    periodBadge: {
+      backgroundColor: p.primary,
+      color: "#ffffff",
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 10,
+      fontSize: 9,
+      fontFamily: bold,
+      alignSelf: "flex-start",
+      marginTop: 6,
+    },
+  });
+}
 
 export interface ReportPDFData {
   companyName: string;
@@ -105,12 +104,17 @@ function formatMonth(m: string): string {
   return `${months[parseInt(month, 10) - 1]} ${year}`;
 }
 
-export function ReportPDFDocument({ data }: { data: ReportPDFData }) {
+export function ReportPDFDocument({ data, branding }: { data: ReportPDFData; branding?: BrandingConfig }) {
+  const config = branding || DEFAULT_BRANDING;
+  const styles = createStyles(config.palette, config.fontFamily);
   const eq = calculateEquivalencies(data.totalCo2);
 
   const materialEntries = Object.entries(data.materials).sort(
     (a, b) => b[1].kg - a[1].kg
   );
+
+  const platformText = config.hidePlatformBranding ? "" : "CertiRecicla - Gestión de Reciclaje Inteligente";
+  const footerText = config.hidePlatformBranding ? `Generado por ${data.companyName}` : "Generado por CertiRecicla";
 
   return (
     <Document>
@@ -119,11 +123,11 @@ export function ReportPDFDocument({ data }: { data: ReportPDFData }) {
         <View style={styles.header}>
           <View>
             <Text style={styles.title}>Reporte de Impacto Ambiental</Text>
-            <Text style={styles.subtitle}>CertiRecicla - Gestión de Reciclaje Inteligente</Text>
+            {platformText ? <Text style={styles.subtitle}>{platformText}</Text> : null}
             <Text style={styles.periodBadge}>{data.periodLabel}</Text>
           </View>
           <View style={styles.companyInfo}>
-            <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 10 }}>{data.companyName}</Text>
+            <Text style={{ fontFamily: config.fontFamily === "Helvetica" ? "Helvetica-Bold" : config.fontFamily === "Times-Roman" ? "Times-Bold" : "Courier-Bold", fontSize: 10 }}>{data.companyName}</Text>
             {data.companyRut ? <Text>{data.companyRut}</Text> : null}
             {data.companyAddress ? <Text>{data.companyAddress}</Text> : null}
           </View>
@@ -137,7 +141,7 @@ export function ReportPDFDocument({ data }: { data: ReportPDFData }) {
             <Text style={styles.label}>CLIENTE</Text>
             <Text style={styles.value}>{data.clientName}</Text>
             {data.clientRut ? (
-              <Text style={{ fontSize: 8, color: "#888" }}>RUT: {data.clientRut}</Text>
+              <Text style={{ fontSize: 8, color: config.palette.gray }}>RUT: {data.clientRut}</Text>
             ) : null}
           </View>
           <View>
@@ -287,7 +291,7 @@ export function ReportPDFDocument({ data }: { data: ReportPDFData }) {
         {/* Footer */}
         <View style={styles.footer}>
           <Text>Reporte generado el {formatDate(data.generatedAt)}</Text>
-          <Text>Generado por CertiRecicla</Text>
+          <Text>{footerText}</Text>
         </View>
       </Page>
     </Document>

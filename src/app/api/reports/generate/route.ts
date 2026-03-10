@@ -3,8 +3,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { hasPermission } from "@/lib/roles";
+import { checkFeatureAccess } from "@/lib/plans";
 import { generateReportPdfBuffer } from "@/lib/pdf/generate-report-pdf";
 import { formatClientName } from "@/lib/format-client-name";
+import { derivePalette, DEFAULT_PALETTE } from "@/lib/pdf/branding-colors";
+import { DEFAULT_BRANDING, type BrandingConfig } from "@/lib/pdf/branding-config";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -26,7 +29,12 @@ export async function POST(req: NextRequest) {
 
   const company = await prisma.company.findUnique({
     where: { id: companyId },
-    select: { name: true, rut: true, address: true },
+    select: {
+      name: true, rut: true, address: true, plan: true,
+      signatureUrl: true, brandPrimaryColor: true, brandHidePlatform: true,
+      brandSignatureUrl: true, brandSecondaryLogoUrl: true,
+      brandClosingText: true, brandFont: true,
+    },
   });
   if (!company) {
     return NextResponse.json({ error: "Empresa no encontrada" }, { status: 404 });
@@ -126,6 +134,23 @@ export async function POST(req: NextRequest) {
       .sort((a, b) => b.kg - a.kg);
   }
 
+  // Build branding config
+  const signatureUrl = company.brandSignatureUrl || company.signatureUrl || undefined;
+  const canBrand = checkFeatureAccess(company.plan, "customBranding");
+  const branding: BrandingConfig = canBrand ? {
+    palette: company.brandPrimaryColor
+      ? derivePalette(company.brandPrimaryColor)
+      : DEFAULT_PALETTE,
+    fontFamily: (company.brandFont as BrandingConfig["fontFamily"]) || "Helvetica",
+    hidePlatformBranding: company.brandHidePlatform,
+    signatureImageUrl: signatureUrl,
+    secondaryLogoUrl: company.brandSecondaryLogoUrl || undefined,
+    closingText: company.brandClosingText || undefined,
+  } : {
+    ...DEFAULT_BRANDING,
+    signatureImageUrl: signatureUrl,
+  };
+
   const pdfBuffer = await generateReportPdfBuffer({
     companyName: company.name,
     companyRut: company.rut || "",
@@ -142,7 +167,7 @@ export async function POST(req: NextRequest) {
     monthlyData,
     generatedAt: new Date().toISOString(),
     ranking,
-  });
+  }, branding);
 
   return new NextResponse(new Uint8Array(pdfBuffer), {
     headers: {
