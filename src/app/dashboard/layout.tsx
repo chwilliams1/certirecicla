@@ -139,7 +139,9 @@ function TrialTopBar() {
     fetch("/api/plan")
       .then((r) => r.json())
       .then((d) => {
-        if (d.plan === "trial") {
+        if (d.trialExpired) {
+          setExpired(true);
+        } else if (d.plan === "trial") {
           setTrialDays(d.trialDaysRemaining);
           setExpired(d.trialExpired);
         }
@@ -180,7 +182,7 @@ function TrialBlockOverlay() {
     fetch("/api/plan")
       .then((r) => r.json())
       .then((d) => {
-        if (d.trialExpired && d.plan === "trial" && d.subscriptionStatus !== "active") {
+        if (d.trialExpired && d.subscriptionStatus !== "active") {
           setBlocked(true);
         }
       })

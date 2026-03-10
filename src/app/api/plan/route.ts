@@ -30,21 +30,22 @@ export async function GET() {
 
   // Sync con Reveniu en paralelo con los counts para no agregar latencia
   const syncReveniu = async () => {
+    // Plan cancelado pero nunca revertido a trial (estado inconsistente)
     if (!company.reveniuSubscriptionId) {
-      // Plan cancelado pero nunca revertido a trial (estado inconsistente)
-      if (company.subscriptionStatus === "cancelled" && company.plan !== "trial") {
+      if (company.subscriptionStatus !== "active" && company.plan !== "trial") {
         const trialConfig = getPlanConfig("trial");
         await prisma.company.update({
           where: { id: session.user.companyId },
           data: {
             plan: "trial",
-            trialEndsAt: new Date(),
+            subscriptionStatus: company.subscriptionStatus || "cancelled",
+            trialEndsAt: new Date(Date.now() - 1000),
             maxClients: trialConfig.maxClients,
             maxCertificatesPerMonth: trialConfig.maxCertificatesPerMonth,
           },
         });
         company.plan = "trial";
-        company.trialEndsAt = new Date();
+        company.trialEndsAt = new Date(Date.now() - 1000);
       }
       return;
     }
@@ -78,14 +79,14 @@ export async function GET() {
             plan: "trial",
             subscriptionStatus: "cancelled",
             reveniuSubscriptionId: null,
-            trialEndsAt: new Date(),
+            trialEndsAt: new Date(Date.now() - 1000),
             maxClients: trialConfig.maxClients,
             maxCertificatesPerMonth: trialConfig.maxCertificatesPerMonth,
           },
         });
         company.plan = "trial";
         company.subscriptionStatus = "cancelled";
-        company.trialEndsAt = new Date();
+        company.trialEndsAt = new Date(Date.now() - 1000);
       }
     } catch {
       // Reveniu no disponible, seguir con datos de DB
@@ -110,7 +111,8 @@ export async function GET() {
 
   // Calcular después del sync para reflejar cambios
   const config = getPlanConfig(company.plan);
-  const trialExpired = company.plan === "trial" && isTrialExpired(company.trialEndsAt);
+  const trialExpired = (company.plan === "trial" && isTrialExpired(company.trialEndsAt))
+    || (company.plan !== "trial" && company.subscriptionStatus !== "active");
   const trialDaysRemaining = company.plan === "trial"
     ? getTrialDaysRemaining(company.trialEndsAt)
     : null;
