@@ -4,6 +4,9 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { generateCertificatePDF } from "@/lib/pdf/generate-certificate-pdf";
 import { hasPermission } from "@/lib/roles";
+import { checkFeatureAccess } from "@/lib/plans";
+import { derivePalette, DEFAULT_PALETTE } from "@/lib/pdf/branding-colors";
+import { DEFAULT_BRANDING, type BrandingConfig } from "@/lib/pdf/branding-config";
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
@@ -22,6 +25,10 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
         select: {
           name: true, rut: true, address: true, phone: true,
           logo: true, sanitaryResolution: true, plantAddress: true,
+          plan: true,
+          brandPrimaryColor: true, brandHidePlatform: true,
+          brandSignatureUrl: true, brandSecondaryLogoUrl: true,
+          brandClosingText: true, brandFont: true,
         },
       },
     },
@@ -69,6 +76,19 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
     kg: p.kg,
   }));
 
+  // Build branding config
+  const canBrand = checkFeatureAccess(certificate.company.plan, "customBranding");
+  const branding: BrandingConfig = canBrand ? {
+    palette: certificate.company.brandPrimaryColor
+      ? derivePalette(certificate.company.brandPrimaryColor)
+      : DEFAULT_PALETTE,
+    fontFamily: (certificate.company.brandFont as BrandingConfig["fontFamily"]) || "Helvetica",
+    hidePlatformBranding: certificate.company.brandHidePlatform,
+    signatureImageUrl: certificate.company.brandSignatureUrl || undefined,
+    secondaryLogoUrl: certificate.company.brandSecondaryLogoUrl || undefined,
+    closingText: certificate.company.brandClosingText || undefined,
+  } : DEFAULT_BRANDING;
+
   const pdfBuffer = await generateCertificatePDF({
     uniqueCode: certificate.uniqueCode,
     clientName: certificate.client.name,
@@ -87,7 +107,7 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
     createdAt: certificate.createdAt.toISOString(),
     status: certificate.status,
     pickups,
-  });
+  }, branding);
 
   return new NextResponse(new Uint8Array(pdfBuffer), {
     headers: {

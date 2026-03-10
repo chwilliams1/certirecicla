@@ -2,6 +2,7 @@ import { renderToBuffer } from "@react-pdf/renderer";
 import React from "react";
 import QRCode from "qrcode";
 import { CertificatePDFDocument } from "./certificate-pdf";
+import { DEFAULT_BRANDING, type BrandingConfig } from "./branding-config";
 
 export interface PickupDetail {
   date: string;
@@ -30,7 +31,10 @@ export interface CertificateData {
   pickups?: PickupDetail[];
 }
 
-export async function generateCertificatePDF(data: CertificateData): Promise<Buffer> {
+export async function generateCertificatePDF(
+  data: CertificateData,
+  branding: BrandingConfig = DEFAULT_BRANDING
+): Promise<Buffer> {
   // Generate QR code as base64 PNG
   const verifyUrl = `https://certirecicla.cl/verify/${data.uniqueCode}`;
   let qrDataUrl: string | undefined;
@@ -38,7 +42,7 @@ export async function generateCertificatePDF(data: CertificateData): Promise<Buf
     qrDataUrl = await QRCode.toDataURL(verifyUrl, {
       width: 120,
       margin: 1,
-      color: { dark: "#2d3a2e", light: "#ffffff" },
+      color: { dark: branding.palette.dark, light: "#ffffff" },
     });
   } catch {
     // QR generation failed, continue without it
@@ -49,6 +53,7 @@ export async function generateCertificatePDF(data: CertificateData): Promise<Buf
     React.createElement(CertificatePDFDocument, {
       data,
       qrDataUrl,
+      branding,
     }) as any
   );
   return Buffer.from(buffer);

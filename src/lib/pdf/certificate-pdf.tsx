@@ -3,268 +3,278 @@ import { Document, Page, Text, View, Image, StyleSheet } from "@react-pdf/render
 import { calculateEquivalencies } from "@/lib/co2-calculator";
 import { formatPeriod } from "@/lib/format-period";
 import type { CertificateData, PickupDetail } from "./generate-certificate-pdf";
+import type { BrandingConfig } from "./branding-config";
+import { DEFAULT_BRANDING } from "./branding-config";
+import type { BrandingPalette } from "./branding-colors";
 
-const GREEN = "#4a6b4e";
-const GREEN_LIGHT = "#7c9a82";
-const GREEN_BG = "#f4f7f4";
-const DARK = "#2d3a2e";
-const GRAY = "#888888";
-const BORDER = "#d4e4d6";
-const ACCENT_BAR = "#5a7d5e";
+type FontFamily = BrandingConfig["fontFamily"];
 
-const styles = StyleSheet.create({
-  page: {
-    padding: 0,
-    fontFamily: "Helvetica",
-    fontSize: 9,
-    color: DARK,
-    position: "relative",
-  },
-  // Green left accent bar
-  accentBar: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    bottom: 0,
-    width: 8,
-    backgroundColor: ACCENT_BAR,
-  },
-  // Watermark
-  watermark: {
-    position: "absolute",
-    top: "35%",
-    left: "10%",
-    fontSize: 54,
-    fontFamily: "Helvetica-Bold",
-    color: DARK,
-    opacity: 0.06,
-    transform: "rotate(-45deg)",
-  },
-  // Content wrapper with left padding for accent bar
-  content: {
-    paddingTop: 35,
-    paddingBottom: 80,
-    paddingLeft: 48,
-    paddingRight: 40,
-  },
-  // Header
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  headerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  logo: {
-    width: 50,
-    height: 50,
-    objectFit: "contain",
-  },
-  headerTitleGroup: {},
-  title: {
-    fontSize: 20,
-    fontFamily: "Helvetica-Bold",
-    color: GREEN,
-  },
-  subtitle: {
-    fontSize: 9,
-    color: GREEN_LIGHT,
-    marginTop: 2,
-  },
-  headerRight: {
-    textAlign: "right",
-    fontSize: 8,
-    color: GRAY,
-  },
-  companyNameHeader: {
-    fontFamily: "Helvetica-Bold",
-    fontSize: 10,
-    color: DARK,
-  },
-  // Divider
-  divider: {
-    borderBottomWidth: 1,
-    borderBottomColor: BORDER,
-    marginVertical: 12,
-  },
-  // Client info row
-  infoRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 4,
-  },
-  label: {
-    color: GREEN_LIGHT,
-    fontSize: 8,
-    marginBottom: 2,
-  },
-  value: {
-    fontFamily: "Helvetica-Bold",
-    fontSize: 10,
-  },
-  smallText: {
-    fontSize: 8,
-    color: GRAY,
-  },
-  // Section title
-  sectionTitle: {
-    fontSize: 11,
-    fontFamily: "Helvetica-Bold",
-    color: GREEN,
-    marginBottom: 6,
-    marginTop: 14,
-  },
-  // Materials table
-  table: {
-    marginTop: 4,
-  },
-  tableHeader: {
-    flexDirection: "row",
-    backgroundColor: GREEN,
-    padding: 7,
-    borderTopLeftRadius: 4,
-    borderTopRightRadius: 4,
-  },
-  tableHeaderText: {
-    fontFamily: "Helvetica-Bold",
-    fontSize: 8,
-    color: "#ffffff",
-  },
-  tableRow: {
-    flexDirection: "row",
-    padding: 6,
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#e8e4dc",
-  },
-  tableRowAlt: {
-    backgroundColor: GREEN_BG,
-  },
-  col1: { width: "40%" },
-  col2: { width: "30%", textAlign: "right" },
-  col3: { width: "30%", textAlign: "right" },
-  // Pickups table columns
-  pCol1: { width: "20%" },
-  pCol2: { width: "30%" },
-  pCol3: { width: "35%" },
-  pCol4: { width: "15%", textAlign: "right" },
-  // Totals box
-  totalsBox: {
-    backgroundColor: GREEN_BG,
-    padding: 14,
-    borderRadius: 6,
-    marginTop: 12,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    borderWidth: 1,
-    borderColor: BORDER,
-  },
-  totalValue: {
-    fontSize: 16,
-    fontFamily: "Helvetica-Bold",
-    color: GREEN,
-  },
-  // Equivalencies
-  equivalencies: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 10,
-    backgroundColor: GREEN_BG,
-    padding: 10,
-    borderRadius: 6,
-  },
-  eqBox: {
-    alignItems: "center",
-    width: "23%",
-  },
-  eqIcon: {
-    fontSize: 16,
-    marginBottom: 2,
-  },
-  eqValue: {
-    fontSize: 13,
-    fontFamily: "Helvetica-Bold",
-    color: ACCENT_BAR,
-  },
-  eqLabel: {
-    fontSize: 7,
-    color: GRAY,
-    textAlign: "center",
-    marginTop: 1,
-  },
-  // Signature section
-  signatureSection: {
-    marginTop: 24,
-    alignItems: "flex-start",
-  },
-  signatureLine: {
-    borderBottomWidth: 1,
-    borderBottomColor: DARK,
-    width: 200,
-    marginBottom: 4,
-  },
-  signatureLabel: {
-    fontSize: 8,
-    color: GRAY,
-  },
-  signatureCompany: {
-    fontSize: 9,
-    fontFamily: "Helvetica-Bold",
-    color: DARK,
-    marginTop: 1,
-  },
-  signatureResolution: {
-    fontSize: 7,
-    color: GRAY,
-    marginTop: 2,
-  },
-  // Footer
-  footer: {
-    position: "absolute",
-    bottom: 0,
-    left: 8,
-    right: 0,
-    borderTopWidth: 1,
-    borderTopColor: BORDER,
-    paddingVertical: 12,
-    paddingHorizontal: 40,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: GREEN_BG,
-  },
-  qrImage: {
-    width: 60,
-    height: 60,
-  },
-  footerText: {
-    marginLeft: 12,
-    fontSize: 7,
-    color: GRAY,
-  },
-  footerCode: {
-    fontFamily: "Helvetica-Bold",
-    fontSize: 8,
-    color: DARK,
-    marginBottom: 2,
-  },
-});
+function getBoldFont(font: FontFamily): string {
+  if (font === "Times-Roman") return "Times-Bold";
+  return `${font}-Bold`;
+}
+
+function createStyles(palette: BrandingPalette, fontFamily: FontFamily) {
+  const boldFont = getBoldFont(fontFamily);
+
+  return StyleSheet.create({
+    page: {
+      padding: 0,
+      fontFamily,
+      fontSize: 9,
+      color: palette.dark,
+      position: "relative",
+    },
+    accentBar: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      bottom: 0,
+      width: 8,
+      backgroundColor: palette.primary,
+    },
+    watermark: {
+      position: "absolute",
+      top: "35%",
+      left: "10%",
+      fontSize: 54,
+      fontFamily: boldFont,
+      color: palette.dark,
+      opacity: 0.06,
+      transform: "rotate(-45deg)",
+    },
+    content: {
+      paddingTop: 35,
+      paddingBottom: 80,
+      paddingLeft: 48,
+      paddingRight: 40,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 20,
+    },
+    headerLeft: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+    },
+    logo: {
+      width: 50,
+      height: 50,
+      objectFit: "contain",
+    },
+    headerTitleGroup: {},
+    title: {
+      fontSize: 20,
+      fontFamily: boldFont,
+      color: palette.primary,
+    },
+    subtitle: {
+      fontSize: 9,
+      color: palette.primaryLight,
+      marginTop: 2,
+    },
+    headerRight: {
+      textAlign: "right",
+      fontSize: 8,
+      color: palette.gray,
+    },
+    companyNameHeader: {
+      fontFamily: boldFont,
+      fontSize: 10,
+      color: palette.dark,
+    },
+    secondaryLogo: {
+      width: 40,
+      height: 40,
+      objectFit: "contain",
+      marginTop: 4,
+    },
+    divider: {
+      borderBottomWidth: 1,
+      borderBottomColor: palette.border,
+      marginVertical: 12,
+    },
+    infoRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 4,
+    },
+    label: {
+      color: palette.primaryLight,
+      fontSize: 8,
+      marginBottom: 2,
+    },
+    value: {
+      fontFamily: boldFont,
+      fontSize: 10,
+    },
+    smallText: {
+      fontSize: 8,
+      color: palette.gray,
+    },
+    sectionTitle: {
+      fontSize: 11,
+      fontFamily: boldFont,
+      color: palette.primary,
+      marginBottom: 6,
+      marginTop: 14,
+    },
+    table: {
+      marginTop: 4,
+    },
+    tableHeader: {
+      flexDirection: "row",
+      backgroundColor: palette.primary,
+      padding: 7,
+      borderTopLeftRadius: 4,
+      borderTopRightRadius: 4,
+    },
+    tableHeaderText: {
+      fontFamily: boldFont,
+      fontSize: 8,
+      color: "#ffffff",
+    },
+    tableRow: {
+      flexDirection: "row",
+      padding: 6,
+      borderBottomWidth: 0.5,
+      borderBottomColor: "#e8e4dc",
+    },
+    tableRowAlt: {
+      backgroundColor: palette.primaryBg,
+    },
+    col1: { width: "40%" },
+    col2: { width: "30%", textAlign: "right" },
+    col3: { width: "30%", textAlign: "right" },
+    pCol1: { width: "20%" },
+    pCol2: { width: "30%" },
+    pCol3: { width: "35%" },
+    pCol4: { width: "15%", textAlign: "right" },
+    totalsBox: {
+      backgroundColor: palette.primaryBg,
+      padding: 14,
+      borderRadius: 6,
+      marginTop: 12,
+      flexDirection: "row",
+      justifyContent: "space-around",
+      borderWidth: 1,
+      borderColor: palette.border,
+    },
+    totalValue: {
+      fontSize: 16,
+      fontFamily: boldFont,
+      color: palette.primary,
+    },
+    equivalencies: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: 10,
+      backgroundColor: palette.primaryBg,
+      padding: 10,
+      borderRadius: 6,
+    },
+    eqBox: {
+      alignItems: "center",
+      width: "23%",
+    },
+    eqIcon: {
+      fontSize: 16,
+      marginBottom: 2,
+    },
+    eqValue: {
+      fontSize: 13,
+      fontFamily: boldFont,
+      color: palette.primary,
+    },
+    eqLabel: {
+      fontSize: 7,
+      color: palette.gray,
+      textAlign: "center",
+      marginTop: 1,
+    },
+    signatureSection: {
+      marginTop: 24,
+      alignItems: "flex-start",
+    },
+    signatureImage: {
+      width: 150,
+      height: 50,
+      objectFit: "contain",
+      marginBottom: 4,
+    },
+    signatureLine: {
+      borderBottomWidth: 1,
+      borderBottomColor: palette.dark,
+      width: 200,
+      marginBottom: 4,
+    },
+    signatureLabel: {
+      fontSize: 8,
+      color: palette.gray,
+    },
+    signatureCompany: {
+      fontSize: 9,
+      fontFamily: boldFont,
+      color: palette.dark,
+      marginTop: 1,
+    },
+    signatureResolution: {
+      fontSize: 7,
+      color: palette.gray,
+      marginTop: 2,
+    },
+    footer: {
+      position: "absolute",
+      bottom: 0,
+      left: 8,
+      right: 0,
+      borderTopWidth: 1,
+      borderTopColor: palette.border,
+      paddingVertical: 12,
+      paddingHorizontal: 40,
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: palette.primaryBg,
+    },
+    qrImage: {
+      width: 60,
+      height: 60,
+    },
+    footerText: {
+      marginLeft: 12,
+      fontSize: 7,
+      color: palette.gray,
+    },
+    footerCode: {
+      fontFamily: boldFont,
+      fontSize: 8,
+      color: palette.dark,
+      marginBottom: 2,
+    },
+  });
+}
 
 interface Props {
   data: CertificateData;
   qrDataUrl?: string;
+  branding?: BrandingConfig;
 }
 
-export function CertificatePDFDocument({ data, qrDataUrl }: Props) {
+export function CertificatePDFDocument({ data, qrDataUrl, branding = DEFAULT_BRANDING }: Props) {
+  const styles = createStyles(branding.palette, branding.fontFamily);
   const eq = calculateEquivalencies(data.totalCo2);
   const formatDate = (d: string) => new Date(d).toLocaleDateString("es-CL");
   const materialEntries = Object.entries(data.materials);
 
+  const closingText = branding.closingText
+    || `Los residuos fueron procesados en instalaciones de valorizacion debidamente autorizadas${data.sanitaryResolution ? ` (${data.sanitaryResolution})` : ""}. Agradecemos su compromiso con la sostenibilidad y el cuidado del entorno.`;
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Green accent bar */}
+        {/* Accent bar */}
         <View style={styles.accentBar} />
 
         <View style={styles.content}>
@@ -276,7 +286,9 @@ export function CertificatePDFDocument({ data, qrDataUrl }: Props) {
               )}
               <View style={styles.headerTitleGroup}>
                 <Text style={styles.title}>Certificado de Reciclaje</Text>
-                <Text style={styles.subtitle}>Impacto Ambiental Verificado</Text>
+                {!branding.hidePlatformBranding && (
+                  <Text style={styles.subtitle}>Impacto Ambiental Verificado</Text>
+                )}
               </View>
             </View>
             <View style={styles.headerRight}>
@@ -284,6 +296,9 @@ export function CertificatePDFDocument({ data, qrDataUrl }: Props) {
               {data.companyRut && <Text>{data.companyRut}</Text>}
               {data.companyAddress && <Text>{data.companyAddress}</Text>}
               {data.plantAddress && <Text>Planta: {data.plantAddress}</Text>}
+              {branding.secondaryLogoUrl && (
+                <Image src={branding.secondaryLogoUrl} style={styles.secondaryLogo} />
+              )}
             </View>
           </View>
 
@@ -303,7 +318,7 @@ export function CertificatePDFDocument({ data, qrDataUrl }: Props) {
           </View>
 
           {/* Certification statement */}
-          <Text style={{ fontSize: 9, color: DARK, lineHeight: 1.5, marginBottom: 10, marginTop: 4 }}>
+          <Text style={{ fontSize: 9, color: branding.palette.dark, lineHeight: 1.5, marginBottom: 10, marginTop: 4 }}>
             Mediante el presente documento, {data.companyName}{data.companyRut ? ` (RUT ${data.companyRut})` : ""} hace constar que {data.clientName}{data.clientRut ? ` (RUT ${data.clientRut})` : ""} realizo la valorizacion de {data.totalKg.toLocaleString("es-CL")} kg de residuos reciclables durante {formatPeriod(data.periodStart)}, contribuyendo a evitar {data.totalCo2.toLocaleString("es-CL")} kg de emisiones de CO2 equivalente.
           </Text>
 
@@ -340,7 +355,7 @@ export function CertificatePDFDocument({ data, qrDataUrl }: Props) {
 
           {/* Equivalencies */}
           <Text style={styles.sectionTitle}>Equivalencias Ecologicas</Text>
-          <Text style={{ fontSize: 8, color: GRAY, marginBottom: 6, lineHeight: 1.4 }}>
+          <Text style={{ fontSize: 8, color: branding.palette.gray, marginBottom: 6, lineHeight: 1.4 }}>
             El correcto manejo de estos residuos permitio generar el siguiente impacto ambiental positivo:
           </Text>
           <View style={styles.equivalencies}>
@@ -386,12 +401,15 @@ export function CertificatePDFDocument({ data, qrDataUrl }: Props) {
           )}
 
           {/* Closing note */}
-          <Text style={{ fontSize: 8, color: GRAY, marginTop: 14, lineHeight: 1.4 }}>
-            Los residuos fueron procesados en instalaciones de valorizacion debidamente autorizadas{data.sanitaryResolution ? ` (${data.sanitaryResolution})` : ""}. Agradecemos su compromiso con la sostenibilidad y el cuidado del entorno.
+          <Text style={{ fontSize: 8, color: branding.palette.gray, marginTop: 14, lineHeight: 1.4 }}>
+            {closingText}
           </Text>
 
           {/* Signature */}
           <View style={styles.signatureSection}>
+            {branding.signatureImageUrl && (
+              <Image src={branding.signatureImageUrl} style={styles.signatureImage} />
+            )}
             <View style={styles.signatureLine} />
             <Text style={styles.signatureLabel}>Firma Responsable</Text>
             <Text style={styles.signatureCompany}>{data.companyName}</Text>
@@ -407,16 +425,20 @@ export function CertificatePDFDocument({ data, qrDataUrl }: Props) {
           <View style={styles.footerText}>
             <Text style={styles.footerCode}>Certificado #{data.uniqueCode}</Text>
             <Text>Emitido: {formatDate(data.createdAt)}</Text>
-            <Text>Verificar en: certirecicla.cl/verify/{data.uniqueCode}</Text>
+            {!branding.hidePlatformBranding && (
+              <Text>Verificar en: certirecicla.cl/verify/{data.uniqueCode}</Text>
+            )}
             {data.sanitaryResolution && <Text>Res. Sanitaria: {data.sanitaryResolution}</Text>}
           </View>
         </View>
 
-        {/* Watermark — rendered last so it appears on top of all content */}
+        {/* Watermark */}
         {data.status === "draft" ? (
           <Text style={[styles.watermark, { color: "#cc0000", opacity: 0.15, fontSize: 72 }]}>BORRADOR</Text>
         ) : (
-          <Text style={[styles.watermark, { opacity: 0.04 }]}>{data.uniqueCode}</Text>
+          !branding.hidePlatformBranding && (
+            <Text style={[styles.watermark, { opacity: 0.04 }]}>{data.uniqueCode}</Text>
+          )
         )}
       </Page>
     </Document>

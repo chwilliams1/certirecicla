@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { hasPermission } from "@/lib/roles";
+import { checkFeatureAccess } from "@/lib/plans";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -31,7 +32,42 @@ export async function PATCH(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { name, rut, address, phone, email, autoSendOnPublish, co2Factors, ecoEquivalencies, reminderDaysThreshold, sanitaryResolution, plantAddress } = body;
+  const { name, rut, address, phone, email, autoSendOnPublish, co2Factors, ecoEquivalencies, reminderDaysThreshold, sanitaryResolution, plantAddress,
+    brandPrimaryColor, brandHidePlatform, brandClosingText, brandFont } = body;
+
+  // Check if branding fields should be applied
+  const currentCompany = await prisma.company.findUnique({
+    where: { id: session.user.companyId },
+    select: { plan: true },
+  });
+  const canBrand = currentCompany ? checkFeatureAccess(currentCompany.plan, "customBranding") : false;
+
+  // Validate branding fields
+  const brandingData: Record<string, unknown> = {};
+  if (canBrand) {
+    if (brandPrimaryColor !== undefined) {
+      if (brandPrimaryColor && !/^#[0-9a-fA-F]{6}$/.test(brandPrimaryColor)) {
+        return NextResponse.json({ error: "Color primario inválido" }, { status: 400 });
+      }
+      brandingData.brandPrimaryColor = brandPrimaryColor || null;
+    }
+    if (brandHidePlatform !== undefined) {
+      brandingData.brandHidePlatform = Boolean(brandHidePlatform);
+    }
+    if (brandClosingText !== undefined) {
+      if (brandClosingText && brandClosingText.length > 500) {
+        return NextResponse.json({ error: "Texto de cierre máximo 500 caracteres" }, { status: 400 });
+      }
+      brandingData.brandClosingText = brandClosingText || null;
+    }
+    if (brandFont !== undefined) {
+      const validFonts = ["Helvetica", "Times-Roman", "Courier"];
+      if (brandFont && !validFonts.includes(brandFont)) {
+        return NextResponse.json({ error: "Tipografía no válida" }, { status: 400 });
+      }
+      brandingData.brandFont = brandFont || null;
+    }
+  }
 
   const company = await prisma.company.update({
     where: { id: session.user.companyId },
@@ -46,6 +82,7 @@ export async function PATCH(req: NextRequest) {
       ...(sanitaryResolution !== undefined && { sanitaryResolution }),
       ...(plantAddress !== undefined && { plantAddress }),
       ...(ecoEquivalencies !== undefined && { ecoEquivalencies: ecoEquivalencies ? JSON.stringify(ecoEquivalencies) : null }),
+      ...brandingData,
     },
   });
 
