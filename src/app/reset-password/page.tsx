@@ -3,7 +3,7 @@
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Leaf } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -175,8 +175,8 @@ function ResetPasswordContent() {
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-sage-100">
-            <Leaf className="h-6 w-6 text-sage-600" />
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center">
+            <Image src="/logo.png" alt="CertiRecicla" width={40} height={40} />
           </div>
           <CardTitle className="text-2xl">CertiRecicla</CardTitle>
           <CardDescription>

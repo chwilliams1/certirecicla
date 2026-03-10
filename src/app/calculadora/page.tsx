@@ -2,8 +2,8 @@
 
 import { useMemo, useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
-  Leaf,
   Plus,
   X,
   TreePine,
@@ -259,7 +259,7 @@ export default function CalculadoraPage() {
       <header className="border-b border-border/50 bg-white/80 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <Leaf className="h-5 w-5 text-sage-500" strokeWidth={1.5} />
+            <Image src="/logo.png" alt="CertiRecicla" width={20} height={20} />
             <span className="font-serif text-sage-800 font-bold">CertiRecicla</span>
           </Link>
           <nav className="flex items-center gap-4">

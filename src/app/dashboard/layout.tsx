@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import {
@@ -61,7 +62,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
     <div className="flex flex-col h-full bg-sand-50 border-r border-sand-300">
       <div className="p-6 pb-4">
         <Link href="/dashboard" className="flex items-center gap-2.5 group" onClick={onNavigate}>
-          <Leaf className="h-6 w-6 text-sage-500 animate-breathe logo-leaf" strokeWidth={1.5} />
+          <Image src="/logo.png" alt="CertiRecicla" width={24} height={24} className="animate-breathe logo-leaf" />
           <span className="font-serif text-lg text-sage-800">CertiRecicla</span>
         </Link>
       </div>
@@ -344,7 +345,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </button>
             </SheetTrigger>
             <div className="flex items-center gap-2 flex-1">
-              <Leaf className="h-5 w-5 text-sage-500 animate-breathe" strokeWidth={1.5} />
+              <Image src="/logo.png" alt="CertiRecicla" width={20} height={20} className="animate-breathe" />
               <span className="font-serif text-sage-800">CertiRecicla</span>
             </div>
             <div className="flex items-center gap-0.5">
