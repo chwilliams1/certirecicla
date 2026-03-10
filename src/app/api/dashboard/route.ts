@@ -19,32 +19,34 @@ export async function GET() {
   const yearStart = new Date(`${currentYear}-01-01T00:00:00.000Z`);
   const yearEnd = new Date(`${currentYear}-12-31T23:59:59.999Z`);
 
-  const records = await prisma.recyclingRecord.findMany({
-    where: { companyId, pickupDate: { gte: yearStart, lte: yearEnd } },
-    include: { client: { select: { name: true } } },
-    orderBy: { pickupDate: "desc" },
-  });
-
-  const totalCo2 = records.reduce((sum, r) => sum + r.co2Saved, 0);
-  const totalKg = records.reduce((sum, r) => sum + r.quantityKg, 0);
-  // Count only leaf clients (branches or standalone) — exclude parent empresas that are just containers
-  const allClients = await prisma.client.findMany({
-    where: { companyId, active: true },
-    select: { id: true, parentClientId: true },
-  });
-  const parentIds = new Set(allClients.filter((c) => c.parentClientId).map((c) => c.parentClientId!));
-  const activeClients = allClients.filter((c) => !parentIds.has(c.id)).length;
-  const certificatesCount = await prisma.certificate.count({ where: { companyId, createdAt: { gte: yearStart, lte: yearEnd } } });
-
-  // Previous year totals for YoY comparison (same period: Jan 1 to today's date last year)
   const now = new Date();
   const prevYearStart = new Date(`${currentYear - 1}-01-01T00:00:00.000Z`);
   const prevYearSameDate = new Date(now);
   prevYearSameDate.setFullYear(currentYear - 1);
-  const prevYearAgg = await prisma.recyclingRecord.aggregate({
-    where: { companyId, pickupDate: { gte: prevYearStart, lte: prevYearSameDate } },
-    _sum: { quantityKg: true },
-  });
+
+  // Parallelize independent DB queries
+  const [records, allClients, certificatesCount, prevYearAgg] = await Promise.all([
+    prisma.recyclingRecord.findMany({
+      where: { companyId, pickupDate: { gte: yearStart, lte: yearEnd } },
+      include: { client: { select: { name: true } } },
+      orderBy: { pickupDate: "desc" },
+    }),
+    prisma.client.findMany({
+      where: { companyId, active: true },
+      select: { id: true, parentClientId: true },
+    }),
+    prisma.certificate.count({ where: { companyId, createdAt: { gte: yearStart, lte: yearEnd } } }),
+    prisma.recyclingRecord.aggregate({
+      where: { companyId, pickupDate: { gte: prevYearStart, lte: prevYearSameDate } },
+      _sum: { quantityKg: true },
+    }),
+  ]);
+
+  const totalCo2 = records.reduce((sum, r) => sum + r.co2Saved, 0);
+  const totalKg = records.reduce((sum, r) => sum + r.quantityKg, 0);
+  // Count only leaf clients (branches or standalone) — exclude parent empresas that are just containers
+  const parentIds = new Set(allClients.filter((c) => c.parentClientId).map((c) => c.parentClientId!));
+  const activeClients = allClients.filter((c) => !parentIds.has(c.id)).length;
   const prevYearKg = prevYearAgg._sum.quantityKg || 0;
 
   const materialDist: Record<string, number> = {};

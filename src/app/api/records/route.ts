@@ -30,12 +30,23 @@ export async function POST(req: NextRequest) {
   if (!session?.user?.companyId) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
+  if (!hasPermission(session.user.role, "pickups:create")) {
+    return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
+  }
 
   const body = await req.json();
   const parsed = recordCreateSchema.safeParse(body);
 
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
+  }
+
+  // Verify client belongs to company
+  const client = await prisma.client.findFirst({
+    where: { id: parsed.data.clientId, companyId: session.user.companyId },
+  });
+  if (!client) {
+    return NextResponse.json({ error: "Cliente no encontrado" }, { status: 404 });
   }
 
   const co2Saved = calculateCo2(parsed.data.material, parsed.data.quantityKg);

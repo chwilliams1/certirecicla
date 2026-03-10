@@ -43,8 +43,7 @@ export async function POST(req: NextRequest) {
   let clientsCreated = 0;
   let duplicatesSkipped = 0;
 
-  // Pre-fetch existing records for duplicate detection (safety net)
-  // Collect all possible client names (both parent names and sucursal names)
+  // Pre-fetch existing records for duplicate detection
   const allClientNames = Array.from(new Set(
     data.flatMap((r) => r.nombre_sucursal ? [r.nombre_cliente, r.nombre_sucursal] : [r.nombre_cliente])
   ));
@@ -75,23 +74,87 @@ export async function POST(req: NextRequest) {
     )
   );
 
-  // Cache for parent client IDs to avoid repeated queries
-  const parentCache = new Map<string, string>();
-  const branchCache = new Map<string, string>();
+  // Use transaction for atomicity
+  await prisma.$transaction(async (tx) => {
+    const parentCache = new Map<string, string>();
+    const branchCache = new Map<string, string>();
+    const recordsBatch: Array<{
+      clientId: string;
+      companyId: string;
+      material: string;
+      quantityKg: number;
+      co2Saved: number;
+      pickupDate: Date;
+      location: string | null;
+      batchId: string;
+    }> = [];
 
-  for (const row of data) {
-    let client;
+    for (const row of data) {
+      let clientId: string;
 
-    if (row.nombre_sucursal) {
-      // Find or create parent client
-      let parentId = parentCache.get(row.nombre_cliente);
-      if (!parentId) {
-        let parent = await prisma.client.findFirst({
-          where: { name: row.nombre_cliente, companyId, parentClientId: null },
+      if (row.nombre_sucursal) {
+        // Find or create parent client
+        let parentId = parentCache.get(row.nombre_cliente);
+        if (!parentId) {
+          let parent = await tx.client.findFirst({
+            where: { name: row.nombre_cliente, companyId, parentClientId: null },
+          });
+          if (!parent) {
+            const details = newClientDetails?.[row.nombre_cliente];
+            parent = await tx.client.create({
+              data: {
+                name: row.nombre_cliente,
+                companyId,
+                ...(details?.rut && { rut: details.rut }),
+                ...(details?.email && { email: details.email }),
+                ...(details?.phone && { phone: details.phone }),
+                ...(details?.address && { address: details.address }),
+                ...(details?.contactName && { contactName: details.contactName }),
+              },
+            });
+            clientsCreated++;
+          }
+          parentId = parent.id;
+          parentCache.set(row.nombre_cliente, parentId);
+        }
+
+        // Find or create branch client
+        const branchKey = `${parentId}|${row.nombre_sucursal}`;
+        const cachedBranchId = branchCache.get(branchKey);
+        if (cachedBranchId) {
+          clientId = cachedBranchId;
+        } else {
+          let branch = await tx.client.findFirst({
+            where: { name: row.nombre_sucursal, companyId, parentClientId: parentId },
+          });
+          if (!branch) {
+            const branchDetails = newClientDetails?.[row.nombre_sucursal];
+            branch = await tx.client.create({
+              data: {
+                name: row.nombre_sucursal,
+                companyId,
+                parentClientId: parentId,
+                ...(branchDetails?.rut && { rut: branchDetails.rut }),
+                ...(branchDetails?.email && { email: branchDetails.email }),
+                ...(branchDetails?.phone && { phone: branchDetails.phone }),
+                ...(branchDetails?.address && { address: branchDetails.address }),
+                ...(branchDetails?.contactName && { contactName: branchDetails.contactName }),
+              },
+            });
+            clientsCreated++;
+          }
+          clientId = branch.id;
+          branchCache.set(branchKey, clientId);
+        }
+      } else {
+        // No sucursal: original behavior
+        let client = await tx.client.findFirst({
+          where: { name: row.nombre_cliente, companyId },
         });
-        if (!parent) {
+
+        if (!client) {
           const details = newClientDetails?.[row.nombre_cliente];
-          parent = await prisma.client.create({
+          client = await tx.client.create({
             data: {
               name: row.nombre_cliente,
               companyId,
@@ -104,85 +167,36 @@ export async function POST(req: NextRequest) {
           });
           clientsCreated++;
         }
-        parentId = parent.id;
-        parentCache.set(row.nombre_cliente, parentId);
+        clientId = client.id;
       }
 
-      // Find or create branch client
-      const branchKey = `${parentId}|${row.nombre_sucursal}`;
-      const cachedBranchId = branchCache.get(branchKey);
-      if (cachedBranchId) {
-        client = { id: cachedBranchId };
-      } else {
-        client = await prisma.client.findFirst({
-          where: { name: row.nombre_sucursal, companyId, parentClientId: parentId },
-        });
-        if (!client) {
-          const branchDetails = newClientDetails?.[row.nombre_sucursal];
-          client = await prisma.client.create({
-            data: {
-              name: row.nombre_sucursal,
-              companyId,
-              parentClientId: parentId,
-              ...(branchDetails?.rut && { rut: branchDetails.rut }),
-              ...(branchDetails?.email && { email: branchDetails.email }),
-              ...(branchDetails?.phone && { phone: branchDetails.phone }),
-              ...(branchDetails?.address && { address: branchDetails.address }),
-              ...(branchDetails?.contactName && { contactName: branchDetails.contactName }),
-            },
-          });
-          clientsCreated++;
-        }
-        branchCache.set(branchKey, client.id);
+      // Check for duplicate
+      const dupKey = `${clientId}|${row.fecha_retiro}|${row.material}|${row.cantidad_kg}`;
+      if (existingKeys.has(dupKey)) {
+        duplicatesSkipped++;
+        continue;
       }
-    } else {
-      // No sucursal: original behavior
-      client = await prisma.client.findFirst({
-        where: { name: row.nombre_cliente, companyId },
-      });
 
-      if (!client) {
-        const details = newClientDetails?.[row.nombre_cliente];
-        client = await prisma.client.create({
-          data: {
-            name: row.nombre_cliente,
-            companyId,
-            ...(details?.rut && { rut: details.rut }),
-            ...(details?.email && { email: details.email }),
-            ...(details?.phone && { phone: details.phone }),
-            ...(details?.address && { address: details.address }),
-            ...(details?.contactName && { contactName: details.contactName }),
-          },
-        });
-        clientsCreated++;
-      }
-    }
-
-    // Check for duplicate
-    const dupKey = `${client.id}|${row.fecha_retiro}|${row.material}|${row.cantidad_kg}`;
-    if (existingKeys.has(dupKey)) {
-      duplicatesSkipped++;
-      continue;
-    }
-
-    const co2Saved = calculateCo2(row.material, row.cantidad_kg);
-
-    await prisma.recyclingRecord.create({
-      data: {
-        clientId: client.id,
+      const co2Saved = calculateCo2(row.material, row.cantidad_kg);
+      recordsBatch.push({
+        clientId,
         companyId,
         material: row.material,
         quantityKg: row.cantidad_kg,
         co2Saved,
         pickupDate: new Date(row.fecha_retiro),
-        location: row.ubicacion,
+        location: row.ubicacion || null,
         batchId,
-      },
-    });
-    recordsCreated++;
-    // Add to set so within-batch duplicates are also caught
-    existingKeys.add(dupKey);
-  }
+      });
+      existingKeys.add(dupKey);
+    }
+
+    // Batch insert all records at once
+    if (recordsBatch.length > 0) {
+      await tx.recyclingRecord.createMany({ data: recordsBatch });
+      recordsCreated = recordsBatch.length;
+    }
+  });
 
   return NextResponse.json({
     recordsCreated,

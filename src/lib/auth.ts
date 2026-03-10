@@ -3,6 +3,15 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { prisma } from "./prisma";
 
+interface AuthUser {
+  id: string;
+  email: string;
+  name: string;
+  companyId: string;
+  companyName: string;
+  role: string;
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -30,8 +39,8 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           email: user.email,
           name: user.name,
-          companyId: user.companyId,
-          companyName: user.company?.name,
+          companyId: user.companyId || "",
+          companyName: user.company?.name || "",
           role: user.role,
         };
       },
@@ -39,24 +48,24 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt",
+    maxAge: 24 * 60 * 60, // 24 hours
   },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        const u = user as unknown as Record<string, unknown>;
-        token.companyId = u.companyId as string;
-        token.companyName = u.companyName as string;
-        token.role = u.role as string;
+        const typedUser = user as AuthUser;
+        token.companyId = typedUser.companyId;
+        token.companyName = typedUser.companyName;
+        token.role = typedUser.role;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        const s = session.user as unknown as Record<string, unknown>;
-        s.id = token.sub;
-        s.companyId = token.companyId;
-        s.companyName = token.companyName;
-        s.role = token.role;
+        (session.user as AuthUser).id = token.sub as string;
+        (session.user as AuthUser).companyId = token.companyId as string;
+        (session.user as AuthUser).companyName = token.companyName as string;
+        (session.user as AuthUser).role = token.role as string;
       }
       return session;
     },

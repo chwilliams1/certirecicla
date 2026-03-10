@@ -65,7 +65,10 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const ext = file.name.split(".").pop() || "png";
+  // Whitelist file extension
+  const ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "webp"];
+  const rawExt = file.name.split(".").pop()?.toLowerCase() || "";
+  const ext = ALLOWED_EXTENSIONS.includes(rawExt) ? rawExt : "png";
   const blob = await put(
     `branding/${session.user.companyId}/${field}-${Date.now()}.${ext}`,
     file,

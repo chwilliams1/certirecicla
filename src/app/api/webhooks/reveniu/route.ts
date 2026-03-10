@@ -5,8 +5,8 @@ import { getPlanConfig } from "@/lib/plans";
 
 export async function POST(req: NextRequest) {
   const secretKey = req.headers.get("Reveniu-Secret-Key");
-  if (secretKey !== process.env.REVENIU_SECRET_KEY) {
-    console.error("Webhook auth failed. Received key:", secretKey?.slice(0, 8) + "...", "Expected:", process.env.REVENIU_SECRET_KEY?.slice(0, 8) + "...");
+  if (!secretKey || secretKey !== process.env.REVENIU_SECRET_KEY) {
+    console.error("Webhook auth failed");
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -74,28 +74,30 @@ export async function POST(req: NextRequest) {
       if (company.subscriptionStatus === "switching") {
         break;
       }
+      const deactivatedTrialConfig = getPlanConfig("trial");
       await prisma.company.update({
         where: { id: company.id },
         data: {
           plan: "trial",
           subscriptionStatus: "cancelled",
           trialEndsAt: new Date(Date.now() - 1000),
-          maxClients: 60,
-          maxCertificatesPerMonth: -1,
+          maxClients: deactivatedTrialConfig.maxClients,
+          maxCertificatesPerMonth: deactivatedTrialConfig.maxCertificatesPerMonth,
         },
       });
       break;
     }
 
     case "subscription_renewal_cancelled": {
+      const cancelledTrialConfig = getPlanConfig("trial");
       await prisma.company.update({
         where: { id: company.id },
         data: {
           plan: "trial",
           subscriptionStatus: "cancelled",
           trialEndsAt: new Date(Date.now() - 1000),
-          maxClients: 60,
-          maxCertificatesPerMonth: -1,
+          maxClients: cancelledTrialConfig.maxClients,
+          maxCertificatesPerMonth: cancelledTrialConfig.maxCertificatesPerMonth,
         },
       });
       break;

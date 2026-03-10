@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PASSWORD_MIN_LENGTH = 8;
+
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const { name, email, password, companyName, rut, phone } = body;
@@ -13,18 +16,33 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  if (password.length < 6) {
+  if (!EMAIL_REGEX.test(email)) {
     return NextResponse.json(
-      { error: "La contraseña debe tener al menos 6 caracteres" },
+      { error: "Email inválido" },
+      { status: 400 }
+    );
+  }
+
+  if (password.length < PASSWORD_MIN_LENGTH) {
+    return NextResponse.json(
+      { error: `La contraseña debe tener al menos ${PASSWORD_MIN_LENGTH} caracteres` },
+      { status: 400 }
+    );
+  }
+
+  if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+    return NextResponse.json(
+      { error: "La contraseña debe incluir mayúsculas, minúsculas y números" },
       { status: 400 }
     );
   }
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
+    // Generic message to prevent email enumeration
     return NextResponse.json(
-      { error: "Ya existe una cuenta con este email" },
-      { status: 409 }
+      { error: "No se pudo crear la cuenta. Verifica los datos e intenta nuevamente." },
+      { status: 400 }
     );
   }
 
