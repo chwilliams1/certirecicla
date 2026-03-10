@@ -120,6 +120,7 @@ export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [chartPeriod, setChartPeriod] = useState<ChartPeriod>("12m");
+  const [heroMetric, setHeroMetric] = useState<"kg" | "co2">("kg");
 
   useEffect(() => {
     fetch("/api/dashboard").then((r) => r.json()).then(setData).finally(() => setLoading(false));
@@ -141,6 +142,11 @@ export default function DashboardPage() {
       </div>
     );
   }
+  useEffect(() => {
+    const timer = setInterval(() => setHeroMetric((m) => (m === "kg" ? "co2" : "kg")), 6000);
+    return () => clearInterval(timer);
+  }, []);
+
   if (!data) return null;
 
   const equivalencies = calculateEquivalencies(data.kpis.totalCo2 * 1000);
@@ -205,10 +211,21 @@ export default function DashboardPage() {
       {/* Impacto compacto + acciones rápidas */}
       <div className="bg-gradient-to-br from-sage-50 to-sand-50 border border-sage-200 rounded-[14px] p-4 sm:p-5 flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
         <div className="text-center sm:text-left flex-shrink-0">
-          <p className="font-serif text-2xl sm:text-3xl text-sage-800">
-            <CountUp end={data.kpis.totalKg} decimals={0} suffix=" kg" />
-          </p>
-          <p className="text-xs text-sage-500">reciclados en {new Date().getFullYear()}</p>
+          {heroMetric === "kg" ? (
+            <div key="kg" className="equiv-enter">
+              <p className="font-serif text-2xl sm:text-3xl text-sage-800">
+                <CountUp end={data.kpis.totalKg} decimals={0} suffix=" kg" />
+              </p>
+              <p className="text-xs text-sage-500">reciclados en {new Date().getFullYear()}</p>
+            </div>
+          ) : (
+            <div key="co2" className="equiv-enter">
+              <p className="font-serif text-2xl sm:text-3xl text-sage-800">
+                <CountUp end={data.kpis.totalCo2} decimals={1} suffix=" ton" />
+              </p>
+              <p className="text-xs text-sage-500">CO₂ evitado en {new Date().getFullYear()}</p>
+            </div>
+          )}
         </div>
         {prevYearKg > 0 && yoyPercent !== 0 && (
           <div className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full flex-shrink-0 ${yoyUp ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-500"}`}>
