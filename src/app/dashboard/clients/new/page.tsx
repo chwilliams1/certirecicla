@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   Users,
@@ -22,7 +22,21 @@ import { Input } from "@/components/ui/input";
 import { formatRut } from "@/lib/validations";
 
 export default function NewClientPage() {
+  return (
+    <Suspense>
+      <NewClientContent />
+    </Suspense>
+  );
+}
+
+function NewClientContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const parentId = searchParams.get("parentId");
+
+  // Parent company data (when adding a branch)
+  const [parentData, setParentData] = useState<{ id: string; name: string; rut: string | null } | null>(null);
+  const [loadingParent, setLoadingParent] = useState(!!parentId);
 
   // Form state
   const [empresa, setEmpresa] = useState("");
@@ -33,12 +47,34 @@ export default function NewClientPage() {
   const [contactName, setContactName] = useState("");
   const [address, setAddress] = useState("");
 
+  // Fetch parent company when adding a branch
+  useEffect(() => {
+    if (!parentId) return;
+    fetch(`/api/clients/${parentId}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.id) {
+          setParentData({ id: data.id, name: data.name, rut: data.rut });
+          setEmpresa(data.name);
+          if (data.rut) setRut(data.rut);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoadingParent(false));
+  }, [parentId]);
+
   // Submit state
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [createdClient, setCreatedClient] = useState<{ id: string; name: string; parentName?: string } | null>(null);
 
-  const canSubmit = empresa.trim().length > 0 && rut.trim().length > 0 && email.trim().length > 0 && phone.trim().length > 0 && contactName.trim().length > 0 && address.trim().length > 0;
+  const canSubmit = empresa.trim().length > 0
+    && rut.trim().length > 0
+    && email.trim().length > 0
+    && phone.trim().length > 0
+    && contactName.trim().length > 0
+    && address.trim().length > 0
+    && (!parentData || sucursal.trim().length > 0); // sucursal required when adding branch
 
   async function handleSubmit() {
     if (!canSubmit) return;
@@ -78,6 +114,15 @@ export default function NewClientPage() {
     } finally {
       setSubmitting(false);
     }
+  }
+
+  if (loadingParent) {
+    return (
+      <div className="space-y-4 max-w-2xl page-fade-in">
+        <div className="skeleton h-8 w-48 rounded" />
+        <div className="skeleton h-32 w-full rounded-[14px]" />
+      </div>
+    );
   }
 
   // Success state
@@ -130,8 +175,12 @@ export default function NewClientPage() {
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" onClick={() => router.back()}><ArrowLeft className="h-4 w-4" /></Button>
         <div>
-          <h1 className="font-serif text-2xl text-sage-800">Nuevo cliente</h1>
-          <p className="text-sm text-sage-800/40">Agrega un nuevo cliente manualmente</p>
+          <h1 className="font-serif text-2xl text-sage-800">
+            {parentData ? "Nueva sucursal" : "Nuevo cliente"}
+          </h1>
+          <p className="text-sm text-sage-800/40">
+            {parentData ? `Agregar sucursal a ${parentData.name}` : "Agrega un nuevo cliente manualmente"}
+          </p>
         </div>
       </div>
 
@@ -146,7 +195,7 @@ export default function NewClientPage() {
 
       {/* Empresa & Sucursal */}
       <div className="grid sm:grid-cols-2 gap-4">
-        <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-5">
+        <div className={`bg-sand-50 border border-sand-300 rounded-[14px] p-5 ${parentData ? "opacity-70" : ""}`}>
           <label className="text-xs font-medium text-sage-800/40 uppercase tracking-wider flex items-center gap-1.5 mb-3">
             <Building2 className="h-3.5 w-3.5" /> Empresa *
           </label>
@@ -155,25 +204,32 @@ export default function NewClientPage() {
             value={empresa}
             onChange={(e) => setEmpresa(e.target.value)}
             className="bg-white"
+            readOnly={!!parentData}
           />
+          {parentData && (
+            <p className="text-[10px] text-sage-500 mt-1.5">Detectada automáticamente</p>
+          )}
         </div>
         <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-5">
           <label className="text-xs font-medium text-sage-800/40 uppercase tracking-wider flex items-center gap-1.5 mb-3">
-            <Store className="h-3.5 w-3.5" /> Sucursal (opcional)
+            <Store className="h-3.5 w-3.5" /> Sucursal {parentData ? "*" : "(opcional)"}
           </label>
           <Input
             placeholder="Nombre de la sucursal..."
             value={sucursal}
             onChange={(e) => setSucursal(e.target.value)}
             className="bg-white"
+            autoFocus={!!parentData}
           />
-          <p className="text-[10px] text-sage-800/30 mt-1.5">Si no tiene sucursal, deja este campo vacío</p>
+          {!parentData && (
+            <p className="text-[10px] text-sage-800/30 mt-1.5">Si no tiene sucursal, deja este campo vacío</p>
+          )}
         </div>
       </div>
 
       {/* RUT & Email */}
       <div className="grid sm:grid-cols-2 gap-4">
-        <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-5">
+        <div className={`bg-sand-50 border border-sand-300 rounded-[14px] p-5 ${parentData?.rut ? "opacity-70" : ""}`}>
           <label className="text-xs font-medium text-sage-800/40 uppercase tracking-wider flex items-center gap-1.5 mb-3">
             <FileText className="h-3.5 w-3.5" /> RUT *
           </label>
@@ -182,7 +238,11 @@ export default function NewClientPage() {
             value={rut}
             onChange={(e) => setRut(formatRut(e.target.value))}
             className="bg-white"
+            readOnly={!!parentData?.rut}
           />
+          {parentData?.rut && (
+            <p className="text-[10px] text-sage-500 mt-1.5">RUT de {parentData.name}</p>
+          )}
         </div>
         <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-5">
           <label className="text-xs font-medium text-sage-800/40 uppercase tracking-wider flex items-center gap-1.5 mb-3">
