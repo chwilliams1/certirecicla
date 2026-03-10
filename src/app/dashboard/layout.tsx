@@ -39,12 +39,22 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const { data: session } = useSession();
   const { can } = usePermissions();
   const [impactKg, setImpactKg] = useState<number | null>(null);
+  const [impactCo2, setImpactCo2] = useState<number | null>(null);
+  const [showCo2, setShowCo2] = useState(false);
 
   useEffect(() => {
     fetch("/api/dashboard")
       .then((r) => r.json())
-      .then((d) => setImpactKg(d?.kpis?.totalKg || 0))
+      .then((d) => {
+        setImpactKg(d?.kpis?.totalKg || 0);
+        setImpactCo2(d?.kpis?.totalCo2 || 0);
+      })
       .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => setShowCo2((v) => !v), 6000);
+    return () => clearInterval(timer);
   }, []);
 
   return (
@@ -80,9 +90,15 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       <div className="border-t border-sand-300">
         {impactKg !== null && impactKg > 0 && (
           <div className="mx-3 mt-3 bg-emerald-50/60 border border-emerald-200/60 rounded-[10px] px-3 py-2 mb-1">
-            <p className="text-[11px] font-medium text-emerald-700">
-              ♻️ {impactKg.toLocaleString("es-CL")} kg reciclados
-            </p>
+            {!showCo2 ? (
+              <p key="kg" className="text-[11px] font-medium text-emerald-700 equiv-enter">
+                ♻️ {impactKg.toLocaleString("es-CL")} kg reciclados en {new Date().getFullYear()}
+              </p>
+            ) : (
+              <p key="co2" className="text-[11px] font-medium text-emerald-700 equiv-enter">
+                🌿 {(impactCo2 ?? 0).toLocaleString("es-CL")} ton CO₂ no emitidos en {new Date().getFullYear()}
+              </p>
+            )}
           </div>
         )}
 
