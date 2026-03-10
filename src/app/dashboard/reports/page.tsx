@@ -796,10 +796,12 @@ export default function ReportsPage() {
             <FileSpreadsheet className="h-3.5 w-3.5" />
             Exportar SINADER
           </TabsTrigger>
+          {/* TODO: Habilitar cuando se implemente programación de envíos
           <TabsTrigger value="schedule" className="flex items-center gap-1.5">
             <Mail className="h-3.5 w-3.5" />
             Programados
           </TabsTrigger>
+          */}
         </TabsList>
 
         <TabsContent value="impact" className="space-y-6">
@@ -1317,9 +1319,11 @@ export default function ReportsPage() {
           <SinaderTab planData={planData} />
         </TabsContent>
 
+        {/* TODO: Habilitar cuando se implemente programación de envíos
         <TabsContent value="schedule">
           <ScheduleTab clients={clients} planData={planData} />
         </TabsContent>
+        */}
       </Tabs>
     </div>
   );
