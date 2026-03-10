@@ -21,7 +21,7 @@ import { NotificationBell } from "@/components/notification-bell";
 import { ProductTour } from "@/components/product-tour";
 import { usePermissions } from "@/hooks/use-permissions";
 import { PlanProvider, usePlan } from "@/components/plan-provider";
-import { Clock, ArrowRight, ShieldAlert, HeartHandshake, ChevronsUpDown, User } from "lucide-react";
+import { Clock, ArrowRight, ShieldAlert, HeartHandshake, ChevronsUpDown, User, Mail } from "lucide-react";
 import { useState, useEffect } from "react";
 
 const navItems = [
@@ -284,12 +284,51 @@ function TrialBlockOverlay() {
   );
 }
 
+function EmailVerificationBanner() {
+  const { data: session } = useSession();
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  if (!session?.user || session.user.emailVerified) return null;
+
+  async function handleResend() {
+    setSending(true);
+    try {
+      await fetch("/api/auth/resend-verification", { method: "POST" });
+      setSent(true);
+    } catch {
+      // Silently fail
+    } finally {
+      setSending(false);
+    }
+  }
+
+  return (
+    <div className="bg-blue-50 border-b border-blue-200 text-blue-800 text-center py-2 px-4 text-xs sm:text-sm flex items-center justify-center gap-2">
+      <Mail className="h-3.5 w-3.5 flex-shrink-0" />
+      <span>Verifica tu email para acceder a todas las funciones.</span>
+      {sent ? (
+        <span className="font-medium">Correo enviado</span>
+      ) : (
+        <button
+          onClick={handleResend}
+          disabled={sending}
+          className="underline hover:no-underline font-medium"
+        >
+          {sending ? "Enviando..." : "Reenviar correo"}
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
 
   return (
     <PlanProvider>
     <div className="flex flex-col h-screen bg-sand-100">
+      <EmailVerificationBanner />
       <TrialTopBar />
       <TrialBlockOverlay />
       <div className="flex flex-1 overflow-hidden">

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { generateSecureToken } from "@/lib/crypto-tokens";
+import { sendTransactionalEmail } from "@/lib/email/send-email";
+import { welcomeEmail, verificationEmail } from "@/lib/email/templates";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_MIN_LENGTH = 8;
@@ -62,6 +65,9 @@ export async function POST(req: NextRequest) {
   const trialEndsAt = new Date();
   trialEndsAt.setDate(trialEndsAt.getDate() + 14);
 
+  const verificationToken = generateSecureToken();
+  const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
   const company = await prisma.company.create({
     data: {
       name: `Empresa de ${name}`,
@@ -75,11 +81,25 @@ export async function POST(req: NextRequest) {
           email,
           password: hashedPassword,
           role: "admin",
+          verificationToken,
+          verificationTokenExpiry,
         },
       },
     },
     include: { users: { select: { id: true } } },
   });
+
+  // Fire-and-forget: send welcome + verification emails
+  try {
+    const welcome = welcomeEmail({ userName: name, trialDays: 14 });
+    sendTransactionalEmail({ to: email, subject: welcome.subject, html: welcome.html });
+
+    const verifyUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${verificationToken}`;
+    const verification = verificationEmail({ userName: name, verificationUrl: verifyUrl });
+    sendTransactionalEmail({ to: email, subject: verification.subject, html: verification.html });
+  } catch {
+    // Never block registration for email failures
+  }
 
   return NextResponse.json(
     { message: "Cuenta creada exitosamente", companyId: company.id },

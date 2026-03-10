@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { hash } from "bcryptjs";
 import { hasPermission } from "@/lib/roles";
 import { checkUserLimit } from "@/lib/plans";
+import { sendTransactionalEmail } from "@/lib/email/send-email";
+import { teamInvitationEmail } from "@/lib/email/templates";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -78,6 +80,18 @@ export async function POST(req: NextRequest) {
     },
     select: { id: true, name: true, email: true, role: true, createdAt: true },
   });
+
+  // Send team invitation email (fire-and-forget)
+  try {
+    const loginUrl = `${process.env.NEXTAUTH_URL}/login`;
+    const emailData = teamInvitationEmail({
+      inviterName: session.user.name,
+      companyName: session.user.companyName,
+      tempPassword: password,
+      loginUrl,
+    });
+    sendTransactionalEmail({ to: email, subject: emailData.subject, html: emailData.html });
+  } catch { /* fire-and-forget */ }
 
   return NextResponse.json(user);
 }

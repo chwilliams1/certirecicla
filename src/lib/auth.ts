@@ -11,6 +11,7 @@ interface AuthUser {
   companyId: string;
   companyName: string;
   role: string;
+  emailVerified: boolean;
 }
 
 export const authOptions: NextAuthOptions = {
@@ -49,6 +50,7 @@ export const authOptions: NextAuthOptions = {
           companyId: user.companyId || "",
           companyName: user.company?.name || "",
           role: user.role,
+          emailVerified: user.emailVerified,
         };
       },
     }),
@@ -64,6 +66,7 @@ export const authOptions: NextAuthOptions = {
         token.companyId = typedUser.companyId;
         token.companyName = typedUser.companyName;
         token.role = typedUser.role;
+        token.emailVerified = typedUser.emailVerified;
       }
       return token;
     },
@@ -73,6 +76,7 @@ export const authOptions: NextAuthOptions = {
         (session.user as AuthUser).companyId = token.companyId as string;
         (session.user as AuthUser).companyName = token.companyName as string;
         (session.user as AuthUser).role = token.role as string;
+        (session.user as AuthUser).emailVerified = token.emailVerified as boolean;
       }
       return session;
     },

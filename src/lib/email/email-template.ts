@@ -10,7 +10,7 @@ export function buildEmailHtml(bodyText: string, companyName: string): string {
       </div>
       <div style="border-top: 1px solid #e8e4dc; margin-top: 32px; padding-top: 12px;">
         <p style="color: #888; font-size: 12px; margin: 0;">
-          Emitido por ${companyName} a través de CertiRecicla
+          ${companyName === "CertiRecicla" ? "CertiRecicla — Plataforma de certificados de reciclaje" : `Emitido por ${companyName} a través de CertiRecicla`}
         </p>
       </div>
     </div>

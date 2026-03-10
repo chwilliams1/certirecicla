@@ -2,6 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSubscription, getReveniuPlanKey, REVENIU_PLAN_MAP } from "@/lib/reveniu";
 import { getPlanConfig } from "@/lib/plans";
+import { sendTransactionalEmail } from "@/lib/email/send-email";
+import {
+  subscriptionActivatedEmail,
+  subscriptionCancelledEmail,
+  paymentFailedEmail,
+} from "@/lib/email/templates";
+
+async function getCompanyAdminEmails(companyId: string): Promise<string[]> {
+  const admins = await prisma.user.findMany({
+    where: { companyId, role: "admin" },
+    select: { email: true },
+  });
+  return admins.map((a) => a.email);
+}
 
 export async function POST(req: NextRequest) {
   const secretKey = req.headers.get("Reveniu-Secret-Key");
@@ -40,7 +54,7 @@ export async function POST(req: NextRequest) {
       }
 
       const planConfig = getPlanConfig(planKey);
-      await prisma.company.update({
+      const updatedCompany = await prisma.company.update({
         where: { id: company.id },
         data: {
           plan: planKey,
@@ -50,6 +64,15 @@ export async function POST(req: NextRequest) {
           maxCertificatesPerMonth: planConfig.maxCertificatesPerMonth,
         },
       });
+
+      // Send activation email
+      try {
+        const emails = await getCompanyAdminEmails(company.id);
+        if (emails.length > 0) {
+          const emailData = subscriptionActivatedEmail({ companyName: updatedCompany.name, planName: planKey });
+          sendTransactionalEmail({ to: emails, subject: emailData.subject, html: emailData.html });
+        }
+      } catch { /* fire-and-forget */ }
       break;
     }
 
@@ -62,10 +85,18 @@ export async function POST(req: NextRequest) {
     }
 
     case "subscription_payment_in_recovery": {
-      await prisma.company.update({
+      const failedCompany = await prisma.company.update({
         where: { id: company.id },
         data: { subscriptionStatus: "failed" },
       });
+
+      try {
+        const emails = await getCompanyAdminEmails(company.id);
+        if (emails.length > 0) {
+          const emailData = paymentFailedEmail({ companyName: failedCompany.name });
+          sendTransactionalEmail({ to: emails, subject: emailData.subject, html: emailData.html });
+        }
+      } catch { /* fire-and-forget */ }
       break;
     }
 
@@ -75,7 +106,7 @@ export async function POST(req: NextRequest) {
         break;
       }
       const deactivatedTrialConfig = getPlanConfig("trial");
-      await prisma.company.update({
+      const deactivatedCompany = await prisma.company.update({
         where: { id: company.id },
         data: {
           plan: "trial",
@@ -85,12 +116,20 @@ export async function POST(req: NextRequest) {
           maxCertificatesPerMonth: deactivatedTrialConfig.maxCertificatesPerMonth,
         },
       });
+
+      try {
+        const emails = await getCompanyAdminEmails(company.id);
+        if (emails.length > 0) {
+          const emailData = subscriptionCancelledEmail({ companyName: deactivatedCompany.name });
+          sendTransactionalEmail({ to: emails, subject: emailData.subject, html: emailData.html });
+        }
+      } catch { /* fire-and-forget */ }
       break;
     }
 
     case "subscription_renewal_cancelled": {
       const cancelledTrialConfig = getPlanConfig("trial");
-      await prisma.company.update({
+      const cancelledCompany = await prisma.company.update({
         where: { id: company.id },
         data: {
           plan: "trial",
@@ -100,6 +139,14 @@ export async function POST(req: NextRequest) {
           maxCertificatesPerMonth: cancelledTrialConfig.maxCertificatesPerMonth,
         },
       });
+
+      try {
+        const emails = await getCompanyAdminEmails(company.id);
+        if (emails.length > 0) {
+          const emailData = subscriptionCancelledEmail({ companyName: cancelledCompany.name });
+          sendTransactionalEmail({ to: emails, subject: emailData.subject, html: emailData.html });
+        }
+      } catch { /* fire-and-forget */ }
       break;
     }
 
