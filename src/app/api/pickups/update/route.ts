@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   const companyId = session.user.companyId;
   const origDayStart = new Date(originalDate + "T00:00:00.000Z");
   const origDayEnd = new Date(originalDate + "T23:59:59.999Z");
-  const newDateObj = new Date(pickupDate);
+  const newDateObj = new Date(pickupDate + "T12:00:00");
 
   // Check if any certificate covers this pickup date
   const overlappingCert = await prisma.certificate.findFirst({

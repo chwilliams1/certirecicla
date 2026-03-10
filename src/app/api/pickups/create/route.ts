@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
   }
 
   const companyId = session.user.companyId;
-  const dateObj = new Date(pickupDate);
+  const dateObj = new Date(pickupDate + "T12:00:00");
 
   // Check client exists
   const client = await prisma.client.findFirst({

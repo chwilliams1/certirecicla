@@ -180,7 +180,7 @@ function BillingContent() {
             <p className="text-sm text-sage-700">
               Plan actual: <strong>{PLANS[currentPlan as PlanType]?.displayName}</strong>
               {billing.reveniu.nextPaymentDate && (
-                <> — Proximo cobro: {new Date(billing.reveniu.nextPaymentDate).toLocaleDateString("es-CL")}</>
+                <> — Proximo cobro: {new Date(billing.reveniu.nextPaymentDate.slice(0, 10) + "T12:00:00").toLocaleDateString("es-CL")}</>
               )}
             </p>
           </div>

@@ -267,7 +267,7 @@ export function CertificatePDFDocument({ data, qrDataUrl, branding = DEFAULT_BRA
   const eq = calculateEquivalencies(data.totalCo2);
   const waterMaterials = Object.entries(data.materials).map(([material, v]) => ({ material, kg: v.kg }));
   const waterSaved = calculateWaterSaved(waterMaterials);
-  const formatDate = (d: string) => new Date(d).toLocaleDateString("es-CL");
+  const formatDate = (d: string) => new Date(d.slice(0, 10) + "T12:00:00").toLocaleDateString("es-CL");
   const materialEntries = Object.entries(data.materials);
 
   const closingText = branding.closingText

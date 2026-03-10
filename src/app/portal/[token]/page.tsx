@@ -163,15 +163,19 @@ function formatNumber(n: number): string {
   return n.toLocaleString("es-CL");
 }
 
+function safeDate(dateStr: string): Date {
+  return new Date(dateStr.slice(0, 10) + "T12:00:00");
+}
+
 function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString("es-CL", {
+  return safeDate(dateStr).toLocaleDateString("es-CL", {
     year: "numeric",
     month: "short",
   });
 }
 
 function formatFullDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString("es-CL", {
+  return safeDate(dateStr).toLocaleDateString("es-CL", {
     weekday: "long",
     day: "numeric",
     month: "long",

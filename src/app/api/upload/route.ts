@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
 
   const existingClientIds = existingClients.map((c) => c.id);
   const uniqueDates = Array.from(new Set(data.map((r) => r.fecha_retiro)));
-  const dateObjects = uniqueDates.map((d) => new Date(d));
+  const dateObjects = uniqueDates.map((d) => new Date(d + "T12:00:00"));
 
   const existingRecords = existingClientIds.length > 0
     ? await prisma.recyclingRecord.findMany({
@@ -185,7 +185,7 @@ export async function POST(req: NextRequest) {
         material: row.material,
         quantityKg: row.cantidad_kg,
         co2Saved,
-        pickupDate: new Date(row.fecha_retiro),
+        pickupDate: new Date(row.fecha_retiro + "T12:00:00"),
         location: row.ubicacion || null,
         batchId,
       });

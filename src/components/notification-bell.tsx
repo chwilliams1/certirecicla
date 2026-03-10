@@ -178,7 +178,7 @@ export function NotificationBell() {
                             {cert.clientName}
                           </span>
                           <span className="text-[11px] text-amber-600 font-medium whitespace-nowrap">
-                            {new Date(cert.createdAt).toLocaleDateString("es-CL")}
+                            {new Date(cert.createdAt.slice(0, 10) + "T12:00:00").toLocaleDateString("es-CL")}
                           </span>
                         </Link>
                       ))}

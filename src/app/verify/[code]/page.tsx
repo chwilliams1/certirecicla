@@ -256,7 +256,7 @@ export default function VerifyCertificatePage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium text-[#2d3a2e]">
-                        {new Date(pickup.date).toLocaleDateString("es-CL", { day: "numeric", month: "long", year: "numeric" })}
+                        {new Date(pickup.date.slice(0, 10) + "T12:00:00").toLocaleDateString("es-CL", { day: "numeric", month: "long", year: "numeric" })}
                       </p>
                       <span className="text-sm font-semibold text-[#4a6b4e]">{pickup.kg.toLocaleString("es-CL")} kg</span>
                     </div>
@@ -288,7 +288,7 @@ export default function VerifyCertificatePage() {
             </div>
           </div>
           <div className="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400 leading-relaxed">
-            Los residuos fueron procesados en instalaciones de valorización debidamente autorizadas{cert.sanitaryResolution ? ` (${cert.sanitaryResolution})` : ""}. Este certificado fue emitido el {new Date(cert.createdAt).toLocaleDateString("es-CL", { day: "numeric", month: "long", year: "numeric" })} a través de la plataforma CertiRecicla.
+            Los residuos fueron procesados en instalaciones de valorización debidamente autorizadas{cert.sanitaryResolution ? ` (${cert.sanitaryResolution})` : ""}. Este certificado fue emitido el {new Date(cert.createdAt.slice(0, 10) + "T12:00:00").toLocaleDateString("es-CL", { day: "numeric", month: "long", year: "numeric" })} a través de la plataforma CertiRecicla.
           </div>
         </div>
 

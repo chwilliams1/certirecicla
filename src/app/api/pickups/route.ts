@@ -80,7 +80,7 @@ export async function GET() {
 
   // Determine certificate status for each pickup
   const pickups = Array.from(pickupMap.values()).map((pickup) => {
-    const pickupDate = new Date(pickup.date);
+    const pickupDate = new Date(pickup.date + "T12:00:00");
 
     // Find best matching certificate for this client covering this date
     const statusRank: Record<string, number> = { none: 0, draft: 1, published: 2, sent: 3 };

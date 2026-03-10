@@ -675,7 +675,7 @@ export default function ClientDetailPage() {
                         )}
                         {branch.lastPickup && (
                           <span className="text-sage-800/30 whitespace-nowrap ml-2">
-                            Último retiro: {new Date(branch.lastPickup).toLocaleDateString("es-CL")}
+                            Último retiro: {new Date(branch.lastPickup.slice(0, 10) + "T12:00:00").toLocaleDateString("es-CL")}
                           </span>
                         )}
                       </div>

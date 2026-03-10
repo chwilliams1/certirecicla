@@ -645,8 +645,8 @@ export default function ReportsPage() {
                   <div>
                     <p className="text-sm font-medium text-sage-800">{period.label}</p>
                     <p className="text-xs text-sage-800/40">
-                      {new Date(period.start).toLocaleDateString("es-CL")} -{" "}
-                      {new Date(period.end).toLocaleDateString("es-CL")}
+                      {new Date(period.start.slice(0, 10) + "T12:00:00").toLocaleDateString("es-CL")} -{" "}
+                      {new Date(period.end.slice(0, 10) + "T12:00:00").toLocaleDateString("es-CL")}
                     </p>
                   </div>
                 </div>
