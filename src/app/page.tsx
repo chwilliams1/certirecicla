@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Leaf,
@@ -25,6 +26,89 @@ import InteractiveDemo from "@/components/landing/interactive-demo";
 import FaqSection from "@/components/landing/faq-section";
 import ScrollFadeIn from "@/components/landing/scroll-fade-in";
 
+export const metadata: Metadata = {
+  title: "CertiRecicla — Certificados de reciclaje con CO₂ verificable para gestoras en Chile",
+  description:
+    "Deja de hacer certificados en Word. CertiRecicla genera certificados de valorización con cálculo de CO₂ (GHG Protocol), gestiona clientes y exporta a SINADER. Prueba gratis 14 días.",
+  alternates: { canonical: "https://certirecicla.cl" },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      name: "CertiRecicla",
+      url: "https://certirecicla.cl",
+      description:
+        "Plataforma de certificados de valorización de residuos para gestoras de reciclaje en Chile.",
+      foundingDate: "2025",
+      areaServed: { "@type": "Country", name: "Chile" },
+    },
+    {
+      "@type": "SoftwareApplication",
+      name: "CertiRecicla",
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Web",
+      url: "https://certirecicla.cl",
+      description:
+        "Genera certificados de reciclaje con cálculo de CO₂ evitado bajo GHG Protocol. Gestiona clientes generadores y exporta datos a SINADER.",
+      offers: [
+        {
+          "@type": "Offer",
+          name: "Starter",
+          price: "19900",
+          priceCurrency: "CLP",
+          description: "Hasta 15 clientes, 30 certificados/mes",
+        },
+        {
+          "@type": "Offer",
+          name: "Profesional",
+          price: "49900",
+          priceCurrency: "CLP",
+          description: "Hasta 60 clientes, certificados ilimitados",
+        },
+        {
+          "@type": "Offer",
+          name: "Business",
+          price: "99900",
+          priceCurrency: "CLP",
+          description: "Hasta 200 clientes, multi-usuario, SINADER",
+        },
+      ],
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "¿Funciona con mi Excel actual?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Sí. CertiRecicla detecta automáticamente las columnas de tu planilla (cliente, material, kg, fecha) y las importa sin reformatear.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "¿Cómo calculan el CO₂ evitado?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Usamos factores de emisión de EPA WARM v16, FEVE y DEFRA, siguiendo la metodología GHG Protocol. Cada material tiene un factor específico.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "¿Es compatible con SINADER?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Sí. CertiRecicla exporta tus datos en el formato que necesita SINADER. Disponible en planes Profesional y Business.",
+          },
+        },
+      ],
+    },
+  ],
+};
+
 const VALORIZACION_METAS = [
   { material: "Vidrio", meta2025: "19%", meta2026: "22%" },
   { material: "Papel / Carton", meta2025: "14%", meta2026: "18%" },
@@ -36,6 +120,10 @@ const VALORIZACION_METAS = [
 export default function Home() {
   return (
     <div className="min-h-screen bg-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Header */}
       <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto flex items-center justify-between px-6 py-4">
