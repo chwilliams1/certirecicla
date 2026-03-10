@@ -132,7 +132,7 @@ const MONTH_SHORT = [
 ];
 
 const SINADER_MONTHS = [
-  { value: "", label: "Todo el ano" },
+  { value: "", label: "Todo el año" },
   { value: "1", label: "Enero" },
   { value: "2", label: "Febrero" },
   { value: "3", label: "Marzo" },
@@ -257,7 +257,11 @@ function SinaderTab({ planData }: { planData: PlanData | null }) {
       .then((r) => r.json())
       .then((data) => {
         if (Array.isArray(data)) {
-          setClients(data.map((c: { id: string; name: string; parentClient?: { name: string } | null }) => ({ id: c.id, name: c.name, parentClient: c.parentClient })));
+          setClients(
+            data
+              .filter((c: { branches?: unknown[] }) => !c.branches || c.branches.length === 0)
+              .map((c: { id: string; name: string; parentClient?: { name: string } | null }) => ({ id: c.id, name: c.name, parentClient: c.parentClient }))
+          );
         }
       })
       .catch(() => {});
@@ -329,7 +333,7 @@ function SinaderTab({ planData }: { planData: PlanData | null }) {
         <div className="space-y-2">
           <label className="flex items-center gap-1.5 text-sm font-medium text-sage-800">
             <Calendar className="h-3.5 w-3.5 text-sage-500" strokeWidth={1.5} />
-            Ano
+            Año
           </label>
           <Select value={year} onValueChange={setYear}>
             <SelectTrigger className="w-48">
@@ -350,7 +354,7 @@ function SinaderTab({ planData }: { planData: PlanData | null }) {
           </label>
           <Select value={month} onValueChange={setMonth}>
             <SelectTrigger className="w-48">
-              <SelectValue placeholder="Todo el ano" />
+              <SelectValue placeholder="Todo el año" />
             </SelectTrigger>
             <SelectContent>
               {SINADER_MONTHS.map((m) => (
@@ -675,7 +679,7 @@ export default function ReportsPage() {
       .then((r) => r.json())
       .then((data) => {
         const list = Array.isArray(data) ? data : data.clients || [];
-        setClients(list);
+        setClients(list.filter((c: { branches?: unknown[] }) => !c.branches || c.branches.length === 0));
       })
       .finally(() => setClientsLoading(false));
   }, []);
