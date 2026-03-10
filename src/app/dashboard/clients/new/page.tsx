@@ -95,10 +95,7 @@ export default function NewClientPage() {
           </div>
           <h3 className="font-serif text-2xl text-sage-800 mb-2">Cliente creado exitosamente</h3>
           <p className="text-sage-600">
-            {createdClient.parentName && (
-              <span className="text-sage-400">{createdClient.parentName} › </span>
-            )}
-            {createdClient.name}
+            {createdClient.parentName ? `${createdClient.parentName} - ${createdClient.name}` : createdClient.name}
           </p>
         </div>
 

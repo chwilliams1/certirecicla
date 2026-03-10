@@ -303,7 +303,7 @@ function PickupRow({
               </span>
             </div>
             <span className="text-xs font-medium text-sage-800 truncate max-w-[100px] sm:max-w-[150px]">
-              {pickup.parentClientName && <span className="text-sage-800/40 hidden sm:inline">{pickup.parentClientName}</span>} {pickup.parentClientName && <span className="text-sage-800/30 mx-1 hidden sm:inline">›</span>} <span>{pickup.clientName}</span>
+              {pickup.parentClientName ? `${pickup.parentClientName} - ${pickup.clientName}` : pickup.clientName}
             </span>
           </div>
         </td>

@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { hasPermission } from "@/lib/roles";
 import { generateReportPdfBuffer } from "@/lib/pdf/generate-report-pdf";
+import { formatClientName } from "@/lib/format-client-name";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -72,9 +73,7 @@ export async function POST(req: NextRequest) {
     .map(([month, data]) => ({ month, ...data }))
     .sort((a, b) => a.month.localeCompare(b.month));
 
-  const clientName = client.parentClient
-    ? `${client.parentClient.name} (${client.name})`
-    : client.name;
+  const clientName = formatClientName(client.name, client.parentClient?.name);
 
   // Count unique pickups (by date+location)
   const pickupSet = new Set(

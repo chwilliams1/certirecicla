@@ -452,7 +452,7 @@ export default function ReportsPage() {
                   <SelectContent>
                     {clients.map((c) => (
                       <SelectItem key={c.id} value={c.id}>
-                        {c.parentClient ? `${c.parentClient.name} > ${c.name}` : c.name}
+                        {c.parentClient ? `${c.parentClient.name} - ${c.name}` : c.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

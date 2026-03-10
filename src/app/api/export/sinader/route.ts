@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
   const records = await prisma.recyclingRecord.findMany({
     where,
     include: {
-      client: { select: { name: true, rut: true } },
+      client: { select: { name: true, rut: true, parentClient: { select: { name: true } } } },
       company: { select: { name: true, rut: true } },
     },
     orderBy: { pickupDate: "asc" },
@@ -101,7 +101,7 @@ export async function GET(req: NextRequest) {
   const rows = records.map((r) => [
     r.pickupDate.toISOString().slice(0, 10),
     r.client.rut || "",
-    r.client.name,
+    r.client.parentClient ? `${r.client.parentClient.name} - ${r.client.name}` : r.client.name,
     r.material,
     r.quantityKg.toString(),
     "kg",

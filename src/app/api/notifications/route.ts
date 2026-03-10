@@ -89,13 +89,14 @@ export async function GET() {
   // Get published certificates not yet sent
   const unsent = await prisma.certificate.findMany({
     where: { companyId, status: "published" },
-    include: { client: { select: { name: true } } },
+    include: { client: { select: { name: true, parentClient: { select: { name: true } } } } },
     orderBy: { createdAt: "desc" },
     take: 20,
   });
+  const { formatClientName } = await import("@/lib/format-client-name");
   const unsentCertificates = unsent.map((c) => ({
     id: c.id,
-    clientName: c.client.name,
+    clientName: formatClientName(c.client.name, c.client.parentClient?.name),
     createdAt: c.createdAt.toISOString(),
   }));
 

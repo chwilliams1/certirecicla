@@ -438,8 +438,7 @@ export default function CertificateDetailPage() {
               <div>
                 <p className="text-xs text-sage-800/40 uppercase">Cliente</p>
                 <p className="font-medium">
-                  {cert.client?.parentClient && <span className="text-sage-800/40">{cert.client.parentClient.name} &rsaquo; </span>}
-                  {cert.client?.name}
+                  {cert.client?.parentClient ? `${cert.client.parentClient.name} - ${cert.client.name}` : cert.client?.name}
                 </p>
                 {cert.client?.rut && <p className="text-xs text-sage-800/40">RUT: {cert.client.rut}</p>}
               </div>

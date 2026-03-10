@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { hasPermission } from "@/lib/roles";
+import { formatClientName } from "@/lib/format-client-name";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -28,7 +29,7 @@ export async function GET() {
   const [records, allClients, certificatesCount, prevYearAgg] = await Promise.all([
     prisma.recyclingRecord.findMany({
       where: { companyId, pickupDate: { gte: yearStart, lte: yearEnd } },
-      include: { client: { select: { name: true } } },
+      include: { client: { select: { name: true, parentClient: { select: { name: true } } } } },
       orderBy: { pickupDate: "desc" },
     }),
     prisma.client.findMany({
@@ -55,7 +56,7 @@ export async function GET() {
   records.forEach((r) => {
     materialDist[r.material] = (materialDist[r.material] || 0) + r.quantityKg;
     if (!clientKgMap[r.clientId]) {
-      clientKgMap[r.clientId] = { name: r.client.name, kg: 0 };
+      clientKgMap[r.clientId] = { name: formatClientName(r.client.name, r.client.parentClient?.name), kg: 0 };
     }
     clientKgMap[r.clientId].kg += r.quantityKg;
   });
@@ -109,7 +110,7 @@ export async function GET() {
     if (!pickupMap.has(key)) {
       pickupMap.set(key, {
         key,
-        clientName: r.client.name,
+        clientName: formatClientName(r.client.name, r.client.parentClient?.name),
         date: dateStr,
         location: r.location,
         materials: [],

@@ -134,9 +134,10 @@ export async function POST(req: NextRequest) {
 
   const { formatPeriod } = await import("@/lib/format-period");
 
-  const clientLabel = client?.parentClient
-    ? `${client.parentClient.name} (${client.name})`
-    : client?.name || "Cliente";
+  const { formatClientName } = await import("@/lib/format-client-name");
+  const clientLabel = client
+    ? formatClientName(client.name, client.parentClient?.name)
+    : "Cliente";
 
   const certName = `${clientLabel} — ${formatPeriod(periodStart)}`;
 

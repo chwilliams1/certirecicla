@@ -257,12 +257,9 @@ export default function ClientDetailPage() {
         <Button variant="ghost" size="sm" onClick={() => router.back()} className="min-h-[44px] min-w-[44px] px-2 flex-shrink-0"><ArrowLeft className="h-4 w-4" /></Button>
         <div className="flex-1 min-w-0">
           <h1 className="font-serif text-xl sm:text-2xl text-sage-800 truncate">
-            {client.parentClient && (
-              <Link href={`/dashboard/clients/${client.parentClient.id}`} className="text-sage-800/40 hover:text-sage-600 transition-colors">
-                {client.parentClient.name} ›{" "}
-              </Link>
-            )}
-            {client.name}
+            {client.parentClient ? (
+              <><Link href={`/dashboard/clients/${client.parentClient.id}`} className="text-sage-800/40 hover:text-sage-600 transition-colors">{client.parentClient.name}</Link>{` - ${client.name}`}</>
+            ) : client.name}
           </h1>
           {client.rut && <p className="text-sm text-sage-800/40">RUT: {client.rut}</p>}
           {hasBranches && (

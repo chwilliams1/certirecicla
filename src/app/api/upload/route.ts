@@ -197,7 +197,7 @@ export async function POST(req: NextRequest) {
       await tx.recyclingRecord.createMany({ data: recordsBatch });
       recordsCreated = recordsBatch.length;
     }
-  });
+  }, { timeout: 30000 });
   } catch (err) {
     console.error("[upload] Import transaction failed:", err);
     const message = err instanceof Error ? err.message : "Error desconocido";

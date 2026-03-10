@@ -236,8 +236,7 @@ export default function CertificatesPage() {
                     </td>
                     <td className="py-3 px-3 sm:px-4 hidden md:table-cell">
                       <span className="text-xs text-sage-800/60 truncate block max-w-[180px]">
-                        {cert.client?.parentClient && <span className="text-sage-800/30">{cert.client.parentClient.name} › </span>}
-                        {cert.client?.name}
+                        {cert.client?.parentClient ? `${cert.client.parentClient.name} - ${cert.client.name}` : cert.client?.name}
                       </span>
                     </td>
                     <td className="py-3 px-3 sm:px-4 text-right text-xs font-medium text-sage-800 tabular-nums whitespace-nowrap">

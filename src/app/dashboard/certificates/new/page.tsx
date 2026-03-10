@@ -571,7 +571,7 @@ function NewCertificateContent() {
 
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sage-800 text-sm">
-                        {preview.parentClientName && <span className="text-sage-800/40 text-sm">{preview.parentClientName} ›</span>} {preview.clientName}
+                        {preview.parentClientName ? `${preview.parentClientName} - ${preview.clientName}` : preview.clientName}
                       </p>
                       {!hasRecords && (
                         <p className="text-xs text-amber-600">Sin retiros en este período</p>
