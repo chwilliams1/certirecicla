@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getPlanConfig, getTrialDaysRemaining, isTrialExpired } from "@/lib/plans";
-import { getSubscription, getReveniuPlanKey } from "@/lib/reveniu";
+import { getSubscription, getReveniuPlanKey, normalizeReveniuStatus } from "@/lib/reveniu";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -55,12 +55,13 @@ export async function GET() {
     }
     try {
       const sub = await getSubscription(company.reveniuSubscriptionId);
-      syncDebug.reveniuStatus = sub.status;
+      const reveniuStatus = normalizeReveniuStatus(sub.status);
+      syncDebug.reveniuStatus = `${sub.status} (${reveniuStatus})`;
       syncDebug.reveniuPlanId = sub.plan_id;
       const reveniuPlanKey = getReveniuPlanKey(sub.plan_id);
 
       // Reveniu dice active pero DB no lo refleja
-      if (sub.status === "active" && company.subscriptionStatus !== "active" && reveniuPlanKey) {
+      if (reveniuStatus === "active" && company.subscriptionStatus !== "active" && reveniuPlanKey) {
         syncDebug.action = "activate_from_reveniu";
         const planConfig = getPlanConfig(reveniuPlanKey);
         await prisma.company.update({
@@ -78,7 +79,7 @@ export async function GET() {
       }
 
       // Reveniu dice inactive/cancelled pero plan no revertido a trial
-      if ((sub.status === "inactive" || sub.status === "cancelled") && company.plan !== "trial") {
+      if ((reveniuStatus === "inactive" || reveniuStatus === "cancelled") && company.plan !== "trial") {
         syncDebug.action = "revert_to_trial_reveniu_cancelled";
         const trialConfig = getPlanConfig("trial");
         await prisma.company.update({

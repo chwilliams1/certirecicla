@@ -56,6 +56,21 @@ export async function createSubscription(
   });
 }
 
+// Reveniu devuelve status como código numérico (string).
+// Mapeo basado en la API de Reveniu:
+// 1 = active, 9 = cancelled/disabled
+const REVENIU_STATUS_MAP: Record<string, string> = {
+  "1": "active",
+  "active": "active",
+  "9": "cancelled",
+  "cancelled": "cancelled",
+  "inactive": "inactive",
+};
+
+export function normalizeReveniuStatus(status: string | number): string {
+  return REVENIU_STATUS_MAP[String(status)] || String(status);
+}
+
 export async function getSubscription(subscriptionId: number) {
   return reveniuFetch(`/subscriptions/${subscriptionId}`);
 }
