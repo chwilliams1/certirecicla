@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Plus, X, Download, Mail } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -175,21 +175,19 @@ export default function InteractiveDemo() {
           {/* Gate CTA */}
           <div className="space-y-3">
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link href="/register?ref=demo" className="flex-1">
+              <Link href="/calculadora" className="flex-1">
                 <Button className="w-full gap-2">
-                  <Download className="h-4 w-4" />
-                  Descargar certificado PDF
+                  Probar calculadora completa
                 </Button>
               </Link>
               <Link href="/register?ref=demo" className="flex-1">
                 <Button variant="outline" className="w-full gap-2">
-                  <Mail className="h-4 w-4" />
-                  Enviar por email
+                  Crear cuenta gratis
                 </Button>
               </Link>
             </div>
             <p className="text-xs text-center text-muted-foreground">
-              Crea tu cuenta gratis para generar certificados reales — 14 días sin costo
+              Calcula tu impacto con más detalle o empieza a generar certificados — 14 días sin costo
             </p>
           </div>
         </div>
