@@ -11,7 +11,6 @@ import {
   Loader2,
   TreePine,
   Car,
-  Home,
   Smartphone,
   Trash2,
   Pencil,
@@ -29,6 +28,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { calculateEquivalencies, DEFAULT_CO2_FACTORS, VALID_MATERIALS } from "@/lib/co2-calculator";
 import { formatPeriod } from "@/lib/format-period";
+import { derivePalette, DEFAULT_PALETTE, type BrandingPalette } from "@/lib/pdf/branding-colors";
+import { checkFeatureAccess } from "@/lib/plans";
 import { SendCertificateDialog } from "@/components/send-certificate-dialog";
 import Link from "next/link";
 import { Plus } from "lucide-react";
@@ -54,7 +55,14 @@ interface CertificateDetail {
   sentAt: string | null;
   createdAt: string;
   client: { id: string; name: string; rut: string | null; email: string | null; parentClient?: { name: string } | null };
-  company: { name: string; rut: string | null; address: string | null; logo?: string | null; sanitaryResolution?: string | null; plantAddress?: string | null };
+  company: {
+    name: string; rut: string | null; address: string | null; logo?: string | null;
+    sanitaryResolution?: string | null; plantAddress?: string | null; plan?: string;
+    signatureUrl?: string | null; brandPrimaryColor?: string | null;
+    brandHidePlatform?: boolean; brandSignatureUrl?: string | null;
+    brandSecondaryLogoUrl?: string | null; brandClosingText?: string | null;
+    brandFont?: string | null;
+  };
   pickups?: PickupDetail[];
 }
 
@@ -268,6 +276,17 @@ export default function CertificateDetailPage() {
   const eq = calculateEquivalencies(totalCo2);
   const isDraft = cert.status === "draft";
 
+  const canBrand = checkFeatureAccess(cert.company.plan || "starter", "customBranding");
+  const palette: BrandingPalette = canBrand && cert.company.brandPrimaryColor
+    ? derivePalette(cert.company.brandPrimaryColor)
+    : DEFAULT_PALETTE;
+  const signatureImg = cert.company.brandSignatureUrl || cert.company.signatureUrl || null;
+  const secondaryLogo = canBrand ? cert.company.brandSecondaryLogoUrl || null : null;
+  const closingText = canBrand && cert.company.brandClosingText
+    ? cert.company.brandClosingText
+    : `Los residuos fueron procesados en instalaciones de valorización debidamente autorizadas${cert.company.sanitaryResolution ? ` (${cert.company.sanitaryResolution})` : ""}. Agradecemos su compromiso con la sostenibilidad y el cuidado del entorno.`;
+  const hidePlatform = canBrand && cert.company.brandHidePlatform;
+
   return (
     <div className="space-y-6 max-w-4xl">
       {/* Header */}
@@ -386,10 +405,10 @@ export default function CertificateDetailPage() {
         </div>
       )}
 
-      {/* Certificate Preview */}
-      <div className={`bg-white border rounded-[14px] shadow-sm overflow-hidden relative ${editing ? "border-sage-300 ring-2 ring-sage-200" : "border-sand-200"}`}>
-        {/* Green left accent bar */}
-        <div className="absolute top-0 left-0 bottom-0 w-2 bg-[#5a7d5e]" />
+      {/* Certificate Preview — formato carta */}
+      <div className={`bg-white border rounded-[14px] shadow-sm overflow-hidden relative mx-auto ${editing ? "border-sage-300 ring-2 ring-sage-200" : "border-sand-200"}`} style={{ maxWidth: "816px", aspectRatio: "8.5 / 11" }}>
+        {/* Left accent bar */}
+        <div className="absolute top-0 left-0 bottom-0 w-2" style={{ backgroundColor: palette.primary }} />
 
         <div className="p-4 pl-6 sm:p-8 sm:pl-10">
           {/* Header */}
@@ -399,8 +418,8 @@ export default function CertificateDetailPage() {
                 <img src={cert.company.logo} alt="Logo" className="h-12 w-12 object-contain rounded" />
               )}
               <div>
-                <h2 className="font-serif text-xl sm:text-2xl text-sage-700">Certificado de Reciclaje</h2>
-                <p className="text-sm text-sage-400 mt-0.5">Impacto Ambiental Verificado</p>
+                <h2 className="font-serif text-xl sm:text-2xl" style={{ color: palette.primary }}>Certificado de Reciclaje</h2>
+                {!hidePlatform && <p className="text-sm mt-0.5" style={{ color: palette.primaryLight }}>Impacto Ambiental Verificado</p>}
               </div>
             </div>
             <div className="sm:text-right text-sm">
@@ -408,6 +427,9 @@ export default function CertificateDetailPage() {
               {cert.company.rut && <p className="text-sage-800/40">{cert.company.rut}</p>}
               {cert.company.address && <p className="text-sage-800/40">{cert.company.address}</p>}
               {cert.company.plantAddress && <p className="text-sage-800/40">Planta: {cert.company.plantAddress}</p>}
+              {secondaryLogo && (
+                <img src={secondaryLogo} alt="Sello" className="h-10 w-10 object-contain mt-2 sm:ml-auto" />
+              )}
             </div>
           </div>
 
@@ -438,14 +460,14 @@ export default function CertificateDetailPage() {
           <div className="border-t border-sand-200 pt-4 mb-4" />
 
           {/* Materials table */}
-          <h3 className="font-serif text-lg text-sage-700 mb-4">
+          <h3 className="font-serif text-lg mb-4" style={{ color: palette.primary }}>
             Detalle de Materiales Reciclados
             {editing && <span className="text-sm font-normal text-sage-400 ml-2">(editando)</span>}
           </h3>
 
           <table className="w-full text-sm mb-6">
             <thead>
-              <tr className="bg-[#4a6b4e] text-white">
+              <tr className="text-white" style={{ backgroundColor: palette.primary }}>
                 <th className="text-left py-2 px-3 rounded-tl-lg font-medium">Material</th>
                 <th className="text-right py-2 px-3 font-medium">Cantidad (kg)</th>
                 <th className="text-right py-2 px-3 font-medium">CO₂ evitado (kg)</th>
@@ -521,91 +543,66 @@ export default function CertificateDetailPage() {
           )}
 
           {/* Totals */}
-          <div className="bg-sage-50 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row sm:justify-around gap-3 border border-[#d4e4d6]">
+          <div className="rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row sm:justify-around gap-3 border" style={{ backgroundColor: palette.primaryBg, borderColor: palette.border }}>
             <div className="text-center">
-              <p className="text-xs text-sage-600">TOTAL RECICLADO</p>
-              <p className="font-serif text-xl sm:text-2xl text-[#4a6b4e]">{totalKg.toLocaleString("es-CL")} kg</p>
+              <p className="text-xs" style={{ color: palette.primaryLight }}>TOTAL RECICLADO</p>
+              <p className="font-serif text-xl sm:text-2xl" style={{ color: palette.primary }}>{totalKg.toLocaleString("es-CL")} kg</p>
             </div>
             <div className="text-center">
-              <p className="text-xs text-sage-600">CO₂ EVITADO</p>
-              <p className="font-serif text-xl sm:text-2xl text-[#4a6b4e]">{totalCo2.toLocaleString("es-CL")} kg</p>
+              <p className="text-xs" style={{ color: palette.primaryLight }}>CO₂ EVITADO</p>
+              <p className="font-serif text-xl sm:text-2xl" style={{ color: palette.primary }}>{totalCo2.toLocaleString("es-CL")} kg</p>
             </div>
           </div>
 
           {/* Equivalencies */}
           {!editing && (
             <>
-              <h3 className="font-serif text-lg text-sage-700 mt-6 mb-2">Equivalencias Ecológicas</h3>
-              <p className="text-xs text-sage-500 mb-4">El correcto manejo de estos residuos permitió generar el siguiente impacto ambiental positivo:</p>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-sage-50 rounded-xl p-4">
+              <h3 className="font-serif text-lg mt-6 mb-2" style={{ color: palette.primary }}>Equivalencias Ecológicas</h3>
+              <p className="text-xs mb-4" style={{ color: palette.gray }}>El correcto manejo de estos residuos permitió generar el siguiente impacto ambiental positivo:</p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 rounded-xl p-4" style={{ backgroundColor: palette.primaryBg }}>
                 {[
                   { icon: TreePine, value: eq.trees, label: "Árboles preservados" },
                   { icon: Car, value: eq.kmNotDriven.toLocaleString("es-CL"), label: "Km no conducidos" },
-                  { icon: Home, value: eq.homesEnergized, label: "Hogares energizados" },
                   { icon: Smartphone, value: eq.smartphonesCharged.toLocaleString("es-CL"), label: "Smartphones cargados" },
                 ].map((item) => (
                   <div key={item.label} className="text-center">
-                    <item.icon className="h-6 w-6 mx-auto text-sage-400 mb-1" strokeWidth={1.5} />
-                    <p className="font-serif text-lg text-[#5a7d5e]">{item.value}</p>
-                    <p className="text-xs text-sage-800/40">{item.label}</p>
+                    <item.icon className="h-6 w-6 mx-auto mb-1" style={{ color: palette.primaryLight }} strokeWidth={1.5} />
+                    <p className="font-serif text-lg" style={{ color: palette.primary }}>{item.value}</p>
+                    <p className="text-xs" style={{ color: palette.gray }}>{item.label}</p>
                   </div>
                 ))}
               </div>
             </>
           )}
 
-          {/* Pickups detail */}
-          {!editing && cert.pickups && cert.pickups.length > 0 && (
-            <>
-              <h3 className="font-serif text-lg text-sage-700 mt-6 mb-4">Detalle de Retiros</h3>
-              <table className="w-full text-sm mb-6">
-                <thead>
-                  <tr className="bg-[#4a6b4e] text-white">
-                    <th className="text-left py-2 px-3 rounded-tl-lg font-medium">Fecha</th>
-                    <th className="text-left py-2 px-3 font-medium">Ubicación</th>
-                    <th className="text-left py-2 px-3 font-medium">Materiales</th>
-                    <th className="text-right py-2 px-3 rounded-tr-lg font-medium">kg</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {cert.pickups.map((pickup, i) => (
-                    <tr key={i} className={`border-b border-sand-100 ${i % 2 === 1 ? "bg-sage-50/50" : ""}`}>
-                      <td className="py-2 px-3">{new Date(pickup.date).toLocaleDateString("es-CL")}</td>
-                      <td className="py-2 px-3 text-sage-600">{pickup.location || "-"}</td>
-                      <td className="py-2 px-3 text-sage-600">{pickup.materials}</td>
-                      <td className="py-2 px-3 text-right">{pickup.kg.toLocaleString("es-CL")}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </>
-          )}
-
           {/* Closing note */}
           {!editing && (
-            <p className="text-xs text-sage-500 mt-6 leading-relaxed">
-              Los residuos fueron procesados en instalaciones de valorización debidamente autorizadas{cert.company.sanitaryResolution ? ` (${cert.company.sanitaryResolution})` : ""}. Agradecemos su compromiso con la sostenibilidad y el cuidado del entorno.
+            <p className="text-xs mt-6 leading-relaxed" style={{ color: palette.gray }}>
+              {closingText}
             </p>
           )}
 
           {/* Signature */}
           {!editing && (
             <div className="mt-8">
-              <div className="w-48 border-b border-sage-800 mb-1" />
-              <p className="text-xs text-sage-800/40">Firma Responsable</p>
-              <p className="text-sm font-medium text-sage-800">{cert.company.name}</p>
+              {signatureImg && (
+                <img src={signatureImg} alt="Firma" className="h-12 object-contain mb-1" />
+              )}
+              <div className="w-48 border-b mb-1" style={{ borderColor: palette.dark }} />
+              <p className="text-xs" style={{ color: palette.gray }}>Firma Responsable</p>
+              <p className="text-sm font-medium" style={{ color: palette.dark }}>{cert.company.name}</p>
               {cert.company.sanitaryResolution && (
-                <p className="text-xs text-sage-800/40 mt-0.5">Res. Sanitaria: {cert.company.sanitaryResolution}</p>
+                <p className="text-xs mt-0.5" style={{ color: palette.gray }}>Res. Sanitaria: {cert.company.sanitaryResolution}</p>
               )}
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="bg-sage-50 border-t border-[#d4e4d6] px-4 pl-6 sm:px-8 sm:pl-10 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-between gap-1 text-xs text-sage-800/40">
-          <span className="font-medium text-sage-800/60">Certificado #{cert.uniqueCode}</span>
+        <div className="border-t px-4 pl-6 sm:px-8 sm:pl-10 py-3 sm:py-4 flex flex-col sm:flex-row sm:justify-between gap-1 text-xs" style={{ backgroundColor: palette.primaryBg, borderColor: palette.border, color: palette.gray }}>
+          <span className="font-medium" style={{ color: palette.dark }}>Certificado #{cert.uniqueCode}</span>
           <span>Emitido: {new Date(cert.createdAt).toLocaleDateString("es-CL")}</span>
-          <span>Verificar en: certirecicla.cl/verify/{cert.uniqueCode}</span>
+          {!hidePlatform && <span>Verificar en: certirecicla.cl/verify/{cert.uniqueCode}</span>}
           {cert.company.sanitaryResolution && <span>Res. Sanitaria: {cert.company.sanitaryResolution}</span>}
         </div>
 

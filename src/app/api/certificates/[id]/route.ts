@@ -18,7 +18,15 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
     where: { id: params.id, companyId: session.user.companyId },
     include: {
       client: { include: { parentClient: { select: { name: true } } } },
-      company: { select: { name: true, rut: true, address: true, phone: true, logo: true, sanitaryResolution: true, plantAddress: true } },
+      company: {
+        select: {
+          name: true, rut: true, address: true, phone: true, logo: true,
+          sanitaryResolution: true, plantAddress: true, plan: true,
+          signatureUrl: true, brandPrimaryColor: true, brandHidePlatform: true,
+          brandSignatureUrl: true, brandSecondaryLogoUrl: true,
+          brandClosingText: true, brandFont: true,
+        },
+      },
     },
   });
 
@@ -125,7 +133,15 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     where: { id: params.id, companyId: session.user.companyId },
     include: {
       client: { include: { parentClient: { select: { name: true } } } },
-      company: { select: { name: true, rut: true, address: true, phone: true, logo: true, sanitaryResolution: true, plantAddress: true } },
+      company: {
+        select: {
+          name: true, rut: true, address: true, phone: true, logo: true,
+          sanitaryResolution: true, plantAddress: true, plan: true,
+          signatureUrl: true, brandPrimaryColor: true, brandHidePlatform: true,
+          brandSignatureUrl: true, brandSecondaryLogoUrl: true,
+          brandClosingText: true, brandFont: true,
+        },
+      },
     },
   });
 
