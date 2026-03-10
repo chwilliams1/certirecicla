@@ -161,7 +161,7 @@ Gracias por su compromiso con el medio ambiente.`;
 
       const resend = getResend();
       await resend.emails.send({
-        from: `CertiRecicla <onboarding@resend.dev>`,
+        from: `CertiRecicla <hola@certirecicla.cl>`,
         to: emails,
         subject: `Reporte de Impacto - ${periodLabel} - ${clientName}`,
         html: buildEmailHtml(bodyText, schedule.company.name),

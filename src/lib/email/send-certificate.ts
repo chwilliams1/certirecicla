@@ -112,7 +112,7 @@ export async function sendCertificateEmail(
       html: string;
       attachments: Array<{ filename: string; content: Buffer }>;
     } = {
-      from: `CertiRecicla <onboarding@resend.dev>`,
+      from: `CertiRecicla <hola@certirecicla.cl>`,
       to: [recipientEmail],
       subject: finalSubject,
       html,
