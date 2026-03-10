@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { MONTH_NAMES_FULL, MONTH_NAMES_SHORT } from "@/lib/constants";
 import {
   FileBarChart,
   Download,
@@ -121,15 +122,8 @@ const PERIOD_LABELS: Record<PeriodType, string> = {
   custom: "Personalizado",
 };
 
-const MONTHS = [
-  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
-];
+const MONTHS = MONTH_NAMES_FULL;
 
-const MONTH_SHORT = [
-  "Ene", "Feb", "Mar", "Abr", "May", "Jun",
-  "Jul", "Ago", "Sep", "Oct", "Nov", "Dic",
-];
 
 const SINADER_MONTHS = [
   { value: "", label: "Todo el año" },
@@ -207,7 +201,7 @@ function formatNum(n: number): string {
 
 function formatMonthLabel(m: string): string {
   const [, mo] = m.split("-");
-  return MONTH_SHORT[parseInt(mo, 10) - 1] || m;
+  return MONTH_NAMES_SHORT[mo.padStart(2, "0")] || m;
 }
 
 /* ─── Change Indicator Component ─── */
@@ -315,9 +309,9 @@ function SinaderTab({ planData }: { planData: PlanData | null }) {
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 flex items-start gap-3">
         <Lock className="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" />
         <div>
-          <p className="text-sm font-medium text-amber-800">Exportacion SINADER no disponible</p>
+          <p className="text-sm font-medium text-amber-800">Exportación SINADER no disponible</p>
           <p className="text-xs text-amber-700 mt-1">
-            La exportacion en formato SINADER esta disponible en el plan Business.
+            La exportación en formato SINADER está disponible en el plan Business.
           </p>
           <a href="/dashboard/billing" className="inline-block mt-2 text-xs font-medium text-amber-700 underline hover:text-amber-900">
             Ver planes
@@ -409,7 +403,7 @@ function SinaderTab({ planData }: { planData: PlanData | null }) {
         <p className="text-xs font-medium text-emerald-700">Sobre el formato SINADER</p>
         <p className="text-[11px] text-emerald-600/70 leading-relaxed">
           El archivo CSV generado incluye las columnas requeridas por SINADER: fecha, RUT del
-          generador, tipo de residuo con codigo LER, cantidad en kg, tratamiento aplicado y datos
+          generador, tipo de residuo con código LER, cantidad en kg, tratamiento aplicado y datos
           del gestor. Revisa los datos antes de subir al portal oficial del Ministerio del Medio
           Ambiente.
         </p>
@@ -497,9 +491,9 @@ function ScheduleTab({
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 flex items-start gap-3">
         <Lock className="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" />
         <div>
-          <p className="text-sm font-medium text-amber-800">Reportes automaticos no disponibles</p>
+          <p className="text-sm font-medium text-amber-800">Reportes automáticos no disponibles</p>
           <p className="text-xs text-amber-700 mt-1">
-            Los reportes automaticos por email estan disponibles desde el plan Profesional.
+            Los reportes automáticos por email están disponibles desde el plan Profesional.
           </p>
           <a href="/dashboard/billing" className="inline-block mt-2 text-xs font-medium text-amber-700 underline hover:text-amber-900">
             Actualizar plan
@@ -520,7 +514,7 @@ function ScheduleTab({
         <div>
           <h3 className="text-sm font-medium text-sage-800">Reportes Programados</h3>
           <p className="text-xs text-sage-800/40 mt-0.5">
-            Programa el envio automatico de reportes por email
+            Programa el envío automático de reportes por email
           </p>
         </div>
         <Button
@@ -594,7 +588,7 @@ function ScheduleTab({
           <Clock className="h-8 w-8 text-sage-300 mx-auto mb-2" />
           <p className="text-sm text-sage-800/50">No hay reportes programados</p>
           <p className="text-xs text-sage-800/30 mt-1">
-            Crea uno para recibir reportes automaticamente
+            Crea uno para recibir reportes automáticamente
           </p>
         </div>
       ) : (
@@ -623,8 +617,8 @@ function ScheduleTab({
                     {emails.join(", ")}
                   </p>
                   <p className="text-[10px] text-sage-800/30">
-                    Proximo envio: {new Date(s.nextSendAt).toLocaleDateString("es-CL")}
-                    {s.lastSentAt && ` · Ultimo: ${new Date(s.lastSentAt).toLocaleDateString("es-CL")}`}
+                    Próximo envío: {new Date(s.nextSendAt).toLocaleDateString("es-CL")}
+                    {s.lastSentAt && ` · Último: ${new Date(s.lastSentAt).toLocaleDateString("es-CL")}`}
                   </p>
                 </div>
                 <Button

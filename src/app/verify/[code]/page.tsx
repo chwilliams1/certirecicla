@@ -19,6 +19,7 @@ import {
   Recycle,
   Droplets,
 } from "lucide-react";
+import Image from "next/image";
 import { calculateEquivalencies, calculateWaterSaved } from "@/lib/co2-calculator";
 import { formatPeriod } from "@/lib/format-period";
 
@@ -112,7 +113,7 @@ export default function VerifyCertificatePage() {
             <Recycle className="h-5 w-5" />
             <span className="font-semibold text-sm">CertiRecicla</span>
           </div>
-          <span className="text-xs text-white/70">Verificacion de Certificado</span>
+          <span className="text-xs text-white/70">Verificación de Certificado</span>
         </div>
       </div>
 
@@ -281,7 +282,7 @@ export default function VerifyCertificatePage() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-start gap-4">
             {cert.companyLogo && (
-              <img src={cert.companyLogo} alt={cert.companyName} className="h-12 w-12 object-contain rounded-lg flex-shrink-0" />
+              <Image src={cert.companyLogo} alt={cert.companyName} width={48} height={48} className="h-12 w-12 object-contain rounded-lg flex-shrink-0" unoptimized />
             )}
             <div className="flex-1">
               <p className="font-semibold text-[#2d3a2e]">{cert.companyName}</p>

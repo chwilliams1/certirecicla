@@ -321,7 +321,7 @@ export function CertificatePDFDocument({ data, qrDataUrl, branding = DEFAULT_BRA
 
           {/* Certification statement */}
           <Text style={{ fontSize: 9, color: branding.palette.dark, lineHeight: 1.5, marginBottom: 10, marginTop: 4 }}>
-            Mediante el presente documento, {data.companyName}{data.companyRut ? ` (RUT ${data.companyRut})` : ""} hace constar que {data.clientName}{data.clientRut ? ` (RUT ${data.clientRut})` : ""} realizo la valorizacion de {data.totalKg.toLocaleString("es-CL")} kg de residuos reciclables durante {formatPeriod(data.periodStart)}, contribuyendo a evitar {data.totalCo2.toLocaleString("es-CL")} kg de emisiones de CO2 equivalente.
+            Mediante el presente documento, {data.companyName}{data.companyRut ? ` (RUT ${data.companyRut})` : ""} hace constar que {data.clientName}{data.clientRut ? ` (RUT ${data.clientRut})` : ""} realizó la valorización de {data.totalKg.toLocaleString("es-CL")} kg de residuos reciclables durante {formatPeriod(data.periodStart)}, contribuyendo a evitar {data.totalCo2.toLocaleString("es-CL")} kg de emisiones de CO2 equivalente.
           </Text>
 
           <View style={styles.divider} />

@@ -95,9 +95,9 @@ model Client {
 
 model RecyclingRecord {
   id         String   @id @default(cuid())
-  client     Client   @relation(fields: [clientId], references: [id])
+  client     Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   clientId   String
-  company    Company  @relation(fields: [companyId], references: [id])
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId  String
   material   String
   quantityKg Float
@@ -149,11 +149,11 @@ model Co2Factor {
 
 model EmailLog {
   id            String       @id @default(cuid())
-  company       Company      @relation(fields: [companyId], references: [id])
+  company       Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId     String
-  client        Client?      @relation(fields: [clientId], references: [id])
+  client        Client?      @relation(fields: [clientId], references: [id], onDelete: SetNull)
   clientId      String?
-  certificate   Certificate? @relation(fields: [certificateId], references: [id])
+  certificate   Certificate? @relation(fields: [certificateId], references: [id], onDelete: SetNull)
   certificateId String?
   to            String
   subject       String
@@ -194,9 +194,9 @@ model ChatMessage {
 model ClientPortalToken {
   id        String    @id @default(cuid())
   token     String    @unique @default(cuid())
-  client    Client    @relation(fields: [clientId], references: [id])
+  client    Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
   clientId  String
-  company   Company   @relation(fields: [companyId], references: [id])
+  company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId String
   expiresAt DateTime?
   active    Boolean   @default(true)
@@ -208,7 +208,7 @@ model ClientPortalToken {
 
 model Notification {
   id        String   @id @default(cuid())
-  company   Company  @relation(fields: [companyId], references: [id])
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId String
   type      String
   title     String
@@ -223,9 +223,9 @@ model Notification {
 
 model ScheduledReport {
   id         String    @id @default(cuid())
-  company    Company   @relation(fields: [companyId], references: [id])
+  company    Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId  String
-  client     Client?   @relation(fields: [clientId], references: [id])
+  client     Client?   @relation(fields: [clientId], references: [id], onDelete: SetNull)
   clientId   String?
   frequency  String    // "monthly" | "quarterly"
   emails     String    // JSON array of email addresses

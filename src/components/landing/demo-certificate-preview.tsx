@@ -152,7 +152,7 @@ export default function DemoCertificatePreview({
 
         {/* Footer */}
         <div className="flex justify-between items-center text-[10px] text-muted-foreground border-t pt-3">
-          <span>Codigo: {demoCode}</span>
+          <span>Código: {demoCode}</span>
           <span>{today.toLocaleDateString("es-CL")}</span>
         </div>
       </div>

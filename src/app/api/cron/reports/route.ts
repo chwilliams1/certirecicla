@@ -7,6 +7,7 @@ import { buildEmailHtml } from "@/lib/email/email-template";
 import { checkFeatureAccess } from "@/lib/plans";
 import { derivePalette, DEFAULT_PALETTE } from "@/lib/pdf/branding-colors";
 import { DEFAULT_BRANDING, type BrandingConfig } from "@/lib/pdf/branding-config";
+import { MONTH_NAMES_FULL } from "@/lib/constants";
 
 export async function GET(req: NextRequest) {
   // Verify cron secret
@@ -46,11 +47,7 @@ export async function GET(req: NextRequest) {
         // Previous month
         periodEnd = new Date(now.getFullYear(), now.getMonth(), 0); // last day of prev month
         periodStart = new Date(periodEnd.getFullYear(), periodEnd.getMonth(), 1);
-        const months = [
-          "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-          "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
-        ];
-        periodLabel = `${months[periodStart.getMonth()]} ${periodStart.getFullYear()}`;
+        periodLabel = `${MONTH_NAMES_FULL[periodStart.getMonth()]} ${periodStart.getFullYear()}`;
       } else {
         // Previous quarter
         const currentQuarter = Math.floor(now.getMonth() / 3);

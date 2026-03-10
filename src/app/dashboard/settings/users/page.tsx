@@ -139,7 +139,7 @@ export default function UsersPage() {
     return (
       <div className="text-center py-12">
         <Shield className="h-12 w-12 text-sage-300 mx-auto mb-3" />
-        <p className="text-sm text-sage-600">No tienes permisos para ver esta pagina.</p>
+        <p className="text-sm text-sage-600">No tienes permisos para ver esta página.</p>
       </div>
     );
   }
@@ -228,8 +228,8 @@ export default function UsersPage() {
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-sage-800/40">
-                  {newRole === "admin" && "Acceso completo: usuarios, configuracion, clientes, retiros y certificados."}
-                  {newRole === "operator" && "Puede gestionar clientes, retiros y certificados. Sin acceso a configuracion ni usuarios."}
+                  {newRole === "admin" && "Acceso completo: usuarios, configuración, clientes, retiros y certificados."}
+                  {newRole === "operator" && "Puede gestionar clientes, retiros y certificados. Sin acceso a configuración ni usuarios."}
                   {newRole === "viewer" && "Solo lectura: puede ver dashboard, clientes, retiros y certificados."}
                 </p>
               </div>

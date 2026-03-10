@@ -1,4 +1,4 @@
-const MONTHS = [
+export const MONTH_NAMES_FULL = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
 ];
@@ -9,5 +9,5 @@ const MONTHS = [
  */
 export function formatPeriod(periodStart: string | Date): string {
   const d = typeof periodStart === "string" ? new Date(periodStart) : periodStart;
-  return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  return `${MONTH_NAMES_FULL[d.getMonth()]} ${d.getFullYear()}`;
 }

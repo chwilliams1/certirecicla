@@ -3,6 +3,7 @@ import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import { calculateEquivalencies } from "@/lib/co2-calculator";
 import { type BrandingPalette, DEFAULT_PALETTE } from "./branding-colors";
 import { type BrandingConfig, DEFAULT_BRANDING } from "./branding-config";
+import { MONTH_NAMES_FULL } from "@/lib/constants";
 
 function createStyles(p: BrandingPalette, fontFamily: string) {
   const bold = fontFamily === "Helvetica" ? "Helvetica-Bold" : fontFamily === "Times-Roman" ? "Times-Bold" : "Courier-Bold";
@@ -97,11 +98,7 @@ function formatDate(d: string): string {
 
 function formatMonth(m: string): string {
   const [year, month] = m.split("-");
-  const months = [
-    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
-  ];
-  return `${months[parseInt(month, 10) - 1]} ${year}`;
+  return `${MONTH_NAMES_FULL[parseInt(month, 10) - 1]} ${year}`;
 }
 
 export function ReportPDFDocument({ data, branding }: { data: ReportPDFData; branding?: BrandingConfig }) {

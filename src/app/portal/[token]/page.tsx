@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { MONTH_NAMES_FULL } from "@/lib/constants";
 import { useParams } from "next/navigation";
 import {
   Leaf,
@@ -191,7 +192,7 @@ function formatFullDate(dateStr: string): string {
   });
 }
 
-const MONTH_NAMES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+const MONTH_NAMES = MONTH_NAMES_FULL;
 
 function monthLabel(monthKey: string): string {
   const [y, m] = monthKey.split("-");
@@ -450,8 +451,7 @@ export default function PortalPage() {
                     formatter={(value) => [`${value} kg CO₂`, "Evitado"]}
                     labelFormatter={(label) => {
                       const [y, m] = String(label).split("-");
-                      const months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-                      return `${months[parseInt(m) - 1]} ${y}`;
+                      return `${MONTH_NAMES[parseInt(m) - 1]} ${y}`;
                     }}
                     contentStyle={{ borderRadius: "12px", border: "1px solid #eae8e3", boxShadow: "0 4px 12px rgba(0,0,0,0.06)", fontSize: "13px" }}
                   />

@@ -35,7 +35,7 @@ export function PageGuard({
     return (
       <div className="text-center py-12">
         <Shield className="h-12 w-12 text-sage-300 mx-auto mb-3" />
-        <p className="text-sm text-sage-600">No tienes permisos para ver esta pagina.</p>
+        <p className="text-sm text-sage-600">No tienes permisos para ver esta página.</p>
       </div>
     );
   }

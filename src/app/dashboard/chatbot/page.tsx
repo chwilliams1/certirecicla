@@ -288,7 +288,7 @@ function PeriodSelector({ onSelect }: { onSelect: (start: string, end: string) =
     { label: "Último mes", start: getMonthAgo(1), end: today() },
     { label: "Últimos 3 meses", start: getMonthAgo(3), end: today() },
     { label: "Últimos 6 meses", start: getMonthAgo(6), end: today() },
-    { label: "Año 2025", start: "2025-01-01", end: "2025-12-31" },
+    { label: `Año ${new Date().getFullYear()}`, start: `${new Date().getFullYear()}-01-01`, end: `${new Date().getFullYear()}-12-31` },
   ];
 
   return (

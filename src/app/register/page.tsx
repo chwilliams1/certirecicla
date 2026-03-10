@@ -60,7 +60,7 @@ export default function RegisterPage() {
             <Leaf className="h-6 w-6 text-sage-600" />
           </div>
           <CardTitle className="text-xl sm:text-2xl">Crear cuenta</CardTitle>
-          <CardDescription>14 dias gratis — sin tarjeta de credito</CardDescription>
+          <CardDescription>14 días gratis — sin tarjeta de crédito</CardDescription>
         </CardHeader>
         <CardContent className="px-4 sm:px-6">
           <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
@@ -119,7 +119,7 @@ export default function RegisterPage() {
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Ya tienes cuenta?{" "}
             <Link href="/login" className="text-sage-600 hover:underline font-medium py-2 inline-block">
-              Inicia sesion
+              Inicia sesión
             </Link>
           </p>
         </CardContent>

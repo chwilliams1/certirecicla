@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { MATERIAL_COLORS } from "@/lib/material-colors";
+import { MONTH_NAMES_FULL } from "@/lib/constants";
 import {
   ArrowLeft,
   ArrowRight,
@@ -25,10 +26,7 @@ import Link from "next/link";
 
 // Colores centralizados en src/lib/material-colors.ts
 
-const MONTHS = [
-  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
-];
+const MONTHS = MONTH_NAMES_FULL;
 
 type Step = "select" | "preview" | "creating" | "done";
 

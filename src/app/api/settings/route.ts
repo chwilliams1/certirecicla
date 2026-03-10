@@ -35,6 +35,10 @@ export async function PATCH(req: NextRequest) {
   const { name, rut, address, phone, email, autoSendOnPublish, co2Factors, ecoEquivalencies, reminderDaysThreshold, sanitaryResolution, plantAddress,
     brandPrimaryColor, brandHidePlatform, brandClosingText, brandFont } = body;
 
+  if (reminderDaysThreshold !== undefined && (Number(reminderDaysThreshold) < 1 || Number(reminderDaysThreshold) > 365)) {
+    return NextResponse.json({ error: "El umbral debe ser entre 1 y 365 días" }, { status: 400 });
+  }
+
   // Check if branding fields should be applied
   const currentCompany = await prisma.company.findUnique({
     where: { id: session.user.companyId },

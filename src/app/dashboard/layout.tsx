@@ -246,7 +246,7 @@ function TrialBlockOverlay() {
             Reactivar mi plan <ArrowRight className="h-4 w-4" />
           </Link>
           <p className="text-xs text-sage-800/30 mt-4">
-            Elige un plan y retoma tu gestion en segundos
+            Elige un plan y retoma tu gestión en segundos
           </p>
         </div>
       </div>
@@ -264,10 +264,10 @@ function TrialBlockOverlay() {
         </h2>
         <p className="text-sm text-sage-800/60 mb-2 leading-relaxed">
           Esperamos que hayas disfrutado explorar todo lo que CertiRecicla
-          puede hacer por tu gestion de reciclaje.
+          puede hacer por tu gestión de reciclaje.
         </p>
         <p className="text-sm text-sage-800/60 mb-7 leading-relaxed">
-          Elige el plan que mejor se adapte a tu operacion
+          Elige el plan que mejor se adapte a tu operación
           y sigue generando impacto ambiental con tus clientes.
         </p>
         <Link

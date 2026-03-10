@@ -128,16 +128,13 @@ export async function POST(req: NextRequest) {
   XLSX.utils.book_append_sheet(wb, wsMaterial, "Por Material");
 
   // Sheet 3: Tendencia Mensual
-  const MONTH_NAMES = [
-    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
-  ];
+  const { MONTH_NAMES_FULL } = await import("@/lib/constants");
   const monthlyRows = Object.entries(monthlyMap)
     .sort((a, b) => a[0].localeCompare(b[0]))
     .map(([m, v]) => {
       const [y, mo] = m.split("-");
       return [
-        `${MONTH_NAMES[parseInt(mo, 10) - 1]} ${y}`,
+        `${MONTH_NAMES_FULL[parseInt(mo, 10) - 1]} ${y}`,
         Math.round(v.kg * 10) / 10,
         Math.round(v.co2 * 10) / 10,
       ];

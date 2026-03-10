@@ -45,6 +45,7 @@ function BillingContent() {
   const [loading, setLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [cancelLoading, setCancelLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/billing/status")
@@ -55,20 +56,21 @@ function BillingContent() {
   }, []);
 
   async function handleCancelSubscription() {
-    if (!window.confirm("¿Estas seguro de que deseas cancelar tu suscripcion? Perderas acceso a las funciones de tu plan actual.")) {
+    if (!window.confirm("¿Estás seguro de que deseas cancelar tu suscripción? Perderás acceso a las funciones de tu plan actual.")) {
       return;
     }
+    setError(null);
     setCancelLoading(true);
     try {
       const res = await fetch("/api/billing/cancel", { method: "POST" });
       if (!res.ok) {
         const data = await res.json();
-        alert(data.error || "Error al cancelar");
+        setError(data.error || "Error al cancelar");
         return;
       }
       window.location.reload();
     } catch {
-      alert("Error de conexion. Intenta de nuevo.");
+      setError("Error de conexión. Intenta de nuevo.");
     } finally {
       setCancelLoading(false);
     }
@@ -78,11 +80,12 @@ function BillingContent() {
     const isActive = billing?.subscriptionStatus === "active";
     if (isActive) {
       const confirmed = window.confirm(
-        `¿Deseas cambiar tu plan a ${PLANS[planKey as PlanType]?.displayName}? Se cancelara tu plan actual y se iniciara el proceso de pago del nuevo plan.`
+        `¿Deseas cambiar tu plan a ${PLANS[planKey as PlanType]?.displayName}? Se cancelará tu plan actual y se iniciará el proceso de pago del nuevo plan.`
       );
       if (!confirmed) return;
     }
 
+    setError(null);
     setCheckoutLoading(planKey);
     try {
       const res = await fetch("/api/billing/checkout", {
@@ -93,7 +96,7 @@ function BillingContent() {
 
       if (!res.ok) {
         const data = await res.json();
-        alert(data.error || "Error al iniciar el pago");
+        setError(data.error || "Error al iniciar el pago");
         return;
       }
 
@@ -111,7 +114,7 @@ function BillingContent() {
       document.body.appendChild(form);
       form.submit();
     } catch {
-      alert("Error de conexion. Intenta de nuevo.");
+      setError("Error de conexión. Intenta de nuevo.");
     } finally {
       setCheckoutLoading(null);
     }
@@ -130,10 +133,17 @@ function BillingContent() {
 
   return (
     <div className="max-w-4xl mx-auto">
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700 flex items-center justify-between mb-6">
+          {error}
+          <button onClick={() => setError(null)} className="text-red-400 hover:text-red-600 ml-2">✕</button>
+        </div>
+      )}
+
       <div className="mb-8">
-        <h1 className="text-2xl font-serif text-sage-800">Planes y facturacion</h1>
+        <h1 className="text-2xl font-serif text-sage-800">Planes y facturación</h1>
         <p className="text-sm text-sage-800/50 mt-1">
-          Selecciona el plan que mejor se adapte a tu operacion
+          Selecciona el plan que mejor se adapte a tu operación
         </p>
       </div>
 
@@ -141,7 +151,7 @@ function BillingContent() {
         <div className="bg-emerald-50 border border-emerald-200 rounded-[10px] px-4 py-3 mb-6 flex items-center gap-2">
           <CheckCircle2 className="h-4 w-4 text-emerald-600 flex-shrink-0" />
           <p className="text-sm text-emerald-700">
-            Pago procesado correctamente. Tu plan se activara en unos momentos.
+            Pago procesado correctamente. Tu plan se activará en unos momentos.
           </p>
         </div>
       )}
@@ -168,7 +178,7 @@ function BillingContent() {
         <div className="bg-red-50 border border-red-200 rounded-[10px] px-4 py-3 mb-6 flex items-center gap-2">
           <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0" />
           <p className="text-sm text-red-700">
-            Tu suscripcion fue cancelada. Selecciona un nuevo plan.
+            Tu suscripción fue cancelada. Selecciona un nuevo plan.
           </p>
         </div>
       )}
@@ -180,7 +190,7 @@ function BillingContent() {
             <p className="text-sm text-sage-700">
               Plan actual: <strong>{PLANS[currentPlan as PlanType]?.displayName}</strong>
               {billing.reveniu.nextPaymentDate && (
-                <> — Proximo cobro: {new Date(billing.reveniu.nextPaymentDate.slice(0, 10) + "T12:00:00").toLocaleDateString("es-CL")}</>
+                <> — Próximo cobro: {new Date(billing.reveniu.nextPaymentDate.slice(0, 10) + "T12:00:00").toLocaleDateString("es-CL")}</>
               )}
             </p>
           </div>
@@ -189,7 +199,7 @@ function BillingContent() {
             disabled={cancelLoading}
             className="text-xs text-red-500 hover:text-red-700 transition-colors disabled:opacity-50"
           >
-            {cancelLoading ? "Cancelando..." : "Cancelar suscripcion"}
+            {cancelLoading ? "Cancelando..." : "Cancelar suscripción"}
           </button>
         </div>
       )}
@@ -251,9 +261,9 @@ function BillingContent() {
                   </ul>
                 </div>
 
-                {/* Gestion */}
+                {/* Gestión */}
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-sage-800/30 mb-1.5">Gestion</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-sage-800/30 mb-1.5">Gestión</p>
                   <ul className="space-y-1.5">
                     <FeatureRow enabled={plan.subClients} label="Sub-clientes (sucursales)" />
                     <FeatureRow enabled={plan.clientPortal} label="Portal de clientes" />
@@ -266,7 +276,7 @@ function BillingContent() {
                   <ul className="space-y-1.5">
                     <li className="flex items-start gap-2 text-sm text-sage-800/70">
                       <Check className="h-4 w-4 text-sage-500 mt-0.5 flex-shrink-0" />
-                      {plan.fullReports ? "Reportes avanzados" : "Dashboard basico"}
+                      {plan.fullReports ? "Reportes avanzados" : "Dashboard básico"}
                     </li>
                   </ul>
                 </div>
@@ -275,7 +285,7 @@ function BillingContent() {
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-sage-800/30 mb-1.5">Compliance</p>
                   <ul className="space-y-1.5">
-                    <FeatureRow enabled={plan.sinaderExport} label="Exportacion SINADER" />
+                    <FeatureRow enabled={plan.sinaderExport} label="Exportación SINADER" />
                     <FeatureRow enabled={plan.customBranding} label="Branding en certificados" />
                   </ul>
                 </div>

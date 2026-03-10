@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { MATERIAL_COLORS } from "@/lib/material-colors";
+import { MATERIAL_EMOJI, MONTH_NAMES_SHORT } from "@/lib/constants";
 import {
   Leaf,
   Users,
@@ -50,20 +51,9 @@ const CHART_COLORS = ["#6889b0", "#b8a05a", "#6a9a82", "#b88a5a", "#8a80a8", "#a
 
 // Colores centralizados en src/lib/material-colors.ts
 
-const MATERIAL_EMOJI: Record<string, string> = {
-  "Plástico PET": "🧴", "Plástico HDPE": "🧴", "Plástico LDPE": "🧴", "Plástico PP": "🧴",
-  "Cartón": "📦", "Vidrio": "🍶", "Aluminio": "🥫", "Papel": "📄",
-  "Madera": "🪵", "Electrónicos": "💻", "RAE": "🔌",
-};
-
-const MONTH_NAMES: Record<string, string> = {
-  "01": "Ene", "02": "Feb", "03": "Mar", "04": "Abr", "05": "May", "06": "Jun",
-  "07": "Jul", "08": "Ago", "09": "Sep", "10": "Oct", "11": "Nov", "12": "Dic",
-};
-
 function formatMonth(m: string) {
   const parts = m.split("-");
-  const month = MONTH_NAMES[parts[1]] || parts[1];
+  const month = MONTH_NAMES_SHORT[parts[1]] || parts[1];
   const year = parts[0].slice(2);
   return `${month} ${year}`;
 }
@@ -121,9 +111,14 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [chartPeriod, setChartPeriod] = useState<ChartPeriod>("12m");
   const [heroMetric, setHeroMetric] = useState<"kg" | "co2">("kg");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/dashboard").then((r) => r.json()).then(setData).finally(() => setLoading(false));
+    fetch("/api/dashboard")
+      .then((r) => r.json())
+      .then(setData)
+      .catch(() => setError("No se pudieron cargar los datos"))
+      .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
@@ -147,7 +142,14 @@ export default function DashboardPage() {
       </div>
     );
   }
-  if (!data) return null;
+  if (!data) return (
+    <div className="flex flex-col items-center justify-center py-20">
+      <p className="text-sage-800/50 mb-4">No se pudieron cargar los datos</p>
+      <button onClick={() => window.location.reload()} className="text-sm text-sage-500 border border-sand-300 rounded-lg px-4 py-2 hover:bg-sand-100">
+        Reintentar
+      </button>
+    </div>
+  );
 
   const equivalencies = calculateEquivalencies(data.kpis.totalCo2 * 1000);
   const waterMaterials = data.materialDistribution.map((m) => ({ material: m.name, kg: m.value }));

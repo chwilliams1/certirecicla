@@ -74,7 +74,7 @@ export default function LoginPage() {
               <p className="text-sm text-destructive">{error}</p>
             )}
             <Button type="submit" className="w-full min-h-[44px]" disabled={loading}>
-              {loading ? "Ingresando..." : "Iniciar sesion"}
+              {loading ? "Ingresando..." : "Iniciar sesión"}
             </Button>
           </form>
           <p className="mt-4 text-center text-sm text-muted-foreground">

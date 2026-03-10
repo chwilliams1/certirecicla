@@ -68,6 +68,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Faltan campos requeridos" }, { status: 400 });
   }
 
+  if (new Date(periodStart) > new Date(periodEnd)) {
+    return NextResponse.json({ error: "La fecha de inicio debe ser anterior a la fecha de fin" }, { status: 400 });
+  }
+
   // Check plan limits
   const company = await prisma.company.findUnique({
     where: { id: session.user.companyId },

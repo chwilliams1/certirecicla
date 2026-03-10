@@ -189,7 +189,7 @@ export default function InteractiveDemo() {
               </Link>
             </div>
             <p className="text-xs text-center text-muted-foreground">
-              Crea tu cuenta gratis para generar certificados reales — 14 dias sin costo
+              Crea tu cuenta gratis para generar certificados reales — 14 días sin costo
             </p>
           </div>
         </div>

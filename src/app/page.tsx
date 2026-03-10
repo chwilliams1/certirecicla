@@ -111,10 +111,10 @@ const jsonLd = {
 
 const VALORIZACION_METAS = [
   { material: "Vidrio", meta2025: "19%", meta2026: "22%" },
-  { material: "Papel / Carton", meta2025: "14%", meta2026: "18%" },
+  { material: "Papel / Cartón", meta2025: "14%", meta2026: "18%" },
   { material: "Metal", meta2025: "12%", meta2026: "15%" },
-  { material: "Plastico", meta2025: "8%", meta2026: "11%" },
-  { material: "Carton para liquidos", meta2025: "11%", meta2026: "15%" },
+  { material: "Plástico", meta2025: "8%", meta2026: "11%" },
+  { material: "Cartón para líquidos", meta2025: "11%", meta2026: "15%" },
 ];
 
 export default function Home() {
@@ -136,11 +136,11 @@ export default function Home() {
             <a href="#funcionalidades" className="hover:text-sage-600 transition-colors">Funcionalidades</a>
             <a href="#demo" className="hover:text-sage-600 transition-colors">Demo</a>
             <a href="#planes" className="hover:text-sage-600 transition-colors">Planes</a>
-            <a href="#regulacion" className="hover:text-sage-600 transition-colors">Regulacion</a>
+            <a href="#regulacion" className="hover:text-sage-600 transition-colors">Regulación</a>
           </nav>
           <div className="flex items-center gap-3">
             <Link href="/login">
-              <Button variant="ghost" size="sm" className="hidden sm:inline-flex">Iniciar sesion</Button>
+              <Button variant="ghost" size="sm" className="hidden sm:inline-flex">Iniciar sesión</Button>
             </Link>
             <Link href="/register">
               <Button size="sm">Prueba gratis</Button>
@@ -155,14 +155,14 @@ export default function Home() {
           <div className="mx-auto max-w-4xl text-center hero-stagger">
             <div className="inline-flex items-center gap-2 rounded-full bg-amber-50 border border-amber-200 px-3 py-1.5 mb-6">
               <AlertTriangle className="h-3.5 w-3.5 text-amber-600 flex-shrink-0" />
-              <span className="text-xs sm:text-sm text-amber-700 font-medium">Metas Ley REP 2026: plastico 11%, vidrio 22%, papel 18%</span>
+              <span className="text-xs sm:text-sm text-amber-700 font-medium">Metas Ley REP 2026: plástico 11%, vidrio 22%, papel 18%</span>
             </div>
             <h1 className="mb-6 font-serif text-3xl font-bold text-sage-900 sm:text-4xl md:text-5xl lg:text-[3.5rem] leading-[1.15]">
               Deja de hacer certificados en Word.<br className="hidden sm:block" />
               Tu gestora merece algo mejor.
             </h1>
             <p className="mb-4 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              CertiRecicla genera certificados de valorizacion con calculo de CO&#x2082; verificable,
+              CertiRecicla genera certificados de valorización con cálculo de CO&#x2082; verificable,
               gestiona tus clientes generadores y te prepara para SINADER — todo en una plataforma
               hecha para gestoras de reciclaje en Chile.
             </p>
@@ -172,7 +172,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
               <Link href="/register" className="w-full sm:w-auto">
                 <Button size="lg" className="w-full sm:w-auto text-base px-8 py-6 btn-scale">
-                  Comenzar gratis por 14 dias
+                  Comenzar gratis por 14 días
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
@@ -184,7 +184,7 @@ export default function Home() {
               </a>
             </div>
             <p className="mt-4 text-xs text-muted-foreground">
-              Sin tarjeta de credito. Acceso completo al plan Profesional durante el trial.
+              Sin tarjeta de crédito. Acceso completo al plan Profesional durante el trial.
             </p>
 
             {/* Social proof stats */}
@@ -211,7 +211,7 @@ export default function Home() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
               <div>
                 <p className="text-sm font-bold text-sage-800">GHG Protocol</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Metodologia internacional CO&#x2082;</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Metodología internacional CO&#x2082;</p>
               </div>
               <div>
                 <p className="text-sm font-bold text-sage-800">Ley REP</p>
@@ -219,7 +219,7 @@ export default function Home() {
               </div>
               <div>
                 <p className="text-sm font-bold text-sage-800">SINADER</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Exportacion de datos lista</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Exportación de datos lista</p>
               </div>
               <div>
                 <p className="text-sm font-bold text-sage-800">NCG 519</p>
@@ -237,7 +237,7 @@ export default function Home() {
             </h2>
             <p className="text-muted-foreground">
               Certificados a mano en Word, seguimiento en planillas, declaraciones SINADER copiando datos uno por uno.
-              Mientras tanto, las metas de valorizacion de la Ley REP suben cada año.
+              Mientras tanto, las metas de valorización de la Ley REP suben cada año.
             </p>
           </ScrollFadeIn>
 
@@ -254,7 +254,7 @@ export default function Home() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-red-400 mt-0.5">&#10005;</span>
-                  CO&#x2082; calculado con formulas Excel sin respaldo metodologico
+                  CO&#x2082; calculado con fórmulas Excel sin respaldo metodológico
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-red-400 mt-0.5">&#10005;</span>
@@ -290,7 +290,7 @@ export default function Home() {
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="h-4 w-4 text-sage-500 mt-0.5 flex-shrink-0" />
-                  Cada certificado verificable online con codigo unico
+                  Cada certificado verificable online con código único
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="h-4 w-4 text-sage-500 mt-0.5 flex-shrink-0" />
@@ -317,10 +317,10 @@ export default function Home() {
             <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
               <div className="rounded-xl border bg-card p-6 card-hover">
                 <FileCheck className="mb-4 h-9 w-9 text-sage-500" />
-                <h3 className="mb-2 font-serif text-base font-bold">Certificados de valorizacion</h3>
+                <h3 className="mb-2 font-serif text-base font-bold">Certificados de valorización</h3>
                 <p className="text-sm text-muted-foreground">
-                  Genera certificados PDF con calculo automatico de CO&#x2082; evitado.
-                  Selecciona clientes, periodo, y listo. Envialos por email directo.
+                  Genera certificados PDF con cálculo automático de CO&#x2082; evitado.
+                  Selecciona clientes, período, y listo. Envíalos por email directo.
                 </p>
               </div>
               <div className="rounded-xl border bg-card p-6 card-hover">
@@ -336,31 +336,31 @@ export default function Home() {
                 <h3 className="mb-2 font-serif text-base font-bold">Dashboard de impacto</h3>
                 <p className="text-sm text-muted-foreground">
                   KPIs en tiempo real: kg reciclados, CO&#x2082; evitado, tendencias mensuales,
-                  ranking de materiales y equivalencias ecologicas.
+                  ranking de materiales y equivalencias ecológicas.
                 </p>
               </div>
               <div className="rounded-xl border bg-card p-6 card-hover">
                 <Upload className="mb-4 h-9 w-9 text-sage-500" />
-                <h3 className="mb-2 font-serif text-base font-bold">Importacion inteligente</h3>
+                <h3 className="mb-2 font-serif text-base font-bold">Importación inteligente</h3>
                 <p className="text-sm text-muted-foreground">
                   Sube tu Excel actual y la plataforma detecta columnas, crea clientes
-                  automaticamente y calcula el CO&#x2082;. Sin reformatear nada.
+                  automáticamente y calcula el CO&#x2082;. Sin reformatear nada.
                 </p>
               </div>
               <div className="rounded-xl border bg-card p-6 card-hover">
                 <Globe className="mb-4 h-9 w-9 text-sage-500" />
-                <h3 className="mb-2 font-serif text-base font-bold">Verificacion publica</h3>
+                <h3 className="mb-2 font-serif text-base font-bold">Verificación pública</h3>
                 <p className="text-sm text-muted-foreground">
-                  Cada certificado tiene un codigo unico y una pagina publica de verificacion.
+                  Cada certificado tiene un código único y una página pública de verificación.
                   Tus clientes lo comparten con sus stakeholders.
                 </p>
               </div>
               <div className="rounded-xl border bg-card p-6 card-hover">
                 <FileSpreadsheet className="mb-4 h-9 w-9 text-sage-500" />
-                <h3 className="mb-2 font-serif text-base font-bold">Exportacion SINADER</h3>
+                <h3 className="mb-2 font-serif text-base font-bold">Exportación SINADER</h3>
                 <p className="text-sm text-muted-foreground">
                   Exporta tus datos en formato compatible con SINADER.
-                  Sin copiar a mano, sin errores de transcripcion.
+                  Sin copiar a mano, sin errores de transcripción.
                 </p>
               </div>
             </div>
@@ -372,10 +372,10 @@ export default function Home() {
           <div className="container mx-auto px-6">
             <ScrollFadeIn className="mx-auto max-w-3xl text-center mb-10">
               <h2 className="font-serif text-3xl font-bold text-sage-900 mb-4">
-                Asi se ve por dentro
+                Así se ve por dentro
               </h2>
               <p className="text-muted-foreground">
-                Dashboard, certificados y gestion de clientes — todo en un mismo lugar.
+                Dashboard, certificados y gestión de clientes — todo en un mismo lugar.
               </p>
             </ScrollFadeIn>
             <div className="mx-auto max-w-5xl">
@@ -473,14 +473,14 @@ export default function Home() {
               <div className="mx-auto w-12 h-12 rounded-full bg-sage-500 text-white flex items-center justify-center mb-4 text-lg font-bold">2</div>
               <h3 className="font-serif font-bold mb-2">Genera certificados</h3>
               <p className="text-sm text-muted-foreground">
-                Selecciona clientes y periodo. CertiRecicla genera certificados PDF con CO&#x2082; evitado, materiales y equivalencias.
+                Selecciona clientes y período. CertiRecicla genera certificados PDF con CO&#x2082; evitado, materiales y equivalencias.
               </p>
             </div>
             <div className="text-center">
               <div className="mx-auto w-12 h-12 rounded-full bg-sage-500 text-white flex items-center justify-center mb-4 text-lg font-bold">3</div>
-              <h3 className="font-serif font-bold mb-2">Envia y verifica</h3>
+              <h3 className="font-serif font-bold mb-2">Envía y verifica</h3>
               <p className="text-sm text-muted-foreground">
-                Envia los certificados por email directo. Cada uno tiene un codigo unico con pagina de verificacion publica.
+                Envía los certificados por email directo. Cada uno tiene un código único con página de verificación pública.
               </p>
             </div>
           </div>
@@ -497,7 +497,7 @@ export default function Home() {
                 CertiRecicla vs tu proceso actual
               </h2>
               <p className="text-muted-foreground">
-                Comparacion real de lo que haces hoy con Excel + Word vs lo que puedes hacer con CertiRecicla.
+                Comparación real de lo que haces hoy con Excel + Word vs lo que puedes hacer con CertiRecicla.
               </p>
             </div>
             <div className="mx-auto max-w-3xl overflow-x-auto">
@@ -522,13 +522,13 @@ export default function Home() {
                 <tbody className="divide-y divide-border">
                   {[
                     { feature: "Tiempo por certificado", old: "1-2 horas", new: "2 minutos" },
-                    { feature: "Calculo CO₂", old: "Formula manual sin fuente", new: "GHG Protocol automatico" },
-                    { feature: "Verificacion online", old: "No existe", new: "Codigo unico + pagina publica" },
-                    { feature: "Reporte SINADER", old: "Copiar datos a mano", new: "Exportacion directa" },
+                    { feature: "Cálculo CO₂", old: "Fórmula manual sin fuente", new: "GHG Protocol automático" },
+                    { feature: "Verificación online", old: "No existe", new: "Código único + página pública" },
+                    { feature: "Reporte SINADER", old: "Copiar datos a mano", new: "Exportación directa" },
                     { feature: "Historial de retiros", old: "Planilla desordenada", new: "Trazabilidad completa" },
-                    { feature: "Envio a clientes", old: "WhatsApp / email manual", new: "Envio directo desde la plataforma" },
+                    { feature: "Envío a clientes", old: "WhatsApp / email manual", new: "Envío directo desde la plataforma" },
                     { feature: "Branding propio", old: "Logo pegado en Word", new: "Logo, colores y firma personalizados" },
-                    { feature: "Auditorias", old: "Buscar en carpetas", new: "Todo centralizado y exportable" },
+                    { feature: "Auditorías", old: "Buscar en carpetas", new: "Todo centralizado y exportable" },
                   ].map((row) => (
                     <tr key={row.feature}>
                       <td className="py-3 px-4 font-medium text-sage-700">{row.feature}</td>
@@ -548,10 +548,10 @@ export default function Home() {
             <div className="mx-auto max-w-4xl">
               <div className="text-center mb-12">
                 <h2 className="font-serif text-3xl font-bold text-sage-900 mb-4">
-                  Certificados con respaldo metodologico real
+                  Certificados con respaldo metodológico real
                 </h2>
                 <p className="text-muted-foreground">
-                  No son numeros inventados. Cada gramo de CO&#x2082; esta calculado con estandares internacionales.
+                  No son números inventados. Cada gramo de CO&#x2082; está calculado con estándares internacionales.
                 </p>
               </div>
 
@@ -562,7 +562,7 @@ export default function Home() {
                   </div>
                   <h3 className="font-serif font-bold mb-2">GHG Protocol</h3>
                   <p className="text-sm text-muted-foreground">
-                    Factores de emision EPA WARM, FEVE y DEFRA. El estandar mas usado
+                    Factores de emisión EPA WARM, FEVE y DEFRA. El estándar más usado
                     para contabilidad de gases de efecto invernadero.
                   </p>
                 </div>
@@ -572,8 +572,8 @@ export default function Home() {
                   </div>
                   <h3 className="font-serif font-bold mb-2">ISO 14064</h3>
                   <p className="text-sm text-muted-foreground">
-                    Estructura alineada con la norma ISO para cuantificacion
-                    y verificacion de emisiones de GEI.
+                    Estructura alineada con la norma ISO para cuantificación
+                    y verificación de emisiones de GEI.
                   </p>
                 </div>
                 <div className="text-center rounded-xl bg-card border p-6">
@@ -583,7 +583,7 @@ export default function Home() {
                   <h3 className="font-serif font-bold mb-2">NCG 519 Ready</h3>
                   <p className="text-sm text-muted-foreground">
                     Desde diciembre 2026, empresas reguladas deben reportar Scope 3.
-                    Tus clientes corporativos necesitaran estos certificados.
+                    Tus clientes corporativos necesitarán estos certificados.
                   </p>
                 </div>
               </div>
@@ -599,8 +599,8 @@ export default function Home() {
                 Las metas de la Ley REP suben cada año
               </h2>
               <p className="text-muted-foreground">
-                Metas de valorizacion de envases y embalajes (Decreto Supremo).
-                Las gestoras que no demuestren trazabilidad quedaran fuera.
+                Metas de valorización de envases y embalajes (Decreto Supremo).
+                Las gestoras que no demuestren trazabilidad quedarán fuera.
               </p>
             </div>
 
@@ -632,7 +632,7 @@ export default function Home() {
                 <h3 className="font-serif font-bold mb-2">Ley REP</h3>
                 <p className="text-sm text-muted-foreground">
                   Metas crecientes hasta 2030. Las gestoras deben demostrar
-                  trazabilidad y resultados de valorizacion.
+                  trazabilidad y resultados de valorización.
                 </p>
               </div>
               <div className="rounded-xl bg-sage-50/50 border border-sage-200/50 p-5">
@@ -689,7 +689,7 @@ export default function Home() {
                     {[
                       "Eres generador buscando donde reciclar",
                       "Necesitas un marketplace",
-                      "Buscas un ERP con facturacion",
+                      "Buscas un ERP con facturación",
                       "Operas fuera de Chile",
                     ].map((item) => (
                       <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -740,15 +740,15 @@ export default function Home() {
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-sage-500 flex-shrink-0" />
-                    Importacion Excel
+                    Importación Excel
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-sage-500 flex-shrink-0" />
-                    Verificacion publica
+                    Verificación pública
                   </li>
                 </ul>
                 <Link href="/register" className="block">
-                  <Button variant="outline" className="w-full">Probar 14 dias gratis</Button>
+                  <Button variant="outline" className="w-full">Probar 14 días gratis</Button>
                 </Link>
               </div>
 
@@ -758,7 +758,7 @@ export default function Home() {
                   Recomendado
                 </div>
                 <h3 className="font-serif text-xl font-bold text-sage-800 mb-1">Profesional</h3>
-                <p className="text-sm text-muted-foreground mb-5">Para gestoras con operacion activa</p>
+                <p className="text-sm text-muted-foreground mb-5">Para gestoras con operación activa</p>
                 <div className="mb-5">
                   <span className="text-4xl font-bold text-sage-900">$49.900</span>
                   <span className="text-muted-foreground text-sm">/mes CLP</span>
@@ -778,7 +778,7 @@ export default function Home() {
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-sage-500 flex-shrink-0" />
-                    Envio de certificados por email
+                    Envío de certificados por email
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-sage-500 flex-shrink-0" />
@@ -786,7 +786,7 @@ export default function Home() {
                   </li>
                 </ul>
                 <Link href="/register" className="block">
-                  <Button className="w-full">Probar 14 dias gratis</Button>
+                  <Button className="w-full">Probar 14 días gratis</Button>
                 </Link>
               </div>
 
@@ -817,16 +817,16 @@ export default function Home() {
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-sage-500 flex-shrink-0" />
-                    Exportacion SINADER
+                    Exportación SINADER
                   </li>
                 </ul>
                 <Link href="/register" className="block">
-                  <Button variant="outline" className="w-full">Probar 14 dias gratis</Button>
+                  <Button variant="outline" className="w-full">Probar 14 días gratis</Button>
                 </Link>
               </div>
             </div>
             <p className="text-center text-sm text-muted-foreground mt-8">
-              Sin tarjeta de credito. Cancela cuando quieras.
+              Sin tarjeta de crédito. Cancela cuando quieras.
             </p>
           </div>
         </section>
@@ -847,19 +847,19 @@ export default function Home() {
                 name: "Carolina M.",
                 role: "Gerenta de Operaciones",
                 company: "EcoGestora Sur",
-                text: "Antes demoraba 2 horas por certificado copiando datos de Excel a Word. Ahora son 2 minutos. Mis clientes corporativos quedaron impresionados con la verificacion online.",
+                text: "Antes demoraba 2 horas por certificado copiando datos de Excel a Word. Ahora son 2 minutos. Mis clientes corporativos quedaron impresionados con la verificación online.",
               },
               {
                 name: "Felipe R.",
                 role: "Fundador",
                 company: "Reciclados RM",
-                text: "La importacion de Excel fue lo que me convencio. Subi mi planilla tal cual y la plataforma detecto todo. En una tarde tenia 3 meses de datos historicos cargados.",
+                text: "La importación de Excel fue lo que me convenció. Subí mi planilla tal cual y la plataforma detectó todo. En una tarde tenía 3 meses de datos históricos cargados.",
               },
               {
                 name: "Andrea L.",
                 role: "Jefa de Calidad",
                 company: "ValorizaChile",
-                text: "Cuando llego la auditoria de la SMA, teniamos todo trazado: retiro, material, certificado, cliente. Antes habria sido un caos buscando en carpetas.",
+                text: "Cuando llegó la auditoría de la SMA, teníamos todo trazado: retiro, material, certificado, cliente. Antes habría sido un caos buscando en carpetas.",
               },
             ].map((t) => (
               <ScrollFadeIn key={t.name}>
@@ -896,8 +896,8 @@ export default function Home() {
                 Tu gestora no puede seguir con Excel
               </h2>
               <p className="text-sage-300 mb-10 max-w-xl mx-auto leading-relaxed">
-                Las metas suben, las auditorias llegan, y tus clientes corporativos van a exigir certificados con respaldo.
-                Empieza hoy — 14 dias gratis, sin tarjeta de credito.
+                Las metas suben, las auditorías llegan, y tus clientes corporativos van a exigir certificados con respaldo.
+                Empieza hoy — 14 días gratis, sin tarjeta de crédito.
               </p>
               <Link href="/register" className="w-full sm:w-auto">
                 <Button size="lg" className="w-full sm:w-auto text-base px-10 py-6 bg-white text-sage-800 hover:bg-sand-100 btn-scale font-semibold">
@@ -906,7 +906,7 @@ export default function Home() {
                 </Button>
               </Link>
               <p className="mt-5 text-xs text-sage-400">
-                Sin tarjeta de credito. Setup en 2 minutos. Cancela cuando quieras.
+                Sin tarjeta de crédito. Setup en 2 minutos. Cancela cuando quieras.
               </p>
             </div>
           </ScrollFadeIn>
@@ -923,7 +923,7 @@ export default function Home() {
                 <span className="font-serif text-sage-800 font-bold">CertiRecicla</span>
               </div>
               <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
-                Plataforma para gestoras de reciclaje en Chile. Certificados de valorizacion con calculo de CO&#x2082; verificable bajo metodologia GHG Protocol + ISO 14064.
+                Plataforma para gestoras de reciclaje en Chile. Certificados de valorización con cálculo de CO&#x2082; verificable bajo metodología GHG Protocol + ISO 14064.
               </p>
             </div>
             <div>
@@ -939,7 +939,7 @@ export default function Home() {
               <p className="text-xs font-medium text-sage-800 uppercase tracking-wider mb-3">Normativa</p>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><a href="#regulacion" className="hover:text-sage-600 transition-colors">Ley REP</a></li>
-                <li><a href="#metodologia" className="hover:text-sage-600 transition-colors">Metodologia CO&#x2082;</a></li>
+                <li><a href="#metodologia" className="hover:text-sage-600 transition-colors">Metodología CO&#x2082;</a></li>
                 <li><a href="#regulacion" className="hover:text-sage-600 transition-colors">SINADER</a></li>
                 <li><a href="#regulacion" className="hover:text-sage-600 transition-colors">NCG 519</a></li>
               </ul>

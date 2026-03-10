@@ -31,7 +31,7 @@ const TOUR_STEPS: TourStep[] = [
     target: "__welcome__",
     title: "Bienvenido a CertiRecicla",
     description:
-      "Te daremos un recorrido rapido por la plataforma para que conozcas todo lo que puedes hacer. Solo tomara un minuto.",
+      "Te daremos un recorrido rápido por la plataforma para que conozcas todo lo que puedes hacer. Solo tomará un minuto.",
     icon: <Rocket className="h-6 w-6" />,
     position: "center",
   },
@@ -39,7 +39,7 @@ const TOUR_STEPS: TourStep[] = [
     target: "nav-dashboard",
     title: "Dashboard",
     description:
-      "Tu panel principal con KPIs de reciclaje, graficos de CO\u2082 evitado, ranking de materiales y retiros recientes.",
+      "Tu panel principal con KPIs de reciclaje, gráficos de CO\u2082 evitado, ranking de materiales y retiros recientes.",
     icon: <LayoutDashboard className="h-5 w-5" />,
     position: "right",
     desktopOnly: true,
@@ -48,7 +48,7 @@ const TOUR_STEPS: TourStep[] = [
     target: "nav-clients",
     title: "Clientes",
     description:
-      "Administra las empresas a las que les retiras residuos. Crealos manualmente o importalos desde Excel.",
+      "Administra las empresas a las que les retiras residuos. Créalos manualmente o impórtalos desde Excel.",
     icon: <Users className="h-5 w-5" />,
     position: "right",
     desktopOnly: true,
@@ -57,7 +57,7 @@ const TOUR_STEPS: TourStep[] = [
     target: "nav-pickups",
     title: "Retiros",
     description:
-      "Registra cada retiro de materiales: fecha, cliente, materiales y cantidades. El CO\u2082 se calcula automaticamente.",
+      "Registra cada retiro de materiales: fecha, cliente, materiales y cantidades. El CO\u2082 se calcula automáticamente.",
     icon: <Truck className="h-5 w-5" />,
     position: "right",
     desktopOnly: true,
@@ -66,7 +66,7 @@ const TOUR_STEPS: TourStep[] = [
     target: "nav-certificates",
     title: "Certificados",
     description:
-      "Genera certificados PDF profesionales de reciclaje para tus clientes y envialos por email directamente.",
+      "Genera certificados PDF profesionales de reciclaje para tus clientes y envíalos por email directamente.",
     icon: <FileCheck className="h-5 w-5" />,
     position: "right",
     desktopOnly: true,
@@ -75,25 +75,25 @@ const TOUR_STEPS: TourStep[] = [
     target: "nav-reports",
     title: "Reportes",
     description:
-      "Visualiza reportes detallados de tu operacion, exporta datos y analiza tendencias de reciclaje.",
+      "Visualiza reportes detallados de tu operación, exporta datos y analiza tendencias de reciclaje.",
     icon: <FileBarChart className="h-5 w-5" />,
     position: "right",
     desktopOnly: true,
   },
   {
     target: "nav-settings",
-    title: "Configuracion",
+    title: "Configuración",
     description:
-      "Personaliza tu empresa: logo, datos de contacto, factores de CO\u2082 y gestion de usuarios.",
+      "Personaliza tu empresa: logo, datos de contacto, factores de CO\u2082 y gestión de usuarios.",
     icon: <Settings className="h-5 w-5" />,
     position: "right",
     desktopOnly: true,
   },
   {
     target: "quick-actions",
-    title: "Acciones rapidas",
+    title: "Acciones rápidas",
     description:
-      "Sube datos, crea certificados o registra retiros con un solo clic. Tu atajo del dia a dia.",
+      "Sube datos, crea certificados o registra retiros con un solo clic. Tu atajo del día a día.",
     icon: <Upload className="h-5 w-5" />,
     position: "bottom",
     desktopOnly: true,
@@ -103,7 +103,7 @@ const TOUR_STEPS: TourStep[] = [
     target: "__welcome__",
     title: "Tu plataforma de reciclaje",
     description:
-      "Desde el menu lateral puedes acceder a: Clientes, Retiros, Certificados, Reportes y Configuracion. Explora cada seccion para conocer todo lo que puedes hacer.",
+      "Desde el menú lateral puedes acceder a: Clientes, Retiros, Certificados, Reportes y Configuración. Explora cada sección para conocer todo lo que puedes hacer.",
     icon: <LayoutDashboard className="h-5 w-5" />,
     position: "center",
     mobileOnly: true,
@@ -112,7 +112,7 @@ const TOUR_STEPS: TourStep[] = [
     target: "__welcome__",
     title: "Flujo principal",
     description:
-      "1. Registra retiros de materiales\n2. Genera certificados para tus clientes\n3. Envialos por email con verificacion publica",
+      "1. Registra retiros de materiales\n2. Genera certificados para tus clientes\n3. Envíalos por email con verificación pública",
     icon: <FileCheck className="h-5 w-5" />,
     position: "center",
     mobileOnly: true,
@@ -325,7 +325,7 @@ export function ProductTour() {
                   className="inline-flex items-center gap-1 text-xs text-sage-500 hover:text-sage-700 px-3 py-2.5 rounded-lg border border-sand-200 hover:bg-sand-50 transition-colors min-h-[44px]"
                 >
                   <ArrowLeft className="h-3 w-3" />
-                  Atras
+                  Atrás
                 </button>
               )}
               {step === 0 && (

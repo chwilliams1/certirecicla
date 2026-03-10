@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import Image from "next/image";
 import { formatRut } from "@/lib/validations";
 import { PageGuard } from "@/components/permission-gate";
 
@@ -289,7 +290,7 @@ export default function SettingsPage() {
           </p>
           {settings.signatureUrl ? (
             <div className="flex items-center gap-4 p-3 bg-white border border-sand-200 rounded-lg">
-              <img src={settings.signatureUrl} alt="Firma digital" className="h-14 object-contain" />
+              <Image src={settings.signatureUrl} alt="Firma digital" width={200} height={56} className="h-14 object-contain" unoptimized />
               <div className="flex-1">
                 <p className="text-xs text-emerald-600 font-medium">Firma configurada</p>
               </div>
@@ -432,7 +433,7 @@ export default function SettingsPage() {
                 <Label>Imagen de firma/sello</Label>
                 {settings.brandSignatureUrl ? (
                   <div className="flex items-center gap-3">
-                    <img src={settings.brandSignatureUrl} alt="Firma" className="h-12 object-contain border rounded" />
+                    <Image src={settings.brandSignatureUrl} alt="Firma" width={200} height={48} className="h-12 object-contain border rounded" unoptimized />
                     <button
                       type="button"
                       onClick={() => deleteImage("signature")}
@@ -470,7 +471,7 @@ export default function SettingsPage() {
                 <Label>Segundo logo/sello (ej: ISO, certificación)</Label>
                 {settings.brandSecondaryLogoUrl ? (
                   <div className="flex items-center gap-3">
-                    <img src={settings.brandSecondaryLogoUrl} alt="Logo secundario" className="h-12 object-contain border rounded" />
+                    <Image src={settings.brandSecondaryLogoUrl} alt="Logo secundario" width={48} height={48} className="h-12 object-contain border rounded" unoptimized />
                     <button
                       type="button"
                       onClick={() => deleteImage("secondaryLogo")}

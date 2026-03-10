@@ -33,6 +33,7 @@ import { formatPeriod } from "@/lib/format-period";
 import { derivePalette, DEFAULT_PALETTE, type BrandingPalette } from "@/lib/pdf/branding-colors";
 import { checkFeatureAccess } from "@/lib/plans";
 import { SendCertificateDialog } from "@/components/send-certificate-dialog";
+import Image from "next/image";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { PermissionGate } from "@/components/permission-gate";
@@ -419,7 +420,7 @@ export default function CertificateDetailPage() {
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
             <div className="flex items-center gap-3">
               {cert.company.logo && (
-                <img src={cert.company.logo} alt="Logo" className="h-12 w-12 object-contain rounded" />
+                <Image src={cert.company.logo} alt="Logo" width={48} height={48} className="h-12 w-12 object-contain rounded" unoptimized />
               )}
               <div>
                 <h2 className="font-serif text-xl sm:text-2xl" style={{ color: palette.primary }}>Certificado de Reciclaje</h2>
@@ -432,7 +433,7 @@ export default function CertificateDetailPage() {
               {cert.company.address && <p className="text-sage-800/40">{cert.company.address}</p>}
               {cert.company.plantAddress && <p className="text-sage-800/40">Planta: {cert.company.plantAddress}</p>}
               {secondaryLogo && (
-                <img src={secondaryLogo} alt="Sello" className="h-10 w-10 object-contain mt-2 sm:ml-auto" />
+                <Image src={secondaryLogo} alt="Sello" width={40} height={40} className="h-10 w-10 object-contain mt-2 sm:ml-auto" unoptimized />
               )}
             </div>
           </div>
@@ -591,7 +592,7 @@ export default function CertificateDetailPage() {
           {!editing && (
             <div className="mt-8">
               {signatureImg && (
-                <img src={signatureImg} alt="Firma" className="h-12 object-contain mb-1" />
+                <Image src={signatureImg} alt="Firma" width={200} height={48} className="h-12 object-contain mb-1" unoptimized />
               )}
               <div className="w-48 border-b mb-1" style={{ borderColor: palette.dark }} />
               <p className="text-xs" style={{ color: palette.gray }}>Firma Responsable</p>
