@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
-import GoogleAnalytics from "@/components/google-analytics";
+import GoogleAnalytics, { GTMNoScript } from "@/components/google-analytics";
 
 const SITE_URL = "https://certirecicla.cl";
 
@@ -84,6 +84,7 @@ export default function RootLayout({
     <html lang="es">
       <body className="font-sans antialiased">
         <GoogleAnalytics />
+        <GTMNoScript />
         <Providers>
           {children}
           <Toaster />
