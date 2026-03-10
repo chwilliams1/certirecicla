@@ -259,7 +259,9 @@ export default function UploadPage() {
     if (renameMap.size > 0 || parentAssignMap.size > 0) {
       dataToImport = dataToImport.map((row) => {
         let cliente = renameMap.get(row.nombre_cliente) || row.nombre_cliente;
-        let sucursal = row.nombre_sucursal ? (renameMap.get(row.nombre_sucursal) || row.nombre_sucursal) : row.nombre_sucursal;
+        let sucursal = row.nombre_sucursal
+          ? (renameMap.get(row.nombre_sucursal) || row.nombre_sucursal)
+          : (row.nombre_sucursal || "");
 
         // If a standalone client is assigned a parent, move it to sucursal
         if (!sucursal && parentAssignMap.has(cliente)) {
@@ -291,21 +293,23 @@ export default function UploadPage() {
     });
 
     try {
+      const payload = { data: dataToImport, newClientDetails: finalDetails };
       const res = await fetch("/api/upload", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: dataToImport, newClientDetails: finalDetails }),
+        body: JSON.stringify(payload),
       });
       const result = await res.json();
       if (!res.ok) {
-        setError(result.error || "Error al importar los datos");
+        setError(result.error || `Error del servidor (${res.status})`);
         setStep("preview");
         return;
       }
       setImportResult({ ...result, pickupsCreated: uniquePickups.size });
       setStep("done");
-    } catch {
-      setError("Error al importar los datos");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(`Error al importar: ${msg}`);
       setStep("preview");
     }
   }

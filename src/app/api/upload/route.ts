@@ -75,6 +75,7 @@ export async function POST(req: NextRequest) {
   );
 
   // Use transaction for atomicity
+  try {
   await prisma.$transaction(async (tx) => {
     const parentCache = new Map<string, string>();
     const branchCache = new Map<string, string>();
@@ -197,6 +198,14 @@ export async function POST(req: NextRequest) {
       recordsCreated = recordsBatch.length;
     }
   });
+  } catch (err) {
+    console.error("[upload] Import transaction failed:", err);
+    const message = err instanceof Error ? err.message : "Error desconocido";
+    return NextResponse.json(
+      { error: `Error al importar: ${message}` },
+      { status: 500 }
+    );
+  }
 
   return NextResponse.json({
     recordsCreated,
