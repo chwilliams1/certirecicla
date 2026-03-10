@@ -32,7 +32,14 @@ interface CompanySettings {
 
 interface PlanInfo {
   plan: string;
-  features: { customBranding: boolean };
+  limits: {
+    customBranding: boolean;
+    sinaderExport: boolean;
+    clientPortal: boolean;
+    fullReports: boolean;
+    multiUser: boolean;
+    subClients: boolean;
+  };
 }
 
 function derivePalettePreview(hex: string) {
@@ -152,7 +159,7 @@ export default function SettingsPage() {
     };
 
     // Add branding fields if Business plan
-    if (planInfo?.features?.customBranding) {
+    if (planInfo?.limits?.customBranding) {
       body.brandPrimaryColor = formData.get("brandPrimaryColor") || null;
       body.brandHidePlatform = formData.get("brandHidePlatform") === "on";
       body.brandFont = formData.get("brandFont") || null;
@@ -181,7 +188,7 @@ export default function SettingsPage() {
 
   if (!settings) return null;
 
-  const canBrand = planInfo?.features?.customBranding ?? false;
+  const canBrand = planInfo?.limits?.customBranding ?? false;
   const palettePreview = derivePalettePreview(brandColor);
 
   return (
@@ -453,17 +460,24 @@ export default function SettingsPage() {
 
         <button
           type="button"
-          onClick={() => router.push("/dashboard/settings/sinader")}
-          className="w-full bg-sand-50 border border-sand-300 rounded-[14px] p-5 flex items-center gap-4 hover:border-amber-300 hover:bg-amber-50/30 transition-colors text-left group"
+          onClick={() => planInfo?.limits?.sinaderExport ? router.push("/dashboard/settings/sinader") : router.push("/dashboard/billing")}
+          className={`w-full bg-sand-50 border border-sand-300 rounded-[14px] p-5 flex items-center gap-4 transition-colors text-left group ${planInfo?.limits?.sinaderExport ? "hover:border-amber-300 hover:bg-amber-50/30" : "opacity-60"}`}
         >
           <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
             <FileSpreadsheet className="h-5 w-5 text-amber-600" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-medium text-sage-800">Exportar SINADER</p>
-            <p className="text-xs text-sage-800/40">Exporta datos en formato compatible con el Sistema Nacional de Declaración de Residuos</p>
+            <p className="text-xs text-sage-800/40">
+              {planInfo?.limits?.sinaderExport
+                ? "Exporta datos en formato compatible con el Sistema Nacional de Declaración de Residuos"
+                : "Disponible en el plan Business"}
+            </p>
           </div>
-          <ChevronRight className="h-5 w-5 text-sage-800/30 group-hover:text-amber-500 transition-colors shrink-0" />
+          {planInfo?.limits?.sinaderExport
+            ? <ChevronRight className="h-5 w-5 text-sage-800/30 group-hover:text-amber-500 transition-colors shrink-0" />
+            : <Lock className="h-5 w-5 text-sage-800/30 shrink-0" />
+          }
         </button>
       </div>
 

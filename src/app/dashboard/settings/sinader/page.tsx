@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Download, FileSpreadsheet, Calendar, Filter, Loader2, ArrowLeft } from "lucide-react";
+import { Download, FileSpreadsheet, Calendar, Filter, Loader2, ArrowLeft, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -46,6 +46,15 @@ export default function SinaderExportPage() {
   const [recordCount, setRecordCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingCount, setLoadingCount] = useState(false);
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+  // Check plan access
+  useEffect(() => {
+    fetch("/api/plan")
+      .then((r) => r.json())
+      .then((data) => setHasAccess(data.limits?.sinaderExport ?? false))
+      .catch(() => setHasAccess(false));
+  }, []);
 
   // Fetch clients for filter
   useEffect(() => {
@@ -103,6 +112,32 @@ export default function SinaderExportPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (hasAccess === false) {
+    return (
+      <div className="space-y-6 max-w-2xl">
+        <button
+          onClick={() => router.push("/dashboard/settings")}
+          className="flex items-center gap-1.5 text-sm text-sage-800/50 hover:text-sage-800 transition-colors mb-3"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Volver a configuración
+        </button>
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 flex items-start gap-3">
+          <Lock className="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="text-sm font-medium text-amber-800">Exportación SINADER no disponible</p>
+            <p className="text-xs text-amber-700 mt-1">
+              La exportación SINADER está disponible en el plan Business. Actualiza tu plan para acceder.
+            </p>
+            <a href="/dashboard/billing" className="inline-block mt-2 text-xs font-medium text-amber-700 underline hover:text-amber-900">
+              Ver planes
+            </a>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

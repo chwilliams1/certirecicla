@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { hasPermission } from "@/lib/roles";
+import { checkFeatureAccess } from "@/lib/plans";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -11,6 +12,18 @@ export async function POST(req: NextRequest) {
   }
   if (!hasPermission(session.user.role, "portal:manage")) {
     return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
+  }
+
+  // Check plan access for client portal
+  const company = await prisma.company.findUnique({
+    where: { id: session.user.companyId },
+    select: { plan: true },
+  });
+  if (!company || !checkFeatureAccess(company.plan, "clientPortal")) {
+    return NextResponse.json(
+      { error: "Portal de clientes disponible desde el plan Profesional" },
+      { status: 403 }
+    );
   }
 
   const { clientId } = await req.json();
