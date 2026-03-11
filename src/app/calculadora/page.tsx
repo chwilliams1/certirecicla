@@ -42,21 +42,147 @@ const INITIAL: MaterialEntry[] = [
 
 let nextId = 4;
 
+const jsonLdGraph = [
+  {
+    "@type": "WebApplication",
+    name: "Calculadora de Reciclaje y CO₂ Evitado",
+    alternateName: [
+      "Calculadora de Ecoequivalencias",
+      "Calculadora Ecológica de Reciclaje",
+      "Calculadora de Impacto Ambiental por Reciclaje",
+    ],
+    url: "https://certirecicla.cl/calculadora",
+    applicationCategory: "UtilityApplication",
+    operatingSystem: "Web",
+    description:
+      "Calculadora de reciclaje gratis: calcula el CO₂ evitado, ecoequivalencias (árboles, km no recorridos, agua ahorrada) y el impacto ambiental de tu empresa al reciclar plástico, cartón, vidrio, aluminio y más. Basada en factores GHG Protocol, IPCC y EPA WARM.",
+    inLanguage: "es",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "CLP" },
+    provider: {
+      "@type": "Organization",
+      name: "CertiRecicla",
+      url: "https://certirecicla.cl",
+      logo: "https://certirecicla.cl/logo.png",
+    },
+    featureList: [
+      "Cálculo de CO₂ evitado por material reciclado",
+      "Ecoequivalencias ambientales (árboles, km no recorridos, smartphones cargados)",
+      "Litros de agua ahorrados por reciclaje",
+      "Gráfico de distribución porcentual por material",
+      "Tabla detallada con factores de emisión por material",
+      "Factores verificados GHG Protocol, IPCC y EPA WARM",
+      "Compartir resultados por URL",
+      "Hasta 10 materiales en un solo cálculo",
+    ],
+    keywords: "calculadora de reciclaje, calculadora de ecoequivalencias, calculadora CO2 reciclaje, calculadora ecológica, calculadora ambiental, calculadora verde",
+  },
+  {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Inicio",
+        item: "https://certirecicla.cl",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Calculadora de CO₂",
+        item: "https://certirecicla.cl/calculadora",
+      },
+    ],
+  },
+  {
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "¿Cómo funciona la calculadora de CO₂ evitado por reciclaje?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "La calculadora estima la cantidad de dióxido de carbono (CO₂) evitado al reciclar materiales en lugar de enviarlos a un relleno sanitario o producir materia prima virgen. Cada material tiene un factor de emisión que representa los kilogramos de CO₂ que se dejan de emitir por cada kilogramo reciclado. Ingresa tus materiales (plástico PET, cartón, vidrio, aluminio, etc.) y la cantidad en kilogramos para obtener el resultado al instante.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "¿Qué metodología usa la calculadora de emisiones evitadas?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Los factores de emisión están basados en fuentes internacionales reconocidas: EPA WARM v16 (Waste Reduction Model), DEFRA 2025 del Reino Unido, GHG Protocol Corporate Standard y datos del IPCC AR6. Esta es la misma metodología que utilizan programas como HuellaChile del Ministerio del Medio Ambiente de Chile.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "¿Para qué sirve calcular el CO₂ evitado por reciclaje?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Conocer el CO₂ evitado te permite incluirlo en reportes de sustentabilidad, certificados de reciclaje, auditorías ISO 14001, cumplir con la NCG 519 de la CMF y demostrar cumplimiento con la Ley REP en Chile. También es útil para memorias anuales, licitaciones públicas y comunicar tu impacto ambiental a clientes y stakeholders.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "¿Cuánto CO₂ se ahorra al reciclar 1 kg de plástico PET?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Reciclar 1 kg de plástico PET evita aproximadamente 1,5 kg de CO₂ equivalente, según factores EPA WARM v16. Esto incluye las emisiones evitadas por no producir plástico virgen y por no enviarlo a relleno sanitario. El ahorro exacto varía según el tipo de material: cartón ahorra 0,9 kg CO₂/kg, vidrio 0,3 kg CO₂/kg, y aluminio hasta 9,1 kg CO₂/kg.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "¿La calculadora de CO₂ por reciclaje es gratuita?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Sí, la calculadora de CertiRecicla es 100% gratuita y no requiere registro. Puedes calcular el CO₂ evitado, ver equivalencias ambientales (árboles, kilómetros no recorridos, agua ahorrada) y compartir tus resultados. Si necesitas certificados oficiales con estos datos, puedes probar CertiRecicla gratis por 14 días.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "¿Qué materiales puedo calcular en la calculadora de reciclaje?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "La calculadora incluye los materiales más comunes: Plástico PET, Plástico HDPE, Cartón, Papel, Vidrio, Aluminio, Chatarra (acero), Cobre, Tetra Pak y Orgánicos. Cada material tiene su propio factor de emisión verificado según estándares internacionales GHG Protocol, EPA WARM e IPCC.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "¿Qué son las ecoequivalencias en reciclaje?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Las ecoequivalencias traducen el CO₂ evitado a magnitudes comprensibles: árboles absorbiendo CO₂ durante un año, kilómetros no recorridos en automóvil, smartphones cargados y litros de agua ahorrados. Se calculan usando los factores del EPA GHG Equivalencies Calculator y permiten comunicar el impacto ambiental de forma clara en reportes de sustentabilidad y certificados de reciclaje.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "¿Sirve esta calculadora para cumplir con la Ley REP en Chile?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "La calculadora te entrega los datos de CO₂ evitado y equivalencias ambientales que puedes incluir en tus reportes. Para cumplir formalmente con la Ley REP necesitas acreditar la valorización en SINADER/RETC con documentación tributaria. CertiRecicla integra este cálculo en certificados de valorización oficiales y permite exportar datos directamente a SINADER.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "¿Cómo incluir el CO₂ evitado en un reporte de sustentabilidad o NCG 519?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "El CO₂ evitado por reciclaje se reporta como emisiones Alcance 3 evitadas según el GHG Protocol Corporate Standard. Para la NCG 519 de la CMF y reportes ESG, debes indicar la metodología (factores EPA WARM/IPCC), el período, los materiales y cantidades. La calculadora de CertiRecicla genera estos datos listos para copiar en tu reporte.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "¿Cuánta agua se ahorra al reciclar?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "El ahorro de agua varía por material: reciclar 1 tonelada de papel ahorra aproximadamente 26.000 litros de agua, 1 tonelada de plástico ahorra 20.000 litros, y 1 tonelada de vidrio ahorra 4.000 litros. La calculadora estima automáticamente el agua total ahorrada según los materiales y cantidades que ingreses.",
+        },
+      },
+    ],
+  },
+];
+
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "WebApplication",
-  name: "Calculadora de CO₂ evitado por reciclaje",
-  url: "https://certirecicla.cl/calculadora",
-  applicationCategory: "UtilityApplication",
-  operatingSystem: "Web",
-  description:
-    "Calcula cuánto CO₂ evita tu empresa al reciclar. Basada en factores GHG Protocol e IPCC.",
-  offers: { "@type": "Offer", price: "0", priceCurrency: "CLP" },
-  provider: {
-    "@type": "Organization",
-    name: "CertiRecicla",
-    url: "https://certirecicla.cl",
-  },
+  "@graph": jsonLdGraph,
 };
 
 // Animated counter hook
@@ -259,7 +385,7 @@ export default function CalculadoraPage() {
       <header className="border-b border-border/50 bg-white/80 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="CertiRecicla" width={28} height={28} />
+            <Image src="/logo.png" alt="CertiRecicla" width={36} height={36} className="animate-breathe" />
             <span className="font-serif text-sage-800 font-bold">CertiRecicla</span>
           </Link>
           <nav className="flex items-center gap-4">
@@ -279,12 +405,17 @@ export default function CalculadoraPage() {
       <main className="container mx-auto px-6 py-10 md:py-14 max-w-6xl">
         {/* Hero */}
         <div className="text-center mb-10">
+          <nav aria-label="Breadcrumb" className="text-xs text-muted-foreground mb-4">
+            <Link href="/" className="hover:text-sage-600 transition-colors">Inicio</Link>
+            <span className="mx-1.5">/</span>
+            <span className="text-sage-700">Calculadora de CO&#x2082;</span>
+          </nav>
           <h1 className="text-3xl md:text-4xl font-serif text-sage-800 mb-3">
             Calculadora de CO&#x2082; evitado por reciclaje
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Ingresa los materiales que recicla tu empresa y calcula al instante tu impacto
-            ambiental. Basada en factores <strong className="text-sage-700">GHG Protocol</strong> e <strong className="text-sage-700">IPCC</strong>.
+            Ingresa los materiales que recicla tu empresa y calcula al instante tu <strong className="text-sage-700">huella de carbono</strong> e <strong className="text-sage-700">impacto
+            ambiental</strong>. Basada en factores <strong className="text-sage-700">GHG Protocol</strong> e <strong className="text-sage-700">IPCC</strong>. 100% gratis, sin registro.
           </p>
         </div>
 
@@ -493,35 +624,91 @@ export default function CalculadoraPage() {
 
         {/* SEO content section */}
         <section className="mt-16 max-w-3xl mx-auto prose prose-sage prose-sm prose-headings:font-serif prose-headings:text-sage-800 prose-p:text-muted-foreground">
-          <h2>¿Cómo funciona la calculadora de CO&#x2082;?</h2>
+          <h2>¿Cómo funciona la calculadora de CO&#x2082; evitado por reciclaje?</h2>
           <p>
-            Esta calculadora estima la cantidad de <strong>dióxido de carbono (CO&#x2082;) evitado</strong> al reciclar
+            Esta <strong>calculadora de CO&#x2082;</strong> estima la cantidad de <strong>dióxido de carbono evitado</strong> al reciclar
             materiales en lugar de enviarlos a un relleno sanitario o producir materia prima virgen. Cada material tiene
             un <strong>factor de emisión</strong> que representa los kilogramos de CO&#x2082; que se dejan de emitir por
-            cada kilogramo reciclado.
+            cada kilogramo reciclado. Ingresa tus materiales &mdash; plástico PET, cartón, vidrio, aluminio, chatarra y más &mdash;
+            junto con la cantidad en kilogramos y obtén el resultado al instante.
           </p>
 
-          <h2>¿Qué metodología usamos?</h2>
+          <h2>¿Qué metodología usa la calculadora de emisiones evitadas?</h2>
           <p>
-            Los factores de emisión están basados en fuentes internacionales reconocidas: <strong>EPA WARM v16</strong> (Waste
+            Los <strong>factores de emisión</strong> están basados en fuentes internacionales reconocidas: <strong>EPA WARM v16</strong> (Waste
             Reduction Model), <strong>DEFRA 2025</strong> del Reino Unido, <strong>GHG Protocol Corporate Standard</strong> y
-            datos del <strong>IPCC AR6</strong>. Esta es la misma metodología que utilizan programas como HuellaChile del
-            Ministerio del Medio Ambiente.
+            datos del <strong>IPCC AR6</strong>. Esta es la misma metodología que utilizan programas como <strong>HuellaChile</strong> del
+            Ministerio del Medio Ambiente de Chile, lo que garantiza que tus datos sean comparables y auditables.
           </p>
 
-          <h2>¿Para qué sirve calcular el CO&#x2082; evitado?</h2>
+          <h2>¿Cuánto CO&#x2082; se ahorra al reciclar cada material?</h2>
           <p>
-            Conocer tu impacto ambiental te permite incluirlo en <strong>reportes de sustentabilidad</strong>,
+            El <strong>CO&#x2082; evitado varía según el material</strong>: reciclar 1&nbsp;kg de aluminio evita hasta 9,1&nbsp;kg de CO&#x2082;,
+            mientras que 1&nbsp;kg de plástico PET evita 1,5&nbsp;kg y 1&nbsp;kg de cartón evita 0,9&nbsp;kg.
+            El vidrio ahorra 0,3&nbsp;kg CO&#x2082;/kg y el cobre lidera con 3,7&nbsp;kg CO&#x2082;/kg.
+            Estos valores incluyen las <strong>emisiones evitadas</strong> por no producir materia prima virgen
+            y por desviar residuos del relleno sanitario.
+          </p>
+
+          <h2>¿Para qué sirve calcular el CO&#x2082; evitado por reciclaje?</h2>
+          <p>
+            Conocer tu <strong>impacto ambiental</strong> te permite incluirlo en <strong>reportes de sustentabilidad</strong>,
             <strong> certificados de reciclaje</strong>, <strong>auditorías ISO 14001</strong> y cumplir con la
             <strong> NCG 519 de la CMF</strong>. Además, es un dato clave para demostrar cumplimiento con la
-            <strong> Ley REP</strong> en Chile.
+            <strong> Ley REP</strong> en Chile. También es útil para <strong>memorias anuales</strong>, licitaciones públicas
+            y comunicar el compromiso ambiental de tu empresa a clientes y stakeholders.
           </p>
 
-          <h2>¿Quieres automatizar este cálculo?</h2>
+          <h2>¿La calculadora de CO&#x2082; por reciclaje es gratuita?</h2>
           <p>
-            Con <strong>CertiRecicla</strong>, cada certificado de reciclaje incluye automáticamente el cálculo de CO&#x2082;
-            evitado por material. Gestiona clientes, genera certificados PDF profesionales y exporta tus datos a SINADER
-            desde una sola plataforma. <Link href="/register" className="text-sage-600 font-medium">Prueba gratis 14 días</Link>.
+            Sí, esta <strong>calculadora de reciclaje es 100% gratuita</strong> y no requiere registro.
+            Puedes calcular el CO&#x2082; evitado, ver <strong>equivalencias ambientales</strong> (árboles absorbiendo CO&#x2082;,
+            kilómetros no recorridos en auto, litros de agua ahorrados) y compartir tus resultados por URL.
+            Úsala todas las veces que necesites para tus reportes mensuales o anuales.
+          </p>
+
+          <h2>¿Qué materiales incluye la calculadora?</h2>
+          <p>
+            La calculadora soporta los <strong>materiales más comunes en gestoras de reciclaje</strong>: Plástico PET,
+            Plástico HDPE, Cartón, Papel, Vidrio, Aluminio, Chatarra (acero), Cobre, Tetra Pak y Orgánicos.
+            Cada uno con su <strong>factor de emisión verificado</strong> según estándares internacionales
+            GHG Protocol, EPA WARM e IPCC. Puedes agregar hasta 10 materiales distintos en un solo cálculo.
+          </p>
+
+          <h2>¿Qué son las ecoequivalencias y cómo se calculan?</h2>
+          <p>
+            Las <strong>ecoequivalencias</strong> traducen el CO&#x2082; evitado a magnitudes que cualquier persona puede entender:
+            <strong> árboles absorbiendo CO&#x2082;</strong> durante un año, <strong>kilómetros no recorridos en auto</strong>,
+            <strong> smartphones cargados</strong> y <strong>litros de agua ahorrados</strong>. Estos valores se calculan
+            usando los factores del <strong>EPA GHG Equivalencies Calculator</strong> y son ideales para incluir en
+            reportes de sustentabilidad, presentaciones a directorio y comunicación a clientes.
+          </p>
+
+          <h2>¿Sirve esta calculadora para la Ley REP y reportes NCG 519?</h2>
+          <p>
+            La <strong>calculadora de reciclaje</strong> te entrega los datos de CO&#x2082; evitado que puedes incluir en
+            <strong> reportes de sustentabilidad</strong>, cumplimiento <strong>NCG 519 de la CMF</strong> y memorias anuales ESG.
+            El CO&#x2082; evitado se reporta como emisiones Alcance 3 evitadas según el <strong>GHG Protocol</strong>.
+            Para cumplir formalmente con la <strong>Ley REP</strong>, necesitas acreditar la valorización en <strong>SINADER</strong> y <strong>RETC</strong> con
+            documentación tributaria, algo que CertiRecicla automatiza.
+          </p>
+
+          <h2>¿Cuánta agua se ahorra al reciclar?</h2>
+          <p>
+            Además del CO&#x2082;, el reciclaje ahorra enormes cantidades de <strong>agua</strong>: reciclar 1 tonelada de papel
+            ahorra aproximadamente 26.000 litros, 1 tonelada de plástico ahorra 20.000 litros y 1 tonelada de vidrio
+            ahorra 4.000 litros. Nuestra <strong>calculadora ecológica</strong> estima automáticamente el agua total
+            ahorrada según los materiales que ingreses.
+          </p>
+
+          <h2>¿Quieres automatizar este cálculo con certificados oficiales?</h2>
+          <p>
+            Con <strong>CertiRecicla</strong>, cada <strong>certificado de reciclaje</strong> incluye automáticamente el cálculo de CO&#x2082;
+            evitado por material, <strong>ecoequivalencias ambientales</strong> y el detalle metodológico.
+            Gestiona clientes generadores, genera <strong>certificados PDF profesionales</strong>, exporta tus datos a <strong>SINADER</strong>
+            {" "}y cumple con la <strong>Ley REP</strong> desde una sola plataforma. Ideal para <strong>gestoras de reciclaje en Chile</strong> que
+            buscan profesionalizar sus operaciones.{" "}
+            <Link href="/register" className="text-sage-600 font-medium">Prueba gratis 14 días</Link>.
           </p>
         </section>
       </main>
