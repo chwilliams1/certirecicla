@@ -515,6 +515,18 @@ export default function CalculadoraPage() {
 
           {/* Right: Results (3 cols) */}
           <div className="lg:col-span-3 space-y-6">
+            {/* Trust badge */}
+            <a href="#metodologia" className="flex items-center gap-3 bg-white border border-sage-200 rounded-xl px-4 py-3 hover:border-sage-300 transition-colors group">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-sage-100 flex-shrink-0">
+                <Check className="h-4 w-4 text-sage-600" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-medium text-sage-800">Datos verificados con fuentes científicas</p>
+                <p className="text-[10px] text-muted-foreground">EPA WARM v16 &bull; DEFRA/DESNZ 2025 &bull; GHG Protocol &bull; Water Footprint Network</p>
+              </div>
+              <ArrowRight className="h-3.5 w-3.5 text-sage-400 group-hover:text-sage-600 flex-shrink-0 ml-auto transition-colors" />
+            </a>
+
             {/* Summary cards */}
             <div className="grid grid-cols-3 gap-4">
               <div className="bg-white border border-border/50 rounded-xl p-5 text-center">
@@ -551,10 +563,13 @@ export default function CalculadoraPage() {
             {/* Equivalencies bars */}
             <div className="bg-white border border-border/50 rounded-xl p-5 space-y-4">
               <h3 className="font-serif text-sage-800">Equivalencias ambientales</h3>
-              <EquivBar icon={TreePine} value={equivalencies.trees} label="Arboles absorbiendo CO&#x2082; por 1 año" maxValue={maxEquiv} />
+              <EquivBar icon={TreePine} value={equivalencies.trees} label="Árboles absorbiendo CO&#x2082; por 1 año" maxValue={maxEquiv} />
               <EquivBar icon={Car} value={equivalencies.kmNotDriven} label="Kilómetros no recorridos en auto" maxValue={maxEquiv} />
               <EquivBar icon={Smartphone} value={equivalencies.smartphonesCharged} label="Smartphones cargados" maxValue={maxEquiv} />
               <EquivBar icon={Droplets} value={waterSaved} label="Litros de agua ahorrados" maxValue={maxEquiv} />
+              <p className="text-[10px] text-muted-foreground text-right pt-1">
+                Fuente: EPA GHG Equivalencies Calculator (Nov 2024) &bull; Water Footprint Network
+              </p>
             </div>
 
             {/* Materials detail table */}
@@ -603,6 +618,11 @@ export default function CalculadoraPage() {
                       </tr>
                     </tfoot>
                   </table>
+                </div>
+                <div className="px-5 py-2.5 border-t border-border/50 bg-sage-50/50">
+                  <p className="text-[10px] text-muted-foreground">
+                    Factores verificados con EPA WARM v16 (2023) y DEFRA/DESNZ 2025. <a href="#metodologia" className="text-sage-600 hover:underline">Ver metodología completa</a>
+                  </p>
                 </div>
               </div>
             )}
