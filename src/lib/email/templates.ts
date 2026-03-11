@@ -143,6 +143,86 @@ export function teamInvitationEmail({ inviterName, companyName, tempPassword, lo
   return { subject: `Te invitaron a ${companyName} en CertiRecicla`, html: buildEmailHtml(body, PLATFORM_NAME) };
 }
 
+export function onboardingDay1Email({ userName }: { userName: string }): { subject: string; html: string } {
+  const body = `Hola <strong>${userName}</strong>,
+
+¿Ya agregaste tu primer cliente? En CertiRecicla el flujo es simple:
+
+<div style="background: #f4f7f4; padding: 20px; border-radius: 8px; margin: 20px 0;">
+<p style="margin: 0;"><strong>1.</strong> Agrega un cliente con sus datos básicos</p>
+<p style="margin: 8px 0 0;"><strong>2.</strong> Registra retiros de reciclaje (material, kg, fecha)</p>
+<p style="margin: 4px 0 0;"><strong>3.</strong> Genera un certificado con CO₂ calculado automáticamente</p>
+</div>
+
+<div style="text-align: center; margin: 24px 0;">
+<a href="${process.env.NEXTAUTH_URL}/dashboard/clients" style="background-color: #4a6b4e; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">Ir a Clientes</a>
+</div>
+
+Si necesitas ayuda, responde a este correo.`;
+
+  return { subject: "¿Ya agregaste tu primer cliente? — CertiRecicla", html: buildEmailHtml(body, PLATFORM_NAME) };
+}
+
+export function onboardingDay3Email({ userName }: { userName: string }): { subject: string; html: string } {
+  const body = `Hola <strong>${userName}</strong>,
+
+¿Sabías que puedes importar tus datos desde Excel? Si ya tienes una planilla con clientes o retiros, súbela directamente y ahorra tiempo.
+
+<div style="background: #f4f7f4; padding: 20px; border-radius: 8px; margin: 20px 0;">
+<p style="margin: 0;"><strong>Tip:</strong> Descarga nuestra plantilla de ejemplo, llénala con tus datos y súbela en un click.</p>
+</div>
+
+<div style="text-align: center; margin: 24px 0;">
+<a href="${process.env.NEXTAUTH_URL}/dashboard/records?import=true" style="background-color: #4a6b4e; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">Subir Excel</a>
+</div>
+
+Saludos,
+El equipo de CertiRecicla`;
+
+  return { subject: "Tip: importa tus datos desde Excel — CertiRecicla", html: buildEmailHtml(body, PLATFORM_NAME) };
+}
+
+export function onboardingDay7Email({ userName }: { userName: string }): { subject: string; html: string } {
+  const body = `Hola <strong>${userName}</strong>,
+
+Generar tu primer certificado toma menos de 2 minutos:
+
+<div style="background: #f4f7f4; padding: 20px; border-radius: 8px; margin: 20px 0;">
+<p style="margin: 0;"><strong>1.</strong> Selecciona un cliente y un rango de fechas</p>
+<p style="margin: 8px 0 0;"><strong>2.</strong> Revisa los datos y el CO₂ calculado</p>
+<p style="margin: 4px 0 0;"><strong>3.</strong> Publica y envía el certificado por email</p>
+</div>
+
+<div style="text-align: center; margin: 24px 0;">
+<a href="${process.env.NEXTAUTH_URL}/dashboard/certificates" style="background-color: #4a6b4e; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">Crear certificado</a>
+</div>
+
+Tus clientes valorarán recibir evidencia verificable de su impacto ambiental.`;
+
+  return { subject: "Tu primer certificado en 2 minutos — CertiRecicla", html: buildEmailHtml(body, PLATFORM_NAME) };
+}
+
+export function onboardingDay12Email({ userName }: { userName: string }): { subject: string; html: string } {
+  const body = `Hola <strong>${userName}</strong>,
+
+Tu periodo de prueba en CertiRecicla vence en <strong>2 días</strong>. Esperamos que hayas podido explorar la plataforma.
+
+<div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0;">
+<p style="margin: 0; font-weight: 600;">Al activar un plan mantienes:</p>
+<p style="margin: 8px 0 0;">✓ Todos tus clientes y datos de retiros</p>
+<p style="margin: 4px 0 0;">✓ Certificados ilimitados según tu plan</p>
+<p style="margin: 4px 0 0;">✓ Portal de clientes y reportes automáticos</p>
+</div>
+
+<div style="text-align: center; margin: 24px 0;">
+<a href="${process.env.NEXTAUTH_URL}/dashboard/billing" style="background-color: #4a6b4e; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">Ver planes</a>
+</div>
+
+Si tienes dudas sobre qué plan elegir, responde a este correo y te ayudamos.`;
+
+  return { subject: "Tu trial vence en 2 días — CertiRecicla", html: buildEmailHtml(body, PLATFORM_NAME) };
+}
+
 export function portalLinkEmail({ companyName, clientName, portalUrl }: { companyName: string; clientName: string; portalUrl: string }): { subject: string; html: string } {
   const body = `Hola equipo de <strong>${clientName}</strong>,
 
