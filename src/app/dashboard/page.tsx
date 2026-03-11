@@ -26,6 +26,7 @@ import {
 import { calculateEquivalencies, calculateWaterSaved } from "@/lib/co2-calculator";
 import { CountUp } from "@/components/count-up";
 import { RotatingEquivalence } from "@/components/rotating-equivalence";
+import { Button } from "@/components/ui/button";
 import { TrialBanner } from "@/components/trial-banner";
 import { OnboardingChecklist } from "@/components/onboarding-checklist";
 
@@ -151,6 +152,40 @@ export default function DashboardPage() {
       </button>
     </div>
   );
+
+  const isEmpty = data.kpis.totalKg === 0 && data.kpis.totalPickups === 0;
+
+  if (isEmpty) {
+    return (
+      <div className="space-y-6 page-fade-in">
+        <TrialBanner />
+        <OnboardingChecklist />
+        <div className="text-center py-16">
+          <p className="text-5xl mb-4">🌱</p>
+          <h2 className="font-serif text-xl text-sage-800 mb-2">
+            Bienvenido a tu dashboard
+          </h2>
+          <p className="text-sm text-sage-500 max-w-md mx-auto mb-6">
+            Aquí verás tus métricas de reciclaje una vez que registres tu primer retiro. Completa los pasos de arriba para empezar.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href="/dashboard/clients">
+              <Button variant="outline" className="gap-2">
+                <Users className="h-4 w-4" />
+                Agregar cliente
+              </Button>
+            </Link>
+            <Link href="/dashboard/pickups">
+              <Button className="gap-2">
+                <Truck className="h-4 w-4" />
+                Registrar primer retiro
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const equivalencies = calculateEquivalencies(data.kpis.totalCo2 * 1000);
   const waterMaterials = data.materialDistribution.map((m) => ({ material: m.name, kg: m.value }));

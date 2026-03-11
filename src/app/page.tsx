@@ -19,8 +19,6 @@ import {
   FileSpreadsheet,
   Calculator,
   X,
-  Star,
-  Quote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import InteractiveDemo from "@/components/landing/interactive-demo";
@@ -829,58 +827,6 @@ export default function Home() {
             <p className="text-center text-sm text-muted-foreground mt-8">
               Sin tarjeta de crédito. Cancela cuando quieras.
             </p>
-          </div>
-        </section>
-
-        {/* Testimonials */}
-        <section className="container mx-auto px-6 py-16 md:py-20">
-          <ScrollFadeIn className="mx-auto max-w-3xl text-center mb-12">
-            <h2 className="font-serif text-3xl font-bold text-sage-900 mb-4">
-              Lo que dicen las gestoras
-            </h2>
-            <p className="text-muted-foreground">
-              Gestoras de reciclaje en Chile que ya dejaron Excel.
-            </p>
-          </ScrollFadeIn>
-          <div className="grid gap-4 md:gap-6 md:grid-cols-3 max-w-5xl mx-auto">
-            {[
-              {
-                name: "Carolina M.",
-                role: "Gerenta de Operaciones",
-                company: "EcoGestora Sur",
-                text: "Antes demoraba 2 horas por certificado copiando datos de Excel a Word. Ahora son 2 minutos. Mis clientes corporativos quedaron impresionados con la verificación online.",
-              },
-              {
-                name: "Felipe R.",
-                role: "Fundador",
-                company: "Reciclados RM",
-                text: "La importación de Excel fue lo que me convenció. Subí mi planilla tal cual y la plataforma detectó todo. En una tarde tenía 3 meses de datos históricos cargados.",
-              },
-              {
-                name: "Andrea L.",
-                role: "Jefa de Calidad",
-                company: "ValorizaChile",
-                text: "Cuando llegó la auditoría de la SMA, teníamos todo trazado: retiro, material, certificado, cliente. Antes habría sido un caos buscando en carpetas.",
-              },
-            ].map((t) => (
-              <ScrollFadeIn key={t.name}>
-                <div className="rounded-xl border bg-card p-6 h-full flex flex-col">
-                  <Quote className="h-5 w-5 text-sage-300 mb-3 flex-shrink-0" />
-                  <p className="text-sm text-sage-700 leading-relaxed flex-1">
-                    &ldquo;{t.text}&rdquo;
-                  </p>
-                  <div className="flex items-center gap-1 mt-4 mb-3">
-                    {[1,2,3,4,5].map((s) => (
-                      <Star key={s} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                    ))}
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-sage-800">{t.name}</p>
-                    <p className="text-xs text-muted-foreground">{t.role}, {t.company}</p>
-                  </div>
-                </div>
-              </ScrollFadeIn>
-            ))}
           </div>
         </section>
 
