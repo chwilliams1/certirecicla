@@ -655,11 +655,6 @@ export default function CalculadoraPage() {
                       <li className="flex items-center gap-2"><Check className="h-4 w-4 text-sage-600 shrink-0" /> Ecoequivalencias verificadas</li>
                       <li className="flex items-center gap-2"><Check className="h-4 w-4 text-sage-600 shrink-0" /> Metodología y fuentes citables</li>
                     </ul>
-                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
-                      <p className="text-sm font-medium text-amber-900">
-                        🎁 Además, recibirás acceso exclusivo a 14 días gratis del Plan Profesional de CertiRecicla — certificados ilimitados, portal de clientes y reportes completos.
-                      </p>
-                    </div>
                     {leadError && (
                       <p className="text-sm text-red-600 mb-3">{leadError}</p>
                     )}
@@ -748,7 +743,7 @@ export default function CalculadoraPage() {
                         <ArrowRight className="h-4 w-4" />
                       </Button>
                     </form>
-                    <p className="text-[11px] text-muted-foreground mt-2">Sin spam. Solo tu reporte + una oferta exclusiva.</p>
+                    <p className="text-[11px] text-muted-foreground mt-2">Sin spam. Solo tu reporte.</p>
                   </>
                 )}
               </div>
