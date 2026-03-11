@@ -52,42 +52,63 @@ export default function BlogArticlePage({ params }: Props) {
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: article.title,
-    description: article.description,
-    datePublished: article.date,
-    dateModified: article.date,
-    author: {
-      "@type": "Organization",
-      name: "CertiRecicla",
-      url: "https://certirecicla.cl",
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "CertiRecicla",
-      url: "https://certirecicla.cl",
-    },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `https://certirecicla.cl/blog/${article.slug}`,
-    },
-    keywords: article.keywords.join(", "),
-  };
-
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Inicio", item: "https://certirecicla.cl" },
-      { "@type": "ListItem", position: 2, name: "Blog", item: "https://certirecicla.cl/blog" },
-      { "@type": "ListItem", position: 3, name: article.title, item: `https://certirecicla.cl/blog/${article.slug}` },
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        headline: article.title,
+        description: article.description,
+        datePublished: article.date,
+        dateModified: article.date,
+        author: {
+          "@type": "Organization",
+          name: "CertiRecicla",
+          url: "https://certirecicla.cl",
+          logo: {
+            "@type": "ImageObject",
+            url: "https://certirecicla.cl/logo.png",
+          },
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "CertiRecicla",
+          url: "https://certirecicla.cl",
+          logo: {
+            "@type": "ImageObject",
+            url: "https://certirecicla.cl/logo.png",
+            width: 200,
+            height: 200,
+          },
+        },
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": `https://certirecicla.cl/blog/${article.slug}`,
+        },
+        image: {
+          "@type": "ImageObject",
+          url: "https://certirecicla.cl/og-image.png",
+          width: 1200,
+          height: 630,
+        },
+        keywords: article.keywords.join(", "),
+        inLanguage: "es",
+        articleSection: article.category,
+        wordCount: article.readingTime * 200,
+        isAccessibleForFree: true,
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Inicio", item: "https://certirecicla.cl" },
+          { "@type": "ListItem", position: 2, name: "Blog", item: "https://certirecicla.cl/blog" },
+          { "@type": "ListItem", position: 3, name: article.title, item: `https://certirecicla.cl/blog/${article.slug}` },
+        ],
+      },
     ],
   };
 
   return (
     <div className="min-h-screen bg-sand-50">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
 
       {/* Header */}
       <header className="border-b border-border/50 bg-white/80 backdrop-blur-sm sticky top-0 z-40">

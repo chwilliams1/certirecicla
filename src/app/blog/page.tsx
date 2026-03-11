@@ -3,9 +3,38 @@ import Image from "next/image";
 import { ArrowRight, Clock, ArrowLeft } from "lucide-react";
 import { blogArticles } from "@/lib/blog/articles";
 
+const blogJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Blog",
+      name: "Blog de Reciclaje y Gestión de Residuos — CertiRecicla",
+      description:
+        "Artículos y guías sobre reciclaje, Ley REP, SINADER, huella de carbono, economía circular y sustentabilidad empresarial en Chile.",
+      url: "https://certirecicla.cl/blog",
+      inLanguage: "es",
+      publisher: {
+        "@type": "Organization",
+        name: "CertiRecicla",
+        url: "https://certirecicla.cl",
+        logo: { "@type": "ImageObject", url: "https://certirecicla.cl/logo.png" },
+      },
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Inicio", item: "https://certirecicla.cl" },
+        { "@type": "ListItem", position: 2, name: "Blog", item: "https://certirecicla.cl/blog" },
+      ],
+    },
+  ],
+};
+
 export default function BlogPage() {
   return (
     <div className="min-h-screen bg-sand-50">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(blogJsonLd) }} />
+
       {/* Header */}
       <header className="border-b border-border/50 bg-white/80 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
@@ -29,13 +58,16 @@ export default function BlogPage() {
 
       <main className="container mx-auto px-6 py-12 md:py-16 max-w-4xl">
         <div className="mb-10">
-          <Link href="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-sage-600 transition-colors mb-6">
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Volver al inicio
-          </Link>
-          <h1 className="text-3xl md:text-4xl font-serif text-sage-800 mb-3">Blog</h1>
+          <nav aria-label="Breadcrumb" className="text-xs text-muted-foreground mb-4">
+            <Link href="/" className="hover:text-sage-600 transition-colors">Inicio</Link>
+            <span className="mx-1.5">/</span>
+            <span className="text-sage-700">Blog</span>
+          </nav>
+          <h1 className="text-3xl md:text-4xl font-serif text-sage-800 mb-3">
+            Blog de Reciclaje y Gestión de Residuos en Chile
+          </h1>
           <p className="text-muted-foreground text-lg">
-            Recursos sobre reciclaje, normativa ambiental y sustentabilidad empresarial en Chile.
+            Guías prácticas sobre reciclaje, Ley REP, SINADER, economía circular, huella de carbono y sustentabilidad empresarial.
           </p>
         </div>
 
