@@ -5,6 +5,7 @@ import Script from "next/script";
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID;
+const GADS_ID = process.env.NEXT_PUBLIC_GADS_ID;
 
 export default function GoogleAnalytics() {
   return (
@@ -37,6 +38,7 @@ export default function GoogleAnalytics() {
               gtag('config', '${GA_ID}', {
                 page_path: window.location.pathname,
               });
+              ${GADS_ID ? `gtag('config', '${GADS_ID}');` : ''}
             `}
           </Script>
         </>

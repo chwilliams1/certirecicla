@@ -42,4 +42,14 @@ export const analytics = {
 
   ctaClick: (label: string) =>
     trackEvent({ action: "cta_click", category: "conversion", label }),
+
+  // Google Ads conversion (usar cuando tengas el Conversion Label)
+  adsConversion: (conversionLabel: string) => {
+    if (typeof window === "undefined" || !window.gtag) return;
+    const gadsId = process.env.NEXT_PUBLIC_GADS_ID;
+    if (!gadsId) return;
+    window.gtag("event", "conversion", {
+      send_to: `${gadsId}/${conversionLabel}`,
+    });
+  },
 };
