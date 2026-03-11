@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { sendTransactionalEmail } from "@/lib/email/send-email";
+import { prisma } from "@/lib/prisma";
 import { randomBytes } from "crypto";
 
 interface MaterialData {
@@ -264,6 +265,21 @@ export async function POST(req: Request) {
     if (!result.success) {
       console.error("Error sending calculator lead email:", result.error);
       return NextResponse.json({ error: "Error al enviar el email" }, { status: 500 });
+    }
+
+    // Store lead for nurture email sequence (fire-and-forget)
+    try {
+      await prisma.calculatorLead.create({
+        data: {
+          name: name.trim(),
+          email: email.trim(),
+          totalKg,
+          totalCo2,
+          materialsJson: JSON.stringify(materials.filter((m: MaterialData) => m.kg > 0)),
+        },
+      });
+    } catch {
+      // Never block the response for DB failures
     }
 
     return NextResponse.json({ success: true });

@@ -224,6 +224,52 @@ Si tienes dudas sobre qué plan elegir, responde a este correo y te ayudamos.`;
   return { subject: "Tu trial vence en 2 días — CertiRecicla", html: buildEmailHtml(body, PLATFORM_NAME) };
 }
 
+// --- Calculator lead nurture emails ---
+
+export function leadNurtureDay3Email({ userName, totalCo2 }: { userName: string; totalCo2: number }): { subject: string; html: string } {
+  const body = `Hola <strong>${userName}</strong>,
+
+Hace unos días calculaste que tu operación evita <strong>${totalCo2.toLocaleString("es-CL", { maximumFractionDigits: 0 })} kg de CO₂</strong> al año. Eso es un gran impacto.
+
+<div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0;">
+<p style="margin: 0; font-weight: 600;">¿Sabías que la Ley REP sube sus metas en 2026?</p>
+<p style="margin: 8px 0 0;">Plástico: 11% · Vidrio: 22% · Papel y cartón: 18%</p>
+<p style="margin: 8px 0 0;">Las gestoras que no puedan acreditar valorización con certificados verificables arriesgan multas y perder clientes productores.</p>
+</div>
+
+Con CertiRecicla puedes generar certificados oficiales con el mismo cálculo que ya hiciste, listos para SINADER y auditorías.
+
+<div style="text-align: center; margin: 24px 0;">
+<a href="https://certirecicla.cl/register?ref=nurture-d3" style="background-color: #4a6b4e; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">Probar 14 días gratis</a>
+</div>
+
+Sin tarjeta de crédito. Si tienes dudas, responde a este correo.`;
+
+  return { subject: "Ley REP 2026: ¿tu gestora está lista?", html: buildEmailHtml(body, PLATFORM_NAME) };
+}
+
+export function leadNurtureDay7Email({ userName, totalCo2 }: { userName: string; totalCo2: number }): { subject: string; html: string } {
+  const body = `Hola <strong>${userName}</strong>,
+
+Tu cálculo mostró <strong>${totalCo2.toLocaleString("es-CL", { maximumFractionDigits: 0 })} kg de CO₂ evitado</strong>. Gestoras como la tuya ya están usando CertiRecicla para convertir esos números en ventaja competitiva.
+
+<div style="background: #f4f7f4; padding: 20px; border-radius: 8px; margin: 20px 0;">
+<p style="margin: 0; font-weight: 600;">Lo que logran nuestros usuarios:</p>
+<p style="margin: 8px 0 0;">✓ Certificados con CO₂ calculado automáticamente en 2 minutos</p>
+<p style="margin: 4px 0 0;">✓ Portal donde sus clientes ven certificados e historial 24/7</p>
+<p style="margin: 4px 0 0;">✓ Datos listos para SINADER y reportes NCG 519</p>
+<p style="margin: 4px 0 0;">✓ Dejan de depender de Excel para sus reportes</p>
+</div>
+
+<div style="text-align: center; margin: 24px 0;">
+<a href="https://certirecicla.cl/register?ref=nurture-d7" style="background-color: #4a6b4e; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">Crear cuenta gratis</a>
+</div>
+
+¿Tienes dudas sobre cómo funciona? Responde este correo y te ayudamos personalmente.`;
+
+  return { subject: `${userName}, tus ${totalCo2.toLocaleString("es-CL", { maximumFractionDigits: 0 })} kg CO₂ merecen un certificado oficial`, html: buildEmailHtml(body, PLATFORM_NAME) };
+}
+
 export function portalLinkEmail({ companyName, clientName, portalUrl }: { companyName: string; clientName: string; portalUrl: string }): { subject: string; html: string } {
   const body = `Hola equipo de <strong>${clientName}</strong>,
 

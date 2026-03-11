@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { name, email, password, phone } = body;
 
-  if (!name || !email || !password || !phone) {
+  if (!name || !email || !password) {
     return NextResponse.json(
       { error: "Todos los campos son obligatorios" },
       { status: 400 }
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     data: {
       name: `Empresa de ${name}`,
       email,
-      phone,
+      ...(phone ? { phone } : {}),
       plan: "trial",
       trialEndsAt,
       users: {

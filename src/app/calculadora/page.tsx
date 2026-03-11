@@ -550,94 +550,10 @@ export default function CalculadoraPage() {
               </div>
             </div>
 
-            {/* Donut chart */}
-            {materials.length > 0 && (
-              <div className="bg-white border border-border/50 rounded-xl p-5">
-                <h3 className="font-serif text-sage-800 mb-4">Distribución de CO&#x2082; por material</h3>
-                <DonutChart materials={materials} />
-              </div>
-            )}
-
-            {/* Equivalencies bars */}
-            <div className="bg-white border border-border/50 rounded-xl p-5 space-y-4">
-              <h3 className="font-serif text-sage-800">Equivalencias ambientales</h3>
-              <EquivBar icon={TreePine} value={equivalencies.trees} label="Árboles absorbiendo CO&#x2082; por 1 año" maxValue={maxEquiv} />
-              <EquivBar icon={Car} value={equivalencies.kmNotDriven} label="Kilómetros no recorridos en auto" maxValue={maxEquiv} />
-              <EquivBar icon={Smartphone} value={equivalencies.smartphonesCharged} label="Smartphones cargados" maxValue={maxEquiv} />
-              <EquivBar icon={Droplets} value={waterSaved} label="Litros de agua ahorrados" maxValue={maxEquiv} />
-              <p className="text-[10px] text-muted-foreground text-right pt-1">
-                Fuente: EPA GHG Equivalencies Calculator (Nov 2024) &bull; Water Footprint Network
-              </p>
-            </div>
-
-            {/* Materials detail table */}
-            {materials.length > 0 && (
-              <div className="bg-white border border-border/50 rounded-xl overflow-hidden">
-                <div className="px-4 sm:px-5 py-4 border-b border-border/50">
-                  <h3 className="font-serif text-sage-800">Detalle por material</h3>
-                </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs sm:text-sm">
-                    <thead>
-                      <tr className="bg-sage-50 text-sage-700">
-                        <th className="text-left px-3 sm:px-5 py-2.5 font-medium">Material</th>
-                        <th className="text-right px-3 sm:px-5 py-2.5 font-medium">Kg</th>
-                        <th className="text-right px-3 sm:px-5 py-2.5 font-medium hidden sm:table-cell">Factor</th>
-                        <th className="text-right px-3 sm:px-5 py-2.5 font-medium">CO&#x2082;</th>
-                        <th className="text-right px-3 sm:px-5 py-2.5 font-medium">%</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {materials.map((m, i) => (
-                        <tr key={m.material} className={i % 2 === 0 ? "bg-white" : "bg-sage-50/30"}>
-                          <td className="px-3 sm:px-5 py-2.5 text-sage-700">{m.material}</td>
-                          <td className="px-3 sm:px-5 py-2.5 text-right">{m.kg.toLocaleString("es-CL")}</td>
-                          <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">
-                            {DEFAULT_CO2_FACTORS[m.material]} kg/kg
-                          </td>
-                          <td className="px-3 sm:px-5 py-2.5 text-right font-medium text-sage-800">
-                            {m.co2.toLocaleString("es-CL", { maximumFractionDigits: 1 })} kg
-                          </td>
-                          <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground">
-                            {totalCo2 > 0 ? ((m.co2 / totalCo2) * 100).toFixed(1) : "0"}%
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                    <tfoot>
-                      <tr className="border-t border-sage-200 bg-sage-50 font-medium text-sage-800">
-                        <td className="px-3 sm:px-5 py-2.5">Total</td>
-                        <td className="px-3 sm:px-5 py-2.5 text-right">{totalKg.toLocaleString("es-CL")}</td>
-                        <td className="px-3 sm:px-5 py-2.5 hidden sm:table-cell"></td>
-                        <td className="px-3 sm:px-5 py-2.5 text-right">
-                          {totalCo2.toLocaleString("es-CL", { maximumFractionDigits: 1 })} kg
-                        </td>
-                        <td className="px-3 sm:px-5 py-2.5 text-right">100%</td>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
-                <div className="px-5 py-2.5 border-t border-border/50 bg-sage-50/50">
-                  <p className="text-[10px] text-muted-foreground">
-                    Factores verificados con EPA WARM v16 (2023) y DEFRA/DESNZ 2025. <a href="#metodologia" className="text-sage-600 hover:underline">Ver metodología completa</a>
-                  </p>
-                </div>
-              </div>
-            )}
-
-
-            {/* Lead capture */}
-            {totalCo2 > 0 && (
+            {/* Lead capture — shown BEFORE detailed results when not unlocked */}
+            {totalCo2 > 0 && leadStep !== "done" && (
               <div className="bg-sage-50 border border-sage-200 rounded-xl p-4 sm:p-6">
-                {leadStep === "done" ? (
-                  <div className="text-center py-2">
-                    <Check className="h-8 w-8 text-sage-600 mx-auto mb-2" />
-                    <p className="font-serif text-sage-800 font-medium">¡Listo! Revisa tu correo, {leadName.trim().split(" ")[0]}</p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Te enviamos tu reporte de impacto ambiental + una sorpresa especial.
-                    </p>
-                  </div>
-                ) : leadStep === "confirm" ? (
+                {leadStep === "confirm" ? (
                   <>
                     <div className="flex items-start gap-3 mb-4">
                       <Mail className="h-5 w-5 text-sage-600 mt-0.5 shrink-0" />
@@ -707,10 +623,10 @@ export default function CalculadoraPage() {
                       <Mail className="h-5 w-5 text-sage-600 mt-0.5 shrink-0" />
                       <div>
                         <h3 className="font-serif text-sage-800 font-medium">
-                          Recibe tu reporte de impacto ambiental
+                          Desbloquea tu reporte completo
                         </h3>
                         <p className="text-sm text-muted-foreground mt-1">
-                          Te enviamos el detalle completo de tu cálculo con metodología y fuentes citables.
+                          Ingresa tu email para ver las equivalencias ambientales, el desglose por material y recibir tu certificado.
                         </p>
                       </div>
                     </div>
@@ -740,13 +656,109 @@ export default function CalculadoraPage() {
                         />
                       </div>
                       <Button type="submit" className="gap-2 whitespace-nowrap w-full sm:w-auto sm:self-end">
-                        Continuar
+                        Desbloquear reporte
                         <ArrowRight className="h-4 w-4" />
                       </Button>
                     </form>
-                    <p className="text-[11px] text-muted-foreground mt-2">Sin spam. Solo tu reporte.</p>
+                    <p className="text-[11px] text-muted-foreground mt-2">Sin spam. Solo tu reporte de impacto.</p>
                   </>
                 )}
+              </div>
+            )}
+
+            {/* Gated content: blurred preview or full content */}
+            <div className={`relative space-y-6 ${totalCo2 > 0 && leadStep !== "done" ? "select-none" : ""}`}>
+              {/* Blur overlay when locked */}
+              {totalCo2 > 0 && leadStep !== "done" && (
+                <div className="absolute inset-0 z-10 backdrop-blur-[6px] bg-white/30 rounded-xl" />
+              )}
+
+              {/* Donut chart */}
+              {materials.length > 0 && (
+                <div className="bg-white border border-border/50 rounded-xl p-5">
+                  <h3 className="font-serif text-sage-800 mb-4">Distribución de CO&#x2082; por material</h3>
+                  <DonutChart materials={materials} />
+                </div>
+              )}
+
+              {/* Equivalencies bars */}
+              <div className="bg-white border border-border/50 rounded-xl p-5 space-y-4">
+                <h3 className="font-serif text-sage-800">Equivalencias ambientales</h3>
+                <EquivBar icon={TreePine} value={equivalencies.trees} label="Árboles absorbiendo CO&#x2082; por 1 año" maxValue={maxEquiv} />
+                <EquivBar icon={Car} value={equivalencies.kmNotDriven} label="Kilómetros no recorridos en auto" maxValue={maxEquiv} />
+                <EquivBar icon={Smartphone} value={equivalencies.smartphonesCharged} label="Smartphones cargados" maxValue={maxEquiv} />
+                <EquivBar icon={Droplets} value={waterSaved} label="Litros de agua ahorrados" maxValue={maxEquiv} />
+                <p className="text-[10px] text-muted-foreground text-right pt-1">
+                  Fuente: EPA GHG Equivalencies Calculator (Nov 2024) &bull; Water Footprint Network
+                </p>
+              </div>
+
+              {/* Materials detail table */}
+              {materials.length > 0 && (
+                <div className="bg-white border border-border/50 rounded-xl overflow-hidden">
+                  <div className="px-4 sm:px-5 py-4 border-b border-border/50">
+                    <h3 className="font-serif text-sage-800">Detalle por material</h3>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs sm:text-sm">
+                      <thead>
+                        <tr className="bg-sage-50 text-sage-700">
+                          <th className="text-left px-3 sm:px-5 py-2.5 font-medium">Material</th>
+                          <th className="text-right px-3 sm:px-5 py-2.5 font-medium">Kg</th>
+                          <th className="text-right px-3 sm:px-5 py-2.5 font-medium hidden sm:table-cell">Factor</th>
+                          <th className="text-right px-3 sm:px-5 py-2.5 font-medium">CO&#x2082;</th>
+                          <th className="text-right px-3 sm:px-5 py-2.5 font-medium">%</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {materials.map((m, i) => (
+                          <tr key={m.material} className={i % 2 === 0 ? "bg-white" : "bg-sage-50/30"}>
+                            <td className="px-3 sm:px-5 py-2.5 text-sage-700">{m.material}</td>
+                            <td className="px-3 sm:px-5 py-2.5 text-right">{m.kg.toLocaleString("es-CL")}</td>
+                            <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">
+                              {DEFAULT_CO2_FACTORS[m.material]} kg/kg
+                            </td>
+                            <td className="px-3 sm:px-5 py-2.5 text-right font-medium text-sage-800">
+                              {m.co2.toLocaleString("es-CL", { maximumFractionDigits: 1 })} kg
+                            </td>
+                            <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground">
+                              {totalCo2 > 0 ? ((m.co2 / totalCo2) * 100).toFixed(1) : "0"}%
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr className="border-t border-sage-200 bg-sage-50 font-medium text-sage-800">
+                          <td className="px-3 sm:px-5 py-2.5">Total</td>
+                          <td className="px-3 sm:px-5 py-2.5 text-right">{totalKg.toLocaleString("es-CL")}</td>
+                          <td className="px-3 sm:px-5 py-2.5 hidden sm:table-cell"></td>
+                          <td className="px-3 sm:px-5 py-2.5 text-right">
+                            {totalCo2.toLocaleString("es-CL", { maximumFractionDigits: 1 })} kg
+                          </td>
+                          <td className="px-3 sm:px-5 py-2.5 text-right">100%</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                  <div className="px-5 py-2.5 border-t border-border/50 bg-sage-50/50">
+                    <p className="text-[10px] text-muted-foreground">
+                      Factores verificados con EPA WARM v16 (2023) y DEFRA/DESNZ 2025. <a href="#metodologia" className="text-sage-600 hover:underline">Ver metodología completa</a>
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Success message after lead capture */}
+            {leadStep === "done" && (
+              <div className="bg-sage-50 border border-sage-200 rounded-xl p-4 sm:p-6">
+                <div className="text-center py-2">
+                  <Check className="h-8 w-8 text-sage-600 mx-auto mb-2" />
+                  <p className="font-serif text-sage-800 font-medium">¡Listo! Revisa tu correo, {leadName.trim().split(" ")[0]}</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Te enviamos tu reporte de impacto ambiental + una sorpresa especial.
+                  </p>
+                </div>
               </div>
             )}
           </div>

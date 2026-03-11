@@ -249,3 +249,18 @@ model ScheduledReport {
   @@index([companyId])
   @@index([active, nextSendAt])
 }
+
+model CalculatorLead {
+  id              String    @id @default(cuid())
+  name            String
+  email           String
+  totalKg         Float
+  totalCo2        Float
+  materialsJson   String    // JSON string of materials array
+  nurtureDay3SentAt DateTime?
+  nurtureDay7SentAt DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@index([email])
+  @@index([createdAt])
+}
