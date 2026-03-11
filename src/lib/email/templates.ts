@@ -212,6 +212,7 @@ Tu periodo de prueba en CertiRecicla vence en <strong>2 días</strong>. Esperamo
 <p style="margin: 8px 0 0;">✓ Todos tus clientes y datos de retiros</p>
 <p style="margin: 4px 0 0;">✓ Certificados ilimitados según tu plan</p>
 <p style="margin: 4px 0 0;">✓ Portal de clientes y reportes automáticos</p>
+<p style="margin: 4px 0 0;">✓ Branding personalizado en certificados (colores, logo, firma)</p>
 </div>
 
 <div style="text-align: center; margin: 24px 0;">
