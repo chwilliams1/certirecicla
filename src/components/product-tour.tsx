@@ -98,22 +98,31 @@ const TOUR_STEPS: TourStep[] = [
     position: "bottom",
     desktopOnly: true,
   },
+  {
+    target: "__welcome__",
+    title: "¡Comienza ahora!",
+    description:
+      "Te dejamos un checklist de primeros pasos en tu dashboard. Completa las 3 tareas para dominar la plataforma:\n\n1. Agrega tu primer cliente\n2. Registra un retiro\n3. Genera tu primer certificado",
+    icon: <Rocket className="h-6 w-6" />,
+    position: "center",
+    desktopOnly: true,
+  },
   // Mobile-only steps (simplified tour without sidebar refs)
   {
     target: "__welcome__",
     title: "Tu plataforma de reciclaje",
     description:
-      "Desde el menú lateral puedes acceder a: Clientes, Retiros, Certificados, Reportes y Configuración. Explora cada sección para conocer todo lo que puedes hacer.",
+      "Desde el menú lateral puedes acceder a: Clientes, Retiros, Certificados, Reportes y Configuración.",
     icon: <LayoutDashboard className="h-5 w-5" />,
     position: "center",
     mobileOnly: true,
   },
   {
     target: "__welcome__",
-    title: "Flujo principal",
+    title: "¡Comienza ahora!",
     description:
-      "1. Registra retiros de materiales\n2. Genera certificados para tus clientes\n3. Envíalos por email con verificación pública",
-    icon: <FileCheck className="h-5 w-5" />,
+      "Te dejamos un checklist de primeros pasos. Completa las 3 tareas para dominar CertiRecicla:\n\n1. Agrega tu primer cliente\n2. Registra un retiro\n3. Genera tu primer certificado",
+    icon: <Rocket className="h-6 w-6" />,
     position: "center",
     mobileOnly: true,
   },

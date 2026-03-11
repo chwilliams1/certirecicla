@@ -27,6 +27,7 @@ import { calculateEquivalencies, calculateWaterSaved } from "@/lib/co2-calculato
 import { CountUp } from "@/components/count-up";
 import { RotatingEquivalence } from "@/components/rotating-equivalence";
 import { TrialBanner } from "@/components/trial-banner";
+import { OnboardingChecklist } from "@/components/onboarding-checklist";
 
 interface RecentPickup {
   key: string;
@@ -202,6 +203,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6 page-fade-in">
       <TrialBanner />
+      <OnboardingChecklist />
       {/* Header */}
       <div>
         <h1 className="font-serif text-2xl text-sage-800">
