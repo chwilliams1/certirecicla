@@ -77,16 +77,17 @@ export default function BlogPage() {
         <div className="space-y-6">
           {blogArticles.map((article) => (
             <Link key={article.slug} href={`/blog/${article.slug}`} className="block group">
-              <article className="bg-white border border-border/50 rounded-xl p-6 hover:border-sage-300 hover:shadow-sm transition-all">
-                <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
+              <article className="bg-white border border-border/50 rounded-xl p-4 sm:p-6 hover:border-sage-300 hover:shadow-sm transition-all">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-muted-foreground mb-3">
                   <span className="bg-sage-50 text-sage-700 px-2.5 py-0.5 rounded-full font-medium">
                     {article.category}
                   </span>
                   <span className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
-                    {article.readingTime} min lectura
+                    {article.readingTime} min
                   </span>
-                  <span>{new Date(article.date).toLocaleDateString("es-CL", { year: "numeric", month: "long", day: "numeric" })}</span>
+                  <span className="hidden sm:inline">{new Date(article.date).toLocaleDateString("es-CL", { year: "numeric", month: "long", day: "numeric" })}</span>
+                  <span className="sm:hidden">{new Date(article.date).toLocaleDateString("es-CL", { day: "numeric", month: "short" })}</span>
                 </div>
                 <h2 className="text-xl font-serif text-sage-800 group-hover:text-sage-600 transition-colors mb-2">
                   {article.title}

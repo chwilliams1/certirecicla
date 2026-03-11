@@ -408,10 +408,10 @@ export default function CalculadoraPage() {
             <span className="mx-1.5">/</span>
             <span className="text-sage-700">Calculadora de CO&#x2082;</span>
           </nav>
-          <h1 className="text-3xl md:text-4xl font-serif text-sage-800 mb-3">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif text-sage-800 mb-3">
             Calculadora de CO&#x2082; evitado por reciclaje
           </h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
             Ingresa los materiales que recicla tu empresa y calcula al instante tu <strong className="text-sage-700">huella de carbono</strong> e <strong className="text-sage-700">impacto
             ambiental</strong>. Basada en factores <strong className="text-sage-700">GHG Protocol</strong> e <strong className="text-sage-700">IPCC</strong>. 100% gratis, sin registro.
           </p>
@@ -428,13 +428,13 @@ export default function CalculadoraPage() {
                   const co2 = entry.material && entry.kg > 0 ? calculateCo2(entry.material, entry.kg) : 0;
                   return (
                     <div key={entry.id} className="space-y-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
                         <Select
                           value={entry.material}
                           onValueChange={(v) => updateEntry(entry.id, "material", v)}
                         >
-                          <SelectTrigger className="flex-1 min-w-0 h-10">
-                            <SelectValue placeholder="Seleccionar material" />
+                          <SelectTrigger className="flex-1 min-w-0 h-10 text-sm">
+                            <SelectValue placeholder="Material" />
                           </SelectTrigger>
                           <SelectContent>
                             {VALID_MATERIALS.filter(
@@ -455,7 +455,7 @@ export default function CalculadoraPage() {
                             updateEntry(entry.id, "kg", Math.max(0, Number(e.target.value)))
                           }
                           placeholder="Kg"
-                          className="w-24 h-10"
+                          className="w-20 sm:w-24 h-10"
                         />
                         <Button
                           variant="ghost"
@@ -526,27 +526,27 @@ export default function CalculadoraPage() {
             </a>
 
             {/* Summary cards */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="bg-white border border-border/50 rounded-xl p-5 text-center">
-                <p className="text-xs text-muted-foreground mb-1">Total reciclado</p>
-                <p className="text-2xl font-bold text-sage-800">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4">
+              <div className="bg-white border border-border/50 rounded-xl p-3 sm:p-5 text-center">
+                <p className="text-[10px] sm:text-xs text-muted-foreground mb-1">Total reciclado</p>
+                <p className="text-lg sm:text-2xl font-bold text-sage-800">
                   <AnimatedNumber value={totalKg} />
                 </p>
-                <p className="text-xs text-muted-foreground">kg</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground">kg</p>
               </div>
-              <div className="bg-sage-500 rounded-xl p-5 text-center text-white">
-                <p className="text-xs text-sage-100 mb-1">CO&#x2082; evitado</p>
-                <p className="text-2xl font-bold">
+              <div className="bg-sage-500 rounded-xl p-3 sm:p-5 text-center text-white">
+                <p className="text-[10px] sm:text-xs text-sage-100 mb-1">CO&#x2082; evitado</p>
+                <p className="text-lg sm:text-2xl font-bold">
                   <AnimatedNumber value={Math.round(totalCo2)} />
                 </p>
-                <p className="text-xs text-sage-100">kg CO&#x2082;</p>
+                <p className="text-[10px] sm:text-xs text-sage-100">kg CO&#x2082;</p>
               </div>
-              <div className="bg-white border border-border/50 rounded-xl p-5 text-center">
-                <p className="text-xs text-muted-foreground mb-1">Agua ahorrada</p>
-                <p className="text-2xl font-bold text-sage-800">
+              <div className="bg-white border border-border/50 rounded-xl p-3 sm:p-5 text-center">
+                <p className="text-[10px] sm:text-xs text-muted-foreground mb-1">Agua ahorrada</p>
+                <p className="text-lg sm:text-2xl font-bold text-sage-800">
                   <AnimatedNumber value={waterSaved} />
                 </p>
-                <p className="text-xs text-muted-foreground">litros</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground">litros</p>
               </div>
             </div>
 
@@ -573,32 +573,32 @@ export default function CalculadoraPage() {
             {/* Materials detail table */}
             {materials.length > 0 && (
               <div className="bg-white border border-border/50 rounded-xl overflow-hidden">
-                <div className="px-5 py-4 border-b border-border/50">
+                <div className="px-4 sm:px-5 py-4 border-b border-border/50">
                   <h3 className="font-serif text-sage-800">Detalle por material</h3>
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                  <table className="w-full text-xs sm:text-sm">
                     <thead>
                       <tr className="bg-sage-50 text-sage-700">
-                        <th className="text-left px-5 py-2.5 font-medium">Material</th>
-                        <th className="text-right px-5 py-2.5 font-medium">Kg</th>
-                        <th className="text-right px-5 py-2.5 font-medium">Factor</th>
-                        <th className="text-right px-5 py-2.5 font-medium">CO&#x2082; evitado</th>
-                        <th className="text-right px-5 py-2.5 font-medium">% del total</th>
+                        <th className="text-left px-3 sm:px-5 py-2.5 font-medium">Material</th>
+                        <th className="text-right px-3 sm:px-5 py-2.5 font-medium">Kg</th>
+                        <th className="text-right px-3 sm:px-5 py-2.5 font-medium hidden sm:table-cell">Factor</th>
+                        <th className="text-right px-3 sm:px-5 py-2.5 font-medium">CO&#x2082;</th>
+                        <th className="text-right px-3 sm:px-5 py-2.5 font-medium">%</th>
                       </tr>
                     </thead>
                     <tbody>
                       {materials.map((m, i) => (
                         <tr key={m.material} className={i % 2 === 0 ? "bg-white" : "bg-sage-50/30"}>
-                          <td className="px-5 py-2.5 text-sage-700">{m.material}</td>
-                          <td className="px-5 py-2.5 text-right">{m.kg.toLocaleString("es-CL")}</td>
-                          <td className="px-5 py-2.5 text-right text-muted-foreground">
+                          <td className="px-3 sm:px-5 py-2.5 text-sage-700">{m.material}</td>
+                          <td className="px-3 sm:px-5 py-2.5 text-right">{m.kg.toLocaleString("es-CL")}</td>
+                          <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">
                             {DEFAULT_CO2_FACTORS[m.material]} kg/kg
                           </td>
-                          <td className="px-5 py-2.5 text-right font-medium text-sage-800">
+                          <td className="px-3 sm:px-5 py-2.5 text-right font-medium text-sage-800">
                             {m.co2.toLocaleString("es-CL", { maximumFractionDigits: 1 })} kg
                           </td>
-                          <td className="px-5 py-2.5 text-right text-muted-foreground">
+                          <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground">
                             {totalCo2 > 0 ? ((m.co2 / totalCo2) * 100).toFixed(1) : "0"}%
                           </td>
                         </tr>
@@ -606,13 +606,13 @@ export default function CalculadoraPage() {
                     </tbody>
                     <tfoot>
                       <tr className="border-t border-sage-200 bg-sage-50 font-medium text-sage-800">
-                        <td className="px-5 py-2.5">Total</td>
-                        <td className="px-5 py-2.5 text-right">{totalKg.toLocaleString("es-CL")}</td>
-                        <td className="px-5 py-2.5"></td>
-                        <td className="px-5 py-2.5 text-right">
+                        <td className="px-3 sm:px-5 py-2.5">Total</td>
+                        <td className="px-3 sm:px-5 py-2.5 text-right">{totalKg.toLocaleString("es-CL")}</td>
+                        <td className="px-3 sm:px-5 py-2.5 hidden sm:table-cell"></td>
+                        <td className="px-3 sm:px-5 py-2.5 text-right">
                           {totalCo2.toLocaleString("es-CL", { maximumFractionDigits: 1 })} kg
                         </td>
-                        <td className="px-5 py-2.5 text-right">100%</td>
+                        <td className="px-3 sm:px-5 py-2.5 text-right">100%</td>
                       </tr>
                     </tfoot>
                   </table>
@@ -628,7 +628,7 @@ export default function CalculadoraPage() {
 
             {/* Lead capture */}
             {totalCo2 > 0 && (
-              <div className="bg-sage-50 border border-sage-200 rounded-xl p-6">
+              <div className="bg-sage-50 border border-sage-200 rounded-xl p-4 sm:p-6">
                 {leadStep === "done" ? (
                   <div className="text-center py-2">
                     <Check className="h-8 w-8 text-sage-600 mx-auto mb-2" />
@@ -756,7 +756,7 @@ export default function CalculadoraPage() {
 
           {/* Intro */}
           <div className="text-center">
-            <h2 className="text-2xl md:text-3xl font-serif text-sage-800 mb-3">Metodología y fuentes</h2>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-serif text-sage-800 mb-3">Metodología y fuentes</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Cada número en esta calculadora proviene de fuentes científicas verificables. No usamos estimaciones
               propias: cruzamos las dos bases de datos de emisiones más respetadas del mundo y aplicamos el valor más
@@ -765,8 +765,8 @@ export default function CalculadoraPage() {
           </div>
 
           {/* How we calculate CO2 */}
-          <div className="bg-white border border-border/50 rounded-xl p-6 md:p-8 space-y-5">
-            <h3 className="font-serif text-xl text-sage-800">¿Cómo calculamos el CO&#x2082; evitado?</h3>
+          <div className="bg-white border border-border/50 rounded-xl p-5 sm:p-6 md:p-8 space-y-5">
+            <h3 className="font-serif text-lg sm:text-xl text-sage-800">¿Cómo calculamos el CO&#x2082; evitado?</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
               El <strong className="text-sage-800">CO&#x2082; evitado</strong> (o emisiones evitadas) mide los kilogramos de dióxido de carbono
               equivalente (CO&#x2082;e) que se dejan de emitir al reciclar un material en lugar de producirlo desde
@@ -784,8 +784,8 @@ export default function CalculadoraPage() {
           </div>
 
           {/* Two-source cross-reference */}
-          <div className="bg-white border border-border/50 rounded-xl p-6 md:p-8 space-y-5">
-            <h3 className="font-serif text-xl text-sage-800">Verificación cruzada: EPA WARM v16 + DEFRA 2025</h3>
+          <div className="bg-white border border-border/50 rounded-xl p-5 sm:p-6 md:p-8 space-y-5">
+            <h3 className="font-serif text-lg sm:text-xl text-sage-800">Verificación cruzada: EPA WARM v16 + DEFRA 2025</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
               A diferencia de otras calculadoras que se basan en una sola fuente, nosotros cruzamos dos de las bases
               de datos de emisiones más rigurosas del mundo. Cuando sus valores difieren, <strong className="text-sage-800">publicamos el valor
@@ -814,84 +814,84 @@ export default function CalculadoraPage() {
 
           {/* Complete emission factors table */}
           <div className="bg-white border border-border/50 rounded-xl overflow-hidden">
-            <div className="px-6 py-5 border-b border-border/50">
-              <h3 className="font-serif text-xl text-sage-800">Tabla completa de factores de emisión</h3>
+            <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-border/50">
+              <h3 className="font-serif text-lg sm:text-xl text-sage-800">Tabla completa de factores de emisión</h3>
               <p className="text-xs text-muted-foreground mt-1">kg CO&#x2082;e evitado por kg de material reciclado &mdash; valor usado y fuente primaria</p>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-sage-50 text-sage-700 text-xs">
-                    <th className="text-left px-5 py-3 font-medium">Material</th>
-                    <th className="text-right px-5 py-3 font-medium">Factor usado</th>
-                    <th className="text-right px-5 py-3 font-medium hidden sm:table-cell">EPA WARM v16</th>
-                    <th className="text-right px-5 py-3 font-medium hidden sm:table-cell">DEFRA 2025</th>
-                    <th className="text-left px-5 py-3 font-medium hidden md:table-cell">Fuente adicional</th>
+                    <th className="text-left px-3 sm:px-5 py-3 font-medium">Material</th>
+                    <th className="text-right px-3 sm:px-5 py-3 font-medium">Factor usado</th>
+                    <th className="text-right px-3 sm:px-5 py-3 font-medium hidden sm:table-cell">EPA WARM v16</th>
+                    <th className="text-right px-3 sm:px-5 py-3 font-medium hidden sm:table-cell">DEFRA 2025</th>
+                    <th className="text-left px-3 sm:px-5 py-3 font-medium hidden md:table-cell">Fuente adicional</th>
                   </tr>
                 </thead>
                 <tbody className="text-xs">
                   <tr className="border-t border-border/30">
-                    <td className="px-5 py-2.5 text-sage-700 font-medium">Plástico PET</td>
-                    <td className="px-5 py-2.5 text-right font-bold text-sage-800">1,3 kg/kg</td>
-                    <td className="px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">1,25 kg/kg</td>
-                    <td className="px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,65 kg/kg</td>
-                    <td className="px-5 py-2.5 text-muted-foreground hidden md:table-cell">&mdash;</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-sage-700 font-medium">Plástico PET</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right font-bold text-sage-800">1,3 kg/kg</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">1,25 kg/kg</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,65 kg/kg</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-muted-foreground hidden md:table-cell">&mdash;</td>
                   </tr>
                   <tr className="border-t border-border/30 bg-sage-50/30">
-                    <td className="px-5 py-2.5 text-sage-700 font-medium">Plástico HDPE</td>
-                    <td className="px-5 py-2.5 text-right font-bold text-sage-800">1,0 kg/kg</td>
-                    <td className="px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,97 kg/kg</td>
-                    <td className="px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,49 kg/kg</td>
-                    <td className="px-5 py-2.5 text-muted-foreground hidden md:table-cell">&mdash;</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-sage-700 font-medium">Plástico HDPE</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right font-bold text-sage-800">1,0 kg/kg</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,97 kg/kg</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,49 kg/kg</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-muted-foreground hidden md:table-cell">&mdash;</td>
                   </tr>
                   <tr className="border-t border-border/30">
-                    <td className="px-5 py-2.5 text-sage-700 font-medium">Cartón</td>
-                    <td className="px-5 py-2.5 text-right font-bold text-sage-800">0,9 kg/kg</td>
-                    <td className="px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">3,14 kg/kg*</td>
-                    <td className="px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,70 kg/kg</td>
-                    <td className="px-5 py-2.5 text-muted-foreground hidden md:table-cell">*Incluye crédito forestal</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-sage-700 font-medium">Cartón</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right font-bold text-sage-800">0,9 kg/kg</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">3,14 kg/kg*</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,70 kg/kg</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-muted-foreground hidden md:table-cell">*Incluye crédito forestal</td>
                   </tr>
                   <tr className="border-t border-border/30 bg-sage-50/30">
-                    <td className="px-5 py-2.5 text-sage-700 font-medium">Papel</td>
-                    <td className="px-5 py-2.5 text-right font-bold text-sage-800">1,0 kg/kg</td>
-                    <td className="px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">2,72 kg/kg*</td>
-                    <td className="px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,73 kg/kg</td>
-                    <td className="px-5 py-2.5 text-muted-foreground hidden md:table-cell">*Incluye crédito forestal</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-sage-700 font-medium">Papel</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right font-bold text-sage-800">1,0 kg/kg</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">2,72 kg/kg*</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,73 kg/kg</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-muted-foreground hidden md:table-cell">*Incluye crédito forestal</td>
                   </tr>
                   <tr className="border-t border-border/30">
-                    <td className="px-5 py-2.5 text-sage-700 font-medium">Vidrio</td>
-                    <td className="px-5 py-2.5 text-right font-bold text-sage-800">0,31 kg/kg</td>
-                    <td className="px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,31 kg/kg</td>
-                    <td className="px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,33 kg/kg</td>
-                    <td className="px-5 py-2.5 text-muted-foreground hidden md:table-cell">FEVE Glass LCA</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-sage-700 font-medium">Vidrio</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right font-bold text-sage-800">0,31 kg/kg</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,31 kg/kg</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,33 kg/kg</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-muted-foreground hidden md:table-cell">FEVE Glass LCA</td>
                   </tr>
                   <tr className="border-t border-border/30 bg-sage-50/30">
-                    <td className="px-5 py-2.5 text-sage-700 font-medium">Aluminio</td>
-                    <td className="px-5 py-2.5 text-right font-bold text-sage-800">9,1 kg/kg</td>
-                    <td className="px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">9,71 kg/kg</td>
-                    <td className="px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">&mdash;</td>
-                    <td className="px-5 py-2.5 text-muted-foreground hidden md:table-cell">BIR CO&#x2082; Report</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-sage-700 font-medium">Aluminio</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right font-bold text-sage-800">9,1 kg/kg</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">9,71 kg/kg</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">&mdash;</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-muted-foreground hidden md:table-cell">BIR CO&#x2082; Report</td>
                   </tr>
                   <tr className="border-t border-border/30">
-                    <td className="px-5 py-2.5 text-sage-700 font-medium">Acero</td>
-                    <td className="px-5 py-2.5 text-right font-bold text-sage-800">1,8 kg/kg</td>
-                    <td className="px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">2,00 kg/kg</td>
-                    <td className="px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">&mdash;</td>
-                    <td className="px-5 py-2.5 text-muted-foreground hidden md:table-cell">BIR CO&#x2082; Report</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-sage-700 font-medium">Acero</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right font-bold text-sage-800">1,8 kg/kg</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">2,00 kg/kg</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">&mdash;</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-muted-foreground hidden md:table-cell">BIR CO&#x2082; Report</td>
                   </tr>
                   <tr className="border-t border-border/30 bg-sage-50/30">
-                    <td className="px-5 py-2.5 text-sage-700 font-medium">Tetra Pak</td>
-                    <td className="px-5 py-2.5 text-right font-bold text-sage-800">0,55 kg/kg</td>
-                    <td className="px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">&mdash;</td>
-                    <td className="px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">&mdash;</td>
-                    <td className="px-5 py-2.5 text-muted-foreground hidden md:table-cell">Tetra Pak LCA / ACE UK</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-sage-700 font-medium">Tetra Pak</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right font-bold text-sage-800">0,55 kg/kg</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">&mdash;</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">&mdash;</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-muted-foreground hidden md:table-cell">Tetra Pak LCA / ACE UK</td>
                   </tr>
                   <tr className="border-t border-border/30">
-                    <td className="px-5 py-2.5 text-sage-700 font-medium">Orgánico</td>
-                    <td className="px-5 py-2.5 text-right font-bold text-sage-800">0,25 kg/kg</td>
-                    <td className="px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,2&ndash;0,3 kg/kg</td>
-                    <td className="px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">&mdash;</td>
-                    <td className="px-5 py-2.5 text-muted-foreground hidden md:table-cell">Compostaje, metano evitado</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-sage-700 font-medium">Orgánico</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right font-bold text-sage-800">0,25 kg/kg</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,2&ndash;0,3 kg/kg</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">&mdash;</td>
+                    <td className="px-3 sm:px-5 py-2.5 text-muted-foreground hidden md:table-cell">Compostaje, metano evitado</td>
                   </tr>
                 </tbody>
               </table>

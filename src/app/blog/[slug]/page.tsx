@@ -202,20 +202,21 @@ export default function BlogArticlePage({ params }: Props) {
 
         <article>
           <header className="mb-8">
-            <div className="flex items-center gap-3 text-xs text-muted-foreground mb-4">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-muted-foreground mb-4">
               <span className="bg-sage-50 text-sage-700 px-2.5 py-0.5 rounded-full font-medium">
                 {article.category}
               </span>
               <span className="flex items-center gap-1">
                 <Clock className="h-3 w-3" />
-                {article.readingTime} min lectura
+                {article.readingTime} min
               </span>
               <span className="flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
-                {new Date(article.date).toLocaleDateString("es-CL", { year: "numeric", month: "long", day: "numeric" })}
+                <span className="hidden sm:inline">{new Date(article.date).toLocaleDateString("es-CL", { year: "numeric", month: "long", day: "numeric" })}</span>
+                <span className="sm:hidden">{new Date(article.date).toLocaleDateString("es-CL", { day: "numeric", month: "short", year: "numeric" })}</span>
               </span>
             </div>
-            <h1 className="text-3xl md:text-4xl font-serif text-sage-800 leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif text-sage-800 leading-tight">
               {article.title}
             </h1>
           </header>
@@ -230,7 +231,7 @@ export default function BlogArticlePage({ params }: Props) {
         {(() => {
           const cta = getContextualCta(article.slug, article.category);
           return (
-            <div className="mt-12 bg-sage-500 rounded-xl p-8 text-center text-white">
+            <div className="mt-12 bg-sage-500 rounded-xl p-6 sm:p-8 text-center text-white">
               <h2 className="text-xl font-serif mb-2">{cta.title}</h2>
               <p className="text-sage-100 text-sm mb-5">{cta.description}</p>
               <Link
