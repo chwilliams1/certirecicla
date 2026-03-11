@@ -20,14 +20,14 @@ function buildCertificateEmailHtml(data: {
   totalKg: number;
   totalCo2: number;
   equivalencies: {
-    treesPerYear: number;
+    trees: number;
     kmNotDriven: number;
     smartphonesCharged: number;
-    waterSavedLiters: number;
   };
+  waterSaved: number;
   verifyUrl: string;
 }): string {
-  const { name, code, materials, totalKg, totalCo2, equivalencies, verifyUrl } = data;
+  const { name, code, materials, totalKg, totalCo2, equivalencies, waterSaved, verifyUrl } = data;
   const today = new Date().toLocaleDateString("es-CL", { day: "numeric", month: "long", year: "numeric" });
 
   const materialsRows = materials
@@ -134,7 +134,7 @@ function buildCertificateEmailHtml(data: {
         <tr>
           <td style="padding: 14px; text-align: center; width: 25%;">
             <p style="margin: 0; font-size: 22px;">🌳</p>
-            <p style="margin: 4px 0 0; font-size: 18px; color: #4a6b4e; font-weight: bold;">${equivalencies.treesPerYear}</p>
+            <p style="margin: 4px 0 0; font-size: 18px; color: #4a6b4e; font-weight: bold;">${equivalencies.trees}</p>
             <p style="margin: 2px 0 0; font-size: 10px; color: #888;">Árboles preservados</p>
           </td>
           <td style="padding: 14px; text-align: center; width: 25%;">
@@ -144,7 +144,7 @@ function buildCertificateEmailHtml(data: {
           </td>
           <td style="padding: 14px; text-align: center; width: 25%;">
             <p style="margin: 0; font-size: 22px;">💧</p>
-            <p style="margin: 4px 0 0; font-size: 18px; color: #4a6b4e; font-weight: bold;">${equivalencies.waterSavedLiters.toLocaleString("es-CL")}</p>
+            <p style="margin: 4px 0 0; font-size: 18px; color: #4a6b4e; font-weight: bold;">${waterSaved.toLocaleString("es-CL")}</p>
             <p style="margin: 2px 0 0; font-size: 10px; color: #888;">Litros agua ahorrados</p>
           </td>
           <td style="padding: 14px; text-align: center; width: 25%;">
@@ -208,18 +208,18 @@ function buildCertificateEmailHtml(data: {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email, materials, totalKg, totalCo2, equivalencies } = body as {
+    const { name, email, materials, totalKg, totalCo2, equivalencies, waterSaved } = body as {
       name: string;
       email: string;
       materials: MaterialData[];
       totalKg: number;
       totalCo2: number;
       equivalencies: {
-        treesPerYear: number;
+        trees: number;
         kmNotDriven: number;
         smartphonesCharged: number;
-        waterSavedLiters: number;
       };
+      waterSaved: number;
     };
 
     if (!name?.trim() || !email?.trim()) {
@@ -232,19 +232,16 @@ export async function POST(req: Request) {
 
     const demoCode = generateDemoCode();
 
-    const materialsForUrl = materials
-      .filter((m) => m.kg > 0)
-      .map((m) => ({ material: m.material, kg: m.kg, co2: Number(m.co2.toFixed(1)) }));
+    const payload = {
+      c: demoCode,
+      n: name.trim(),
+      m: materials.filter((m) => m.kg > 0).map((m) => [m.material, m.kg, Number(m.co2.toFixed(1))]),
+      k: totalKg,
+      co: Number(totalCo2.toFixed(1)),
+    };
+    const d = Buffer.from(JSON.stringify(payload)).toString("base64url");
 
-    const verifyParams = new URLSearchParams({
-      code: demoCode,
-      name: name.trim(),
-      materials: JSON.stringify(materialsForUrl),
-      totalKg: String(totalKg),
-      totalCo2: String(Number(totalCo2.toFixed(1))),
-    });
-
-    const verifyUrl = `https://certirecicla.cl/verify/demo?${verifyParams.toString()}`;
+    const verifyUrl = `https://certirecicla.cl/verify/demo?d=${d}`;
 
     const html = buildCertificateEmailHtml({
       name: name.trim(),
@@ -253,6 +250,7 @@ export async function POST(req: Request) {
       totalKg,
       totalCo2,
       equivalencies,
+      waterSaved,
       verifyUrl,
     });
 

@@ -684,6 +684,7 @@ export default function CalculadoraPage() {
                                 totalKg,
                                 totalCo2,
                                 equivalencies,
+                                waterSaved,
                               }),
                             });
                             if (!res.ok) throw new Error();
