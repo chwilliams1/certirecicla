@@ -1,0 +1,61 @@
+name: Scheduled Cron Jobs
+
+on:
+  schedule:
+    # Onboarding emails — every day at 10:00 UTC (7:00 AM Chile)
+    - cron: "0 10 * * *"
+    # Trial reminders — every day at 14:00 UTC (11:00 AM Chile)
+    - cron: "0 14 * * *"
+    # Reports — every Monday at 8:00 UTC
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+    inputs:
+      job:
+        description: "Which cron job to run"
+        required: true
+        type: choice
+        options:
+          - all
+          - onboarding-emails
+          - trial-reminders
+          - reports
+
+env:
+  BASE_URL: ${{ secrets.PRODUCTION_URL || 'https://certirecicla.cl' }}
+
+jobs:
+  onboarding-emails:
+    if: >
+      github.event_name == 'workflow_dispatch' && (github.event.inputs.job == 'all' || github.event.inputs.job == 'onboarding-emails')
+      || github.event_name == 'schedule' && github.event.schedule == '0 10 * * *'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger onboarding emails
+        run: |
+          curl -sf -X GET "${{ env.BASE_URL }}/api/cron/onboarding-emails" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json"
+
+  trial-reminders:
+    if: >
+      github.event_name == 'workflow_dispatch' && (github.event.inputs.job == 'all' || github.event.inputs.job == 'trial-reminders')
+      || github.event_name == 'schedule' && github.event.schedule == '0 14 * * *'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger trial reminders
+        run: |
+          curl -sf -X GET "${{ env.BASE_URL }}/api/cron/trial-reminders" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json"
+
+  reports:
+    if: >
+      github.event_name == 'workflow_dispatch' && (github.event.inputs.job == 'all' || github.event.inputs.job == 'reports')
+      || github.event_name == 'schedule' && github.event.schedule == '0 8 * * 1'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger scheduled reports
+        run: |
+          curl -sf -X GET "${{ env.BASE_URL }}/api/cron/reports" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json"
