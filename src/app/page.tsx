@@ -745,6 +745,10 @@ export default function Home() {
                     <Check className="h-4 w-4 text-sage-500 flex-shrink-0" />
                     Verificación pública
                   </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-sage-500 flex-shrink-0" />
+                    Envío de certificados por email
+                  </li>
                 </ul>
                 <Link href="/register" className="block">
                   <Button variant="outline" className="w-full">Probar 14 días gratis</Button>
@@ -777,11 +781,11 @@ export default function Home() {
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-sage-500 flex-shrink-0" />
-                    Envío de certificados por email
+                    Portal de impacto para clientes
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-sage-500 flex-shrink-0" />
-                    Portal de impacto para clientes
+                    Multi-usuario (hasta 5)
                   </li>
                 </ul>
                 <Link href="/register" className="block">
@@ -812,11 +816,15 @@ export default function Home() {
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-sage-500 flex-shrink-0" />
-                    Multi-usuario con roles
+                    Usuarios ilimitados
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-sage-500 flex-shrink-0" />
                     Exportación SINADER
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-sage-500 flex-shrink-0" />
+                    Branding propio en certificados
                   </li>
                 </ul>
                 <Link href="/register" className="block">
