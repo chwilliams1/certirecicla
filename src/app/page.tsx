@@ -131,11 +131,9 @@ export default function Home() {
             <span className="font-serif text-xl font-bold text-sage-800">CertiRecicla</span>
           </div>
           <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-            <a href="#problema" className="hover:text-sage-600 transition-colors">El problema</a>
             <a href="#funcionalidades" className="hover:text-sage-600 transition-colors">Funcionalidades</a>
             <a href="#demo" className="hover:text-sage-600 transition-colors">Demo</a>
-            <a href="#planes" className="hover:text-sage-600 transition-colors">Planes</a>
-            <a href="#regulacion" className="hover:text-sage-600 transition-colors">Regulación</a>
+            <Link href="/blog" className="hover:text-sage-600 transition-colors">Blog</Link>
             <Link href="/precios" className="hover:text-sage-600 transition-colors">Precios</Link>
           </nav>
           <div className="flex items-center gap-3">
