@@ -43,8 +43,11 @@ export default function BlogPage() {
             <span className="font-serif text-sage-800 font-bold">CertiRecicla</span>
           </Link>
           <nav className="flex items-center gap-4">
-            <Link href="/" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors">
+            <Link href="/" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors hidden sm:inline">
               Inicio
+            </Link>
+            <Link href="/precios" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors hidden sm:inline">
+              Precios
             </Link>
             <Link
               href="/register"

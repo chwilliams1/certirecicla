@@ -43,6 +43,66 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+function getContextualCta(slug: string, category: string): {
+  title: string;
+  description: string;
+  href: string;
+  buttonText: string;
+} {
+  // SINADER / Ley REP
+  if (slug.includes("sinader") || slug.includes("ley-rep")) {
+    return {
+      title: "Exporta a SINADER automáticamente",
+      description: "CertiRecicla exporta tus datos a SINADER con un clic. Sin planillas, sin errores.",
+      href: "/register",
+      buttonText: "Prueba gratis 14 días",
+    };
+  }
+  // Certificados
+  if (slug.includes("certificado") && !slug.includes("cumplimiento")) {
+    return {
+      title: "Genera certificados profesionales en minutos",
+      description: "Certificados PDF con CO\u2082 verificable, listos para auditorías y clientes.",
+      href: "/register",
+      buttonText: "Prueba gratis 14 días",
+    };
+  }
+  // CO2 / impacto
+  if (slug.includes("co2") || slug.includes("impacto") || category === "Huella de carbono") {
+    return {
+      title: "Calcula tu impacto con datos verificados",
+      description: "Usa nuestra calculadora gratuita con factores EPA WARM y DEFRA actualizados.",
+      href: "/calculadora",
+      buttonText: "Ir a la calculadora",
+    };
+  }
+  // Gestión residuos / clasificación
+  if (slug.includes("gestion-residuos") || slug.includes("clasificacion") || slug.includes("proveedor-reciclaje") || category === "Gestión") {
+    return {
+      title: "Digitaliza tu gestión de residuos",
+      description: "Gestiona clientes, retiros y certificados desde una sola plataforma.",
+      href: "/register",
+      buttonText: "Prueba gratis 14 días",
+    };
+  }
+  // Trazabilidad
+  if (slug.includes("trazabilidad")) {
+    return {
+      title: "Trazabilidad digital de extremo a extremo",
+      description: "Registra cada retiro, genera certificados y demuestra cumplimiento con trazabilidad completa.",
+      href: "/register",
+      buttonText: "Prueba gratis 14 días",
+    };
+  }
+  // Default
+  return {
+    title: "Digitaliza tus certificados de reciclaje",
+    description: "CertiRecicla genera certificados con CO\u2082 verificable, gestiona clientes y exporta a SINADER.",
+    href: "/register",
+    buttonText: "Prueba gratis 14 días",
+  };
+}
+
 export default function BlogArticlePage({ params }: Props) {
   const article = getArticleBySlug(params.slug);
   if (!article) notFound();
@@ -118,6 +178,9 @@ export default function BlogArticlePage({ params }: Props) {
             <span className="font-serif text-sage-800 font-bold">CertiRecicla</span>
           </Link>
           <nav className="flex items-center gap-4">
+            <Link href="/precios" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors hidden sm:inline">
+              Precios
+            </Link>
             <Link href="/blog" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors">
               Blog
             </Link>
@@ -164,18 +227,21 @@ export default function BlogArticlePage({ params }: Props) {
         </article>
 
         {/* CTA */}
-        <div className="mt-12 bg-sage-500 rounded-xl p-8 text-center text-white">
-          <h2 className="text-xl font-serif mb-2">Digitaliza tus certificados de reciclaje</h2>
-          <p className="text-sage-100 text-sm mb-5">
-            CertiRecicla genera certificados con CO&#x2082; verificable, gestiona clientes y exporta a SINADER.
-          </p>
-          <Link
-            href="/register"
-            className="inline-block bg-white text-sage-700 font-medium px-6 py-2.5 rounded-lg hover:bg-sage-50 transition-colors text-sm"
-          >
-            Prueba gratis 14 días
-          </Link>
-        </div>
+        {(() => {
+          const cta = getContextualCta(article.slug, article.category);
+          return (
+            <div className="mt-12 bg-sage-500 rounded-xl p-8 text-center text-white">
+              <h2 className="text-xl font-serif mb-2">{cta.title}</h2>
+              <p className="text-sage-100 text-sm mb-5">{cta.description}</p>
+              <Link
+                href={cta.href}
+                className="inline-block bg-white text-sage-700 font-medium px-6 py-2.5 rounded-lg hover:bg-sage-50 transition-colors text-sm"
+              >
+                {cta.buttonText}
+              </Link>
+            </div>
+          );
+        })()}
 
         {/* Related articles */}
         <div className="mt-12">

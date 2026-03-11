@@ -136,6 +136,7 @@ export default function Home() {
             <a href="#demo" className="hover:text-sage-600 transition-colors">Demo</a>
             <a href="#planes" className="hover:text-sage-600 transition-colors">Planes</a>
             <a href="#regulacion" className="hover:text-sage-600 transition-colors">Regulación</a>
+            <Link href="/precios" className="hover:text-sage-600 transition-colors">Precios</Link>
           </nav>
           <div className="flex items-center gap-3">
             <Link href="/login">
@@ -886,7 +887,7 @@ export default function Home() {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><a href="#funcionalidades" className="hover:text-sage-600 transition-colors">Funcionalidades</a></li>
                 <li><a href="#demo" className="hover:text-sage-600 transition-colors">Demo</a></li>
-                <li><a href="#planes" className="hover:text-sage-600 transition-colors">Planes y precios</a></li>
+                <li><Link href="/precios" className="hover:text-sage-600 transition-colors">Planes y precios</Link></li>
                 <li><a href="#faq" className="hover:text-sage-600 transition-colors">Preguntas frecuentes</a></li>
                 <li><Link href="/calculadora" className="hover:text-sage-600 transition-colors">Calculadora CO&#x2082;</Link></li>
                 <li><Link href="/blog" className="hover:text-sage-600 transition-colors">Blog</Link></li>

@@ -14,6 +14,7 @@ import {
   ArrowRight,
   Check,
   Info,
+  Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -309,6 +310,8 @@ function EquivBar({
 export default function CalculadoraPage() {
   const [entries, setEntries] = useState<MaterialEntry[]>(INITIAL);
   const [copied, setCopied] = useState(false);
+  const [leadEmail, setLeadEmail] = useState("");
+  const [leadSubmitted, setLeadSubmitted] = useState(false);
 
   const selectedMaterials = useMemo(
     () => new Set(entries.map((e) => e.material)),
@@ -389,6 +392,9 @@ export default function CalculadoraPage() {
             <span className="font-serif text-sage-800 font-bold">CertiRecicla</span>
           </Link>
           <nav className="flex items-center gap-4">
+            <Link href="/precios" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors hidden sm:inline">
+              Precios
+            </Link>
             <Link href="/blog" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors hidden sm:inline">
               Blog
             </Link>
@@ -644,6 +650,56 @@ export default function CalculadoraPage() {
                 </Button>
               </Link>
             </div>
+
+            {/* Lead capture */}
+            {totalCo2 > 0 && (
+              <div className="bg-sage-50 border border-sage-200 rounded-xl p-6">
+                {leadSubmitted ? (
+                  <div className="text-center py-2">
+                    <Check className="h-8 w-8 text-sage-600 mx-auto mb-2" />
+                    <p className="font-serif text-sage-800 font-medium">¡Listo! Revisa tu correo</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Te enviaremos el reporte de impacto ambiental en los próximos minutos.
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-start gap-3 mb-4">
+                      <Mail className="h-5 w-5 text-sage-600 mt-0.5 shrink-0" />
+                      <div>
+                        <h3 className="font-serif text-sage-800 font-medium">
+                          Recibe tu reporte de impacto ambiental
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Te enviamos un PDF con el detalle completo de tu cálculo, incluyendo metodología y fuentes citables.
+                        </p>
+                      </div>
+                    </div>
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        if (leadEmail.trim()) setLeadSubmitted(true);
+                      }}
+                      className="flex flex-col sm:flex-row gap-2"
+                    >
+                      <Input
+                        type="email"
+                        required
+                        placeholder="tu@empresa.cl"
+                        value={leadEmail}
+                        onChange={(e) => setLeadEmail(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Button type="submit" className="gap-2 whitespace-nowrap">
+                        Enviar reporte gratis
+                        <ArrowRight className="h-4 w-4" />
+                      </Button>
+                    </form>
+                    <p className="text-[11px] text-muted-foreground mt-2">Sin spam. Solo tu reporte.</p>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
