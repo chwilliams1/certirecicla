@@ -10,7 +10,7 @@ import {
   Car,
   Smartphone,
   Droplets,
-  Share2,
+
   ArrowRight,
   Check,
   Info,
@@ -309,9 +309,12 @@ function EquivBar({
 
 export default function CalculadoraPage() {
   const [entries, setEntries] = useState<MaterialEntry[]>(INITIAL);
-  const [copied, setCopied] = useState(false);
+
+  const [leadName, setLeadName] = useState("");
   const [leadEmail, setLeadEmail] = useState("");
-  const [leadSubmitted, setLeadSubmitted] = useState(false);
+  const [leadStep, setLeadStep] = useState<"form" | "confirm" | "done">("form");
+  const [leadSending, setLeadSending] = useState(false);
+  const [leadError, setLeadError] = useState("");
 
   const selectedMaterials = useMemo(
     () => new Set(entries.map((e) => e.material)),
@@ -347,17 +350,6 @@ export default function CalculadoraPage() {
     setEntries((prev) => [...prev, { id: String(nextId++), material: "", kg: 0 }]);
   };
 
-  const handleShare = () => {
-    const params = entries
-      .filter((e) => e.material && e.kg > 0)
-      .map((e) => `${encodeURIComponent(e.material)}:${e.kg}`)
-      .join(",");
-    const url = `${window.location.origin}/calculadora?m=${params}`;
-    navigator.clipboard.writeText(url).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
 
   // Load from URL params on mount
   useEffect(() => {
@@ -633,35 +625,86 @@ export default function CalculadoraPage() {
               </div>
             )}
 
-            {/* Actions */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button
-                variant="outline"
-                className="gap-2 flex-1"
-                onClick={handleShare}
-              >
-                {copied ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
-                {copied ? "Link copiado" : "Compartir resultados"}
-              </Button>
-              <Link href="/register?ref=calculadora" className="flex-1">
-                <Button className="w-full gap-2">
-                  Generar certificados reales
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
 
             {/* Lead capture */}
             {totalCo2 > 0 && (
               <div className="bg-sage-50 border border-sage-200 rounded-xl p-6">
-                {leadSubmitted ? (
+                {leadStep === "done" ? (
                   <div className="text-center py-2">
                     <Check className="h-8 w-8 text-sage-600 mx-auto mb-2" />
-                    <p className="font-serif text-sage-800 font-medium">¡Listo! Revisa tu correo</p>
+                    <p className="font-serif text-sage-800 font-medium">¡Listo! Revisa tu correo, {leadName.trim().split(" ")[0]}</p>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Te enviaremos el reporte de impacto ambiental en los próximos minutos.
+                      Te enviamos tu reporte de impacto ambiental + una sorpresa especial.
                     </p>
                   </div>
+                ) : leadStep === "confirm" ? (
+                  <>
+                    <div className="flex items-start gap-3 mb-4">
+                      <Mail className="h-5 w-5 text-sage-600 mt-0.5 shrink-0" />
+                      <div>
+                        <h3 className="font-serif text-sage-800 font-medium">
+                          Confirma tu envío, {leadName.trim().split(" ")[0]}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Enviaremos a <strong>{leadEmail}</strong> tu reporte con:
+                        </p>
+                      </div>
+                    </div>
+                    <ul className="text-sm text-sage-700 space-y-1.5 mb-4 ml-8">
+                      <li className="flex items-center gap-2"><Check className="h-4 w-4 text-sage-600 shrink-0" /> Detalle de CO₂ evitado por material</li>
+                      <li className="flex items-center gap-2"><Check className="h-4 w-4 text-sage-600 shrink-0" /> Ecoequivalencias verificadas</li>
+                      <li className="flex items-center gap-2"><Check className="h-4 w-4 text-sage-600 shrink-0" /> Metodología y fuentes citables</li>
+                    </ul>
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
+                      <p className="text-sm font-medium text-amber-900">
+                        🎁 Además, recibirás acceso exclusivo a 14 días gratis del Plan Profesional de CertiRecicla — certificados ilimitados, portal de clientes y reportes completos.
+                      </p>
+                    </div>
+                    {leadError && (
+                      <p className="text-sm text-red-600 mb-3">{leadError}</p>
+                    )}
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => setLeadStep("form")}
+                        disabled={leadSending}
+                      >
+                        Volver
+                      </Button>
+                      <Button
+                        className="flex-1 gap-2"
+                        disabled={leadSending}
+                        onClick={async () => {
+                          setLeadSending(true);
+                          setLeadError("");
+                          try {
+                            const res = await fetch("/api/calculadora/lead", {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({
+                                name: leadName.trim(),
+                                email: leadEmail.trim(),
+                                materials,
+                                totalKg,
+                                totalCo2,
+                                equivalencies,
+                              }),
+                            });
+                            if (!res.ok) throw new Error();
+                            setLeadStep("done");
+                          } catch {
+                            setLeadError("No pudimos enviar el correo. Intenta de nuevo.");
+                          } finally {
+                            setLeadSending(false);
+                          }
+                        }}
+                      >
+                        {leadSending ? "Enviando..." : "Sí, enviar mi reporte"}
+                        <ArrowRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </>
                 ) : (
                   <>
                     <div className="flex items-start gap-3 mb-4">
@@ -671,31 +714,41 @@ export default function CalculadoraPage() {
                           Recibe tu reporte de impacto ambiental
                         </h3>
                         <p className="text-sm text-muted-foreground mt-1">
-                          Te enviamos un PDF con el detalle completo de tu cálculo, incluyendo metodología y fuentes citables.
+                          Te enviamos el detalle completo de tu cálculo con metodología y fuentes citables.
                         </p>
                       </div>
                     </div>
                     <form
                       onSubmit={(e) => {
                         e.preventDefault();
-                        if (leadEmail.trim()) setLeadSubmitted(true);
+                        if (leadName.trim() && leadEmail.trim()) setLeadStep("confirm");
                       }}
-                      className="flex flex-col sm:flex-row gap-2"
+                      className="flex flex-col gap-2"
                     >
-                      <Input
-                        type="email"
-                        required
-                        placeholder="tu@empresa.cl"
-                        value={leadEmail}
-                        onChange={(e) => setLeadEmail(e.target.value)}
-                        className="flex-1"
-                      />
-                      <Button type="submit" className="gap-2 whitespace-nowrap">
-                        Enviar reporte gratis
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <Input
+                          type="text"
+                          required
+                          placeholder="Tu nombre"
+                          value={leadName}
+                          onChange={(e) => setLeadName(e.target.value)}
+                          className="flex-1"
+                        />
+                        <Input
+                          type="email"
+                          required
+                          placeholder="tu@empresa.cl"
+                          value={leadEmail}
+                          onChange={(e) => setLeadEmail(e.target.value)}
+                          className="flex-1"
+                        />
+                      </div>
+                      <Button type="submit" className="gap-2 whitespace-nowrap w-full sm:w-auto sm:self-end">
+                        Continuar
                         <ArrowRight className="h-4 w-4" />
                       </Button>
                     </form>
-                    <p className="text-[11px] text-muted-foreground mt-2">Sin spam. Solo tu reporte.</p>
+                    <p className="text-[11px] text-muted-foreground mt-2">Sin spam. Solo tu reporte + una oferta exclusiva.</p>
                   </>
                 )}
               </div>
