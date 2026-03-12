@@ -53,7 +53,7 @@ export const contentPart3: Record<string, string> = {
 <p>Además, puedes usar la <a href="/calculadora">calculadora de impacto ambiental</a> para simular escenarios y mostrar a potenciales clientes cuánto CO₂ podrían evitar al trabajar contigo.</p>
 
 <h2>Caso de uso: gestora que maneja 50+ clientes</h2>
-<p>Imagina una gestora de reciclaje en la Región Metropolitana que trabaja con 60 empresas clientes. Cada mes realiza entre 150 y 200 retiros de materiales diversos: cartón, plástico, vidrio, chatarra y papel. Antes de usar CertiRecicla, su flujo era el siguiente:</p>
+<p>Imagina una gestora de reciclaje en la Región Metropolitana que trabaja con 60 empresas clientes. Cada mes realiza entre 150 y 200 retiros de materiales diversos: <a href="/materiales/carton">cartón</a>, <a href="/materiales/plastico-pet">plástico</a>, <a href="/materiales/vidrio">vidrio</a>, <a href="/materiales/acero">chatarra</a> y <a href="/materiales/papel">papel</a>. Antes de usar CertiRecicla, su flujo era el siguiente:</p>
 <ol>
   <li>El operador de terreno anota los datos del retiro en una libreta o en el celular.</li>
   <li>Al volver a la oficina, alguien transcribe esos datos a una planilla Excel.</li>

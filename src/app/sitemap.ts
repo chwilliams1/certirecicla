@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { blogArticles } from "@/lib/blog/articles";
+import { MATERIALS } from "@/lib/materials-data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://certirecicla.cl";
@@ -24,6 +25,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${baseUrl}/materiales`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/precios`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: `${baseUrl}/login`,
       lastModified: new Date(),
       changeFrequency: "monthly",
@@ -39,10 +52,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const blogPages: MetadataRoute.Sitemap = blogArticles.map((article) => ({
     url: `${baseUrl}/blog/${article.slug}`,
-    lastModified: new Date(article.date),
+    lastModified: new Date(article.updatedDate ?? article.date),
     changeFrequency: "monthly" as const,
     priority: 0.7,
   }));
 
-  return [...staticPages, ...blogPages];
+  const materialPages: MetadataRoute.Sitemap = MATERIALS.map((material) => ({
+    url: `${baseUrl}/materiales/${material.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
+  return [...staticPages, ...blogPages, ...materialPages];
 }

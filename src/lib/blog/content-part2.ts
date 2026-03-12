@@ -40,52 +40,52 @@ export const contentPart2: Record<string, string> = {
   </thead>
   <tbody>
     <tr>
-      <td>Cartón</td>
+      <td><a href="/materiales/carton">Cartón</a></td>
       <td>0,9</td>
       <td>Incluye cartón corrugado y cartón gris</td>
     </tr>
     <tr>
-      <td>Papel</td>
+      <td><a href="/materiales/papel">Papel</a></td>
       <td>1,0</td>
       <td>Papel blanco, papel mixto, papel periódico</td>
     </tr>
     <tr>
-      <td>Plástico PET</td>
+      <td><a href="/materiales/plastico-pet">Plástico PET</a></td>
       <td>1,5</td>
       <td>Botellas, envases transparentes (resina #1)</td>
     </tr>
     <tr>
-      <td>Plástico HDPE</td>
+      <td><a href="/materiales/plastico-hdpe">Plástico HDPE</a></td>
       <td>1,4</td>
       <td>Envases opacos, bidones, tapas (resina #2)</td>
     </tr>
     <tr>
-      <td>Vidrio</td>
+      <td><a href="/materiales/vidrio">Vidrio</a></td>
       <td>0,3</td>
       <td>Botellas, frascos, vidrio plano</td>
     </tr>
     <tr>
-      <td>Aluminio</td>
+      <td><a href="/materiales/aluminio">Aluminio</a></td>
       <td>9,1</td>
       <td>Latas, perfiles; alta intensidad energética en producción primaria</td>
     </tr>
     <tr>
-      <td>Chatarra (acero)</td>
+      <td><a href="/materiales/acero">Chatarra (acero)</a></td>
       <td>1,5</td>
       <td>Acero, fierro, hojalata</td>
     </tr>
     <tr>
-      <td>Madera</td>
+      <td><a href="/materiales/madera">Madera</a></td>
       <td>0,4</td>
       <td>Pallets, madera de embalaje, restos de poda industrial</td>
     </tr>
     <tr>
-      <td>Textil</td>
+      <td><a href="/materiales/textil">Textil</a></td>
       <td>3,2</td>
       <td>Fibras naturales y sintéticas; evita producción y vertedero</td>
     </tr>
     <tr>
-      <td>Orgánico (compost)</td>
+      <td><a href="/materiales/organico">Orgánico (compost)</a></td>
       <td>0,2</td>
       <td>Residuos de alimentos y jardín compostados; evita metano en relleno</td>
     </tr>
@@ -566,7 +566,7 @@ export const contentPart2: Record<string, string> = {
 <ul>
   <li><strong>Identificación del emisor:</strong> Nombre o razón social de la gestora de reciclaje, RUT y datos de contacto. Idealmente, también el número de autorización sanitaria.</li>
   <li><strong>Identificación del generador:</strong> Nombre o razón social de la empresa que entregó los residuos, RUT y dirección de la planta o sucursal.</li>
-  <li><strong>Detalle de materiales:</strong> Tipo de material reciclado (cartón, plástico PET, vidrio, etc.), cantidad en kilogramos y, si aplica, la clasificación según código de residuo.</li>
+  <li><strong>Detalle de materiales:</strong> Tipo de material reciclado (<a href="/materiales/carton">cartón</a>, <a href="/materiales/plastico-pet">plástico PET</a>, <a href="/materiales/vidrio">vidrio</a>, etc.), cantidad en kilogramos y, si aplica, la clasificación según código de residuo.</li>
   <li><strong>Fecha o período:</strong> Fecha del retiro o período al que corresponde el certificado (por ejemplo, enero 2026).</li>
   <li><strong>Destino del material:</strong> Indicación de qué proceso de valorización se aplicó (reciclaje mecánico, compostaje, coprocesamiento, etc.) y, preferentemente, identificación de la planta de destino.</li>
   <li><strong>CO₂ evitado:</strong> Aunque no siempre es obligatorio, incluir el cálculo de CO₂ evitado agrega valor al certificado y es cada vez más solicitado por auditores y clientes.</li>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Materiales Reciclables en Chile — Guia Completa | CertiRecicla",
+  title: "Materiales Reciclables en Chile — Guía Completa",
   description:
     "Guia completa de materiales reciclables en Chile: plastico PET, carton, vidrio, aluminio, papel, textil, electronicos y mas. Aprende como reciclar cada material, su impacto ambiental y donde llevarlos.",
   keywords: [

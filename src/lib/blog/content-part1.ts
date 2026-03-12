@@ -10,7 +10,7 @@ export const contentPart1: Record<string, string> = {
 <ul>
   <li><strong>Datos de la empresa gestora:</strong> razón social, RUT, dirección, resolución sanitaria y autorización ambiental vigente.</li>
   <li><strong>Datos del cliente:</strong> razón social, RUT y dirección de la empresa que generó los residuos.</li>
-  <li><strong>Tipos de materiales:</strong> detalle de cada material reciclado (cartón, plástico PET, vidrio, chatarra, papel blanco, etc.).</li>
+  <li><strong>Tipos de materiales:</strong> detalle de cada material reciclado (<a href="/materiales/carton">cartón</a>, <a href="/materiales/plastico-pet">plástico PET</a>, <a href="/materiales/vidrio">vidrio</a>, <a href="/materiales/acero">chatarra</a>, <a href="/materiales/papel">papel blanco</a>, etc.).</li>
   <li><strong>Kilogramos procesados:</strong> peso exacto de cada material, idealmente respaldado por guía de despacho o pesaje en planta.</li>
   <li><strong>CO₂ equivalente evitado:</strong> cálculo de las emisiones de carbono que se dejaron de emitir gracias al reciclaje, basado en factores reconocidos como los del GHG Protocol o la EPA.</li>
   <li><strong>Período cubierto:</strong> rango de fechas al que corresponden los retiros o entregas de material.</li>
@@ -39,7 +39,7 @@ export const contentPart1: Record<string, string> = {
 <p>Si tu empresa opera bajo la norma <strong>ISO 14001</strong> o tiene un sistema de gestión ambiental interno, los auditores exigirán evidencia documental de que los residuos se manejan correctamente. Un certificado de reciclaje con código verificable es la respuesta más sólida a esa exigencia.</p>
 
 <h3>Cumplimiento de la Ley REP</h3>
-<p>La <strong>Ley REP (20.920)</strong> exige a productores e importadores de productos prioritarios hacerse cargo del reciclaje de sus envases y embalajes. Las gestoras que participan en este ecosistema deben emitir certificados que respalden las toneladas valorizadas, y las empresas adheridas necesitan esos documentos para demostrar cumplimiento ante el Ministerio del Medio Ambiente.</p>
+<p>La <strong><a href="/blog/ley-rep-chile-guia-completa">Ley REP (20.920)</a></strong> exige a productores e importadores de productos prioritarios hacerse cargo del reciclaje de sus envases y embalajes. Las gestoras que participan en este ecosistema deben emitir certificados que respalden las toneladas valorizadas, y las empresas adheridas necesitan esos documentos para demostrar cumplimiento ante el Ministerio del Medio Ambiente.</p>
 
 <h3>Confianza de clientes y stakeholders</h3>
 <p>Cada vez más clientes corporativos exigen a sus proveedores evidencia concreta de prácticas sustentables. Un certificado de reciclaje actualizado demuestra compromiso real, no solo declaraciones de intención. Esto es especialmente relevante en licitaciones públicas y procesos de homologación de proveedores.</p>
@@ -48,7 +48,7 @@ export const contentPart1: Record<string, string> = {
 <p>Si tu empresa publica memorias de sustentabilidad o reporta bajo estándares como GRI o SASB, los certificados de reciclaje son la fuente primaria para respaldar los indicadores de gestión de residuos y economía circular. Sin certificados, esos números quedan sin respaldo verificable.</p>
 
 <h3>Reducción de riesgos legales</h3>
-<p>Operar sin trazabilidad de residuos puede exponer a tu empresa a multas de la Superintendencia del Medio Ambiente. Contar con certificados demuestra diligencia y buena fe en el cumplimiento normativo, lo que puede ser un atenuante en caso de fiscalización.</p>
+<p>Operar sin <a href="/blog/trazabilidad-residuos-digital-chile">trazabilidad de residuos</a> puede exponer a tu empresa a <a href="/blog/multas-ley-rep-chile-casos-reales">multas de la Superintendencia del Medio Ambiente</a>. Contar con certificados demuestra diligencia y buena fe en el cumplimiento normativo, lo que puede ser un atenuante en caso de fiscalización.</p>
 
 <h2>Cómo obtener un certificado de reciclaje digital</h2>
 <p>Tradicionalmente, los certificados de reciclaje se emitían en papel o en PDF genéricos creados manualmente, con los problemas que eso conlleva: demoras, errores de transcripción, dificultad para verificar autenticidad y archivos que se pierden en bandejas de correo.</p>
@@ -179,7 +179,7 @@ export const contentPart1: Record<string, string> = {
 <p>Son los principales obligados. Cualquier empresa que fabrique en Chile o importe productos que contengan o utilicen productos prioritarios debe inscribirse, reportar las cantidades puestas en el mercado y cumplir con las metas de recolección y valorización. Pueden hacerlo de forma individual o a través de un <strong>sistema de gestión colectivo</strong> (GRANSIC).</p>
 
 <h3>Empresas gestoras de residuos</h3>
-<p>Las <strong>gestoras</strong> son las empresas que realizan la recolección, transporte, clasificación y valorización de los residuos. Bajo la Ley REP, deben estar debidamente autorizadas y registrar sus operaciones en los sistemas oficiales. Son un eslabón fundamental, ya que sin gestoras eficientes no hay forma de que los productores cumplan sus metas.</p>
+<p>Las <strong>gestoras</strong> son las empresas que realizan la recolección, transporte, clasificación y valorización de los residuos. Bajo la Ley REP, deben estar debidamente autorizadas y registrar sus operaciones en los sistemas oficiales. Son un eslabón fundamental, ya que sin gestoras eficientes no hay forma de que los productores cumplan sus metas. Si buscas una gestora, lee nuestra guía sobre <a href="/blog/como-elegir-proveedor-reciclaje-chile">cómo elegir un proveedor de reciclaje confiable</a>.</p>
 
 <h3>Recicladores de base</h3>
 <p>La ley reconoce explícitamente el rol de los recicladores de base (recolectores informales) y establece mecanismos para su formalización e integración en los sistemas de gestión. Esto fue una innovación importante respecto a modelos de otros países.</p>
@@ -200,10 +200,10 @@ export const contentPart1: Record<string, string> = {
   <li><strong>Infracciones gravísimas:</strong> multas de hasta 10.000 UTA, revocación de autorizaciones y clausura temporal o definitiva.</li>
 </ul>
 <p>Entre las conductas sancionables se incluyen: no inscribirse como productor obligado, no reportar las cantidades puestas en el mercado, no cumplir las metas de recolección y valorización, y no llevar registros adecuados de las operaciones.</p>
-<p>Además de las multas económicas, el daño reputacional puede ser considerable. La SMA publica las sanciones en su sitio web, lo que puede afectar la imagen de la empresa ante clientes, inversionistas y la comunidad.</p>
+<p>Además de las multas económicas, el daño reputacional puede ser considerable. La SMA publica las sanciones en su sitio web, lo que puede afectar la imagen de la empresa ante clientes, inversionistas y la comunidad. Conoce <a href="/blog/multas-ley-rep-chile-casos-reales">casos reales de multas y cómo evitarlas</a>.</p>
 
 <h2>Obligaciones de reporte en SINADER</h2>
-<p>El <strong>SINADER</strong> es el sistema oficial donde productores y gestoras deben declarar sus operaciones de residuos. Las obligaciones incluyen:</p>
+<p>El <strong>SINADER</strong> es el sistema oficial donde productores y gestoras deben declarar sus operaciones de residuos (consulta nuestra <a href="/blog/como-declarar-residuos-sinader">guía paso a paso para declarar en SINADER</a>). Las obligaciones incluyen:</p>
 <ul>
   <li>Declarar las cantidades de productos prioritarios puestas en el mercado (para productores).</li>
   <li>Declarar las cantidades de residuos recolectados, transportados y valorizados (para gestoras).</li>
@@ -255,12 +255,12 @@ export const contentPart1: Record<string, string> = {
 
 <h3>Categorías comunes en empresas chilenas</h3>
 <ul>
-  <li><strong>Papel y cartón:</strong> hojas de oficina, cajas, embalajes de cartón corrugado.</li>
-  <li><strong>Plásticos:</strong> botellas PET, film stretch, envases rígidos. Idealmente separados por tipo de resina.</li>
-  <li><strong>Vidrio:</strong> botellas, frascos, envases de vidrio.</li>
-  <li><strong>Metales:</strong> latas de aluminio, chatarra ferrosa, envases metálicos.</li>
-  <li><strong>Orgánicos:</strong> restos de comida del casino o cafetería, residuos de jardín.</li>
-  <li><strong>Residuos peligrosos (RESPEL):</strong> aceites, solventes, baterías, luminarias fluorescentes. Requieren manejo especial según D.S. 148.</li>
+  <li><strong><a href="/materiales/papel">Papel</a> y <a href="/materiales/carton">cartón</a>:</strong> hojas de oficina, cajas, embalajes de cartón corrugado.</li>
+  <li><strong>Plásticos:</strong> botellas <a href="/materiales/plastico-pet">PET</a>, film stretch, envases rígidos. Idealmente separados por tipo de resina.</li>
+  <li><strong><a href="/materiales/vidrio">Vidrio</a>:</strong> botellas, frascos, envases de vidrio.</li>
+  <li><strong>Metales:</strong> latas de <a href="/materiales/aluminio">aluminio</a>, <a href="/materiales/acero">chatarra ferrosa</a>, envases metálicos.</li>
+  <li><strong><a href="/materiales/organico">Orgánicos</a>:</strong> restos de comida del casino o cafetería, residuos de jardín.</li>
+  <li><strong>Residuos peligrosos (RESPEL):</strong> aceites, solventes, <a href="/materiales/baterias">baterías</a>, luminarias fluorescentes. Requieren manejo especial según <a href="/blog/clasificacion-residuos-industriales-chile">D.S. 148</a>.</li>
   <li><strong>Basura no reciclable:</strong> residuos que no entran en ninguna categoría anterior y van a disposición final.</li>
 </ul>
 
@@ -319,7 +319,7 @@ export const contentPart1: Record<string, string> = {
   "como-declarar-residuos-sinader": `
 <h2>¿Qué es el SINADER?</h2>
 <p>El <strong>SINADER</strong> (Sistema Nacional de Declaración de Residuos) es la plataforma digital del Ministerio del Medio Ambiente de Chile donde empresas generadoras y gestoras de residuos deben declarar sus operaciones. Forma parte del <strong>RETC</strong> (Registro de Emisiones y Transferencias de Contaminantes), también conocido como <strong>Ventanilla Única</strong> del RETC.</p>
-<p>En términos prácticos, el SINADER es el sistema donde el Estado registra y fiscaliza qué residuos se generan en Chile, quién los genera, quién los transporta y cuál es su destino final. La <strong>declaración de residuos</strong> en este sistema no es opcional: es una obligación legal establecida en el D.S. 1/2013 del Ministerio del Medio Ambiente y reforzada por la Ley REP.</p>
+<p>En términos prácticos, el SINADER es el sistema donde el Estado registra y fiscaliza qué residuos se generan en Chile, quién los genera, quién los transporta y cuál es su destino final. La <strong>declaración de residuos</strong> en este sistema no es opcional: es una obligación legal establecida en el D.S. 1/2013 del Ministerio del Medio Ambiente y reforzada por la <a href="/blog/ley-rep-chile-guia-completa">Ley REP</a>.</p>
 <p>Para las empresas gestoras de reciclaje, declarar correctamente en SINADER es doblemente importante: no solo evita sanciones propias, sino que permite a sus clientes demostrar cumplimiento ambiental usando la información reportada oficialmente.</p>
 
 <h2>¿Quiénes deben declarar en SINADER?</h2>

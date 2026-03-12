@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Blog de Reciclaje y Gestión de Residuos en Chile — CertiRecicla",
+  title: "Blog de Reciclaje y Gestión de Residuos en Chile",
   description:
     "Artículos y guías sobre reciclaje, Ley REP, SINADER, huella de carbono, economía circular, gestión de residuos y sustentabilidad empresarial en Chile. Recursos gratuitos para gestoras y empresas.",
   keywords: [

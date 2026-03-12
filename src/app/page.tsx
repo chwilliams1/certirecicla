@@ -28,7 +28,7 @@ import ScrollFadeIn from "@/components/landing/scroll-fade-in";
 export const metadata: Metadata = {
   title: "CertiRecicla — Certificados de reciclaje con CO₂ verificable para gestoras en Chile",
   description:
-    "Deja de hacer certificados en Word. CertiRecicla genera certificados de valorización con cálculo de CO₂ (GHG Protocol), gestiona clientes y exporta a SINADER. Prueba gratis 14 días.",
+    "Tu competencia ya genera certificados verificables en 2 minutos. CertiRecicla: certificados con CO₂ (GHG Protocol), verificación QR y exportación SINADER. Prueba gratis 14 días.",
   alternates: { canonical: "https://certirecicla.cl" },
 };
 
@@ -153,31 +153,30 @@ export default function Home() {
           <div className="mx-auto max-w-4xl text-center hero-stagger">
             <div className="inline-flex items-center gap-2 rounded-full bg-amber-50 border border-amber-200 px-3 py-1.5 mb-6">
               <AlertTriangle className="h-3.5 w-3.5 text-amber-600 flex-shrink-0" />
-              <span className="text-xs sm:text-sm text-amber-700 font-medium">Metas Ley REP 2026: plástico 11%, vidrio 22%, papel 18%</span>
+              <span className="text-xs sm:text-sm text-amber-700 font-medium">Dic 2026: tus clientes corporativos van a exigir certificados Scope 3. ¿Estás listo?</span>
             </div>
             <h1 className="mb-6 font-serif text-3xl font-bold text-sage-900 sm:text-4xl md:text-5xl lg:text-[3.5rem] leading-[1.15]">
-              Deja de hacer certificados en Word.<br className="hidden sm:block" />
-              Tu gestora merece algo mejor.
+              Mientras tú armas certificados en Word,<br className="hidden sm:block" />
+              tu competencia ya los genera en 2 clics.
             </h1>
             <p className="mb-4 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              CertiRecicla genera certificados de valorización con cálculo de CO&#x2082; verificable,
-              gestiona tus clientes generadores y te prepara para SINADER — todo en una plataforma
-              hecha para gestoras de reciclaje en Chile.
+              Las gestoras que se digitalizaron entregan certificados verificables con CO&#x2082; calculado
+              en segundos. Las que no, pierden clientes. ¿De qué lado quieres estar?
             </p>
             <p className="mb-8 sm:mb-10 text-sm text-sage-500 font-medium">
-              Reemplaza Excel + Word + WhatsApp. En minutos, no en horas.
+              Certificados con GHG Protocol + verificación QR + exportación SINADER. Setup en 2 minutos.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
               <Link href="/register" className="w-full sm:w-auto">
                 <Button size="lg" className="w-full sm:w-auto text-base px-8 py-6 btn-scale">
-                  Comenzar gratis por 14 días
+                  Empezar mi prueba gratis
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
               <a href="#demo" className="w-full sm:w-auto">
                 <Button variant="outline" size="lg" className="w-full sm:w-auto text-base px-8 py-6 gap-2">
                   <Calculator className="h-5 w-5" />
-                  Probar calculadora gratis
+                  Ver cómo funciona
                 </Button>
               </a>
             </div>
@@ -231,11 +230,11 @@ export default function Home() {
         <section id="problema" className="container mx-auto px-6 py-16 md:py-20">
           <ScrollFadeIn className="mx-auto max-w-3xl text-center mb-12">
             <h2 className="font-serif text-3xl font-bold text-sage-900 mb-4">
-              Cada mes pierdes horas en trabajo que no genera valor
+              Cada certificado manual es una oportunidad para que tu cliente elija a otra gestora
             </h2>
             <p className="text-muted-foreground">
-              Certificados a mano en Word, seguimiento en planillas, declaraciones SINADER copiando datos uno por uno.
-              Mientras tanto, las metas de valorización de la Ley REP suben cada año.
+              Mientras tú pasas 2 horas armando un certificado en Word — sin verificación, sin CO&#x2082; auditable, sin trazabilidad —
+              hay otra gestora que se lo entrega por email en 2 minutos. Con QR. Con GHG Protocol. Con marca propia.
             </p>
           </ScrollFadeIn>
 
@@ -243,56 +242,56 @@ export default function Home() {
             <div className="rounded-xl border border-red-200 bg-red-50/30 p-6">
               <h3 className="font-serif text-lg font-bold text-red-800 mb-4 flex items-center gap-2">
                 <Clock className="h-5 w-5 text-red-400" />
-                Tu dia a dia hoy
+                Lo que ven tus clientes hoy
               </h3>
               <ul className="space-y-3 text-sm text-red-700/80">
                 <li className="flex items-start gap-2">
                   <span className="text-red-400 mt-0.5">&#10005;</span>
-                  Certificados manuales en Word — 1 a 2 horas cada uno
+                  Un certificado Word genérico que nadie puede verificar
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-red-400 mt-0.5">&#10005;</span>
-                  CO&#x2082; calculado con fórmulas Excel sin respaldo metodológico
+                  CO&#x2082; &quot;calculado&quot; con fórmulas que ningún auditor acepta
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-red-400 mt-0.5">&#10005;</span>
-                  SINADER completado a mano, copiando datos uno por uno
+                  Días de espera por un documento que debería ser inmediato
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-red-400 mt-0.5">&#10005;</span>
-                  Tus clientes no pueden verificar sus certificados online
+                  Datos para SINADER que no coinciden con los certificados
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-red-400 mt-0.5">&#10005;</span>
-                  Sin trazabilidad real cuando llega una auditoria
+                  Cero trazabilidad cuando llega una auditoría o licitación
                 </li>
               </ul>
             </div>
             <div className="rounded-xl border border-sage-200 bg-sage-50/30 p-6">
               <h3 className="font-serif text-lg font-bold text-sage-800 mb-4 flex items-center gap-2">
                 <Check className="h-5 w-5 text-sage-500" />
-                Con CertiRecicla
+                Lo que ven con CertiRecicla
               </h3>
               <ul className="space-y-3 text-sm text-sage-700/80">
                 <li className="flex items-start gap-2">
                   <Check className="h-4 w-4 text-sage-500 mt-0.5 flex-shrink-0" />
-                  Certificados PDF profesionales en 2 clics para todos tus clientes
+                  PDF profesional con tu marca, verificable con código QR
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="h-4 w-4 text-sage-500 mt-0.5 flex-shrink-0" />
-                  CO&#x2082; evitado con GHG Protocol — verificable y auditable
+                  CO&#x2082; con GHG Protocol — el mismo estándar que usan las multinacionales
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="h-4 w-4 text-sage-500 mt-0.5 flex-shrink-0" />
-                  Datos listos para exportar a SINADER sin copiar nada
+                  Certificado listo en 2 clics, enviado por email desde la plataforma
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="h-4 w-4 text-sage-500 mt-0.5 flex-shrink-0" />
-                  Cada certificado verificable online con código único
+                  Exportación SINADER directa — datos que cuadran siempre
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="h-4 w-4 text-sage-500 mt-0.5 flex-shrink-0" />
-                  Trazabilidad completa: retiro → material → certificado
+                  Trazabilidad completa que resiste cualquier auditoría
                 </li>
               </ul>
             </div>
@@ -304,21 +303,21 @@ export default function Home() {
           <div className="container mx-auto px-6">
             <ScrollFadeIn className="mx-auto max-w-3xl text-center mb-12">
               <h2 className="font-serif text-3xl font-bold text-sage-900 mb-4">
-                Todo lo que necesita tu gestora en un solo lugar
+                Las herramientas que las gestoras profesionales ya están usando
               </h2>
               <p className="text-muted-foreground">
-                Diseñado para gestoras de reciclaje PyME en Chile.
-                No es un marketplace. No es para generadores. Es tu herramienta.
+                Cada funcionalidad fue diseñada para resolver un problema real
+                que te cuesta clientes, tiempo o dinero.
               </p>
             </ScrollFadeIn>
 
             <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
               <div className="rounded-xl border bg-card p-6 card-hover">
                 <FileCheck className="mb-4 h-9 w-9 text-sage-500" />
-                <h3 className="mb-2 font-serif text-base font-bold">Certificados de valorización</h3>
+                <h3 className="mb-2 font-serif text-base font-bold">Certificados que impresionan, no que avergüenzan</h3>
                 <p className="text-sm text-muted-foreground">
-                  Genera certificados PDF con cálculo automático de CO&#x2082; evitado.
-                  Selecciona clientes, período, y listo. Envíalos por email directo.
+                  PDF profesional con tu logo, CO&#x2082; automático y código QR.
+                  El certificado que tus clientes esperan recibir — no un Word con números pegados.
                 </p>
               </div>
               <div className="rounded-xl border bg-card p-6 card-hover">
@@ -347,18 +346,18 @@ export default function Home() {
               </div>
               <div className="rounded-xl border bg-card p-6 card-hover">
                 <Globe className="mb-4 h-9 w-9 text-sage-500" />
-                <h3 className="mb-2 font-serif text-base font-bold">Verificación pública</h3>
+                <h3 className="mb-2 font-serif text-base font-bold">Que tu cliente presuma tu trabajo</h3>
                 <p className="text-sm text-muted-foreground">
-                  Cada certificado tiene un código único y una página pública de verificación.
-                  Tus clientes lo comparten con sus stakeholders.
+                  Cada certificado tiene una página pública de verificación con código QR.
+                  Tu cliente la comparte con su directorio, auditores e inversionistas. Tu marca aparece ahí.
                 </p>
               </div>
               <div className="rounded-xl border bg-card p-6 card-hover">
                 <FileSpreadsheet className="mb-4 h-9 w-9 text-sage-500" />
-                <h3 className="mb-2 font-serif text-base font-bold">Exportación SINADER</h3>
+                <h3 className="mb-2 font-serif text-base font-bold">SINADER en un clic, no en un día</h3>
                 <p className="text-sm text-muted-foreground">
-                  Exporta tus datos en formato compatible con SINADER.
-                  Sin copiar a mano, sin errores de transcripción.
+                  Los datos salen de la plataforma directo al formato SINADER.
+                  Sin transcribir, sin errores, sin el estrés del último día de plazo.
                 </p>
               </div>
             </div>
@@ -492,10 +491,10 @@ export default function Home() {
           <div className="container mx-auto px-6">
             <div className="mx-auto max-w-3xl text-center mb-10">
               <h2 className="font-serif text-3xl font-bold text-sage-900 mb-4">
-                CertiRecicla vs tu proceso actual
+                Lo que tu competencia ya tiene vs lo que tú sigues haciendo
               </h2>
               <p className="text-muted-foreground">
-                Comparación real de lo que haces hoy con Excel + Word vs lo que puedes hacer con CertiRecicla.
+                Esto es lo que pasa cuando tu cliente recibe un certificado de cada gestora y decide con quién seguir.
               </p>
             </div>
             <div className="mx-auto max-w-3xl overflow-x-auto">
@@ -506,7 +505,7 @@ export default function Home() {
                     <th className="text-center py-3 px-4 font-medium text-muted-foreground w-1/3">
                       <span className="flex items-center justify-center gap-1.5">
                         <Clock className="h-4 w-4" />
-                        Excel + Word
+                        Tu gestora hoy
                       </span>
                     </th>
                     <th className="text-center py-3 px-4 font-bold text-sage-800 w-1/3">
@@ -594,11 +593,11 @@ export default function Home() {
           <div className="mx-auto max-w-4xl">
             <div className="text-center mb-12">
               <h2 className="font-serif text-3xl font-bold text-sage-900 mb-4">
-                Las metas de la Ley REP suben cada año
+                Las reglas del juego cambiaron. ¿Y tu operación?
               </h2>
               <p className="text-muted-foreground">
-                Metas de valorización de envases y embalajes (Decreto Supremo).
-                Las gestoras que no demuestren trazabilidad quedarán fuera.
+                La Ley REP sube las metas cada año. La NCG 519 exigirá Scope 3 desde diciembre 2026.
+                Las gestoras que operen con planillas van a quedar fuera de las licitaciones corporativas.
               </p>
             </div>
 
@@ -657,7 +656,7 @@ export default function Home() {
         <section className="container mx-auto px-6 py-16 md:py-20">
           <div className="mx-auto max-w-4xl">
             <h2 className="font-serif text-3xl font-bold text-sage-900 text-center mb-10">
-              Hecho para gestoras de reciclaje. Nadie mas.
+              Si emites certificados de reciclaje en Chile, esto se hizo para ti
             </h2>
             <div className="rounded-2xl border bg-card overflow-hidden">
               <div className="grid md:grid-cols-5">
@@ -707,10 +706,11 @@ export default function Home() {
           <div className="container mx-auto px-6">
             <div className="mx-auto max-w-3xl text-center mb-12">
               <h2 className="font-serif text-3xl font-bold text-sage-900 mb-4">
-                Planes pensados para gestoras PyME
+                Menos de lo que te cuesta un día de trabajo administrativo
               </h2>
               <p className="text-muted-foreground">
-                Precio por rango de clientes. Sin cobro por certificado, sin cobro por usuario.
+                Piensa cuántas horas gastas al mes en certificados y planillas.
+                CertiRecicla se paga solo desde el primer mes.
               </p>
             </div>
 
@@ -718,7 +718,7 @@ export default function Home() {
               {/* Starter */}
               <div className="rounded-xl border bg-card p-7 card-hover">
                 <h3 className="font-serif text-xl font-bold text-sage-800 mb-1">Starter</h3>
-                <p className="text-sm text-muted-foreground mb-5">Para empezar a digitalizar</p>
+                <p className="text-sm text-muted-foreground mb-5">Para decirle adiós a Word este mes</p>
                 <div className="mb-5">
                   <span className="text-4xl font-bold text-sage-900">$19.900</span>
                   <span className="text-muted-foreground text-sm">/mes CLP</span>
@@ -750,7 +750,7 @@ export default function Home() {
                   </li>
                 </ul>
                 <Link href="/register" className="block">
-                  <Button variant="outline" className="w-full">Probar 14 días gratis</Button>
+                  <Button variant="outline" className="w-full">Empezar gratis</Button>
                 </Link>
               </div>
 
@@ -760,7 +760,7 @@ export default function Home() {
                   Recomendado
                 </div>
                 <h3 className="font-serif text-xl font-bold text-sage-800 mb-1">Profesional</h3>
-                <p className="text-sm text-muted-foreground mb-5">Para gestoras con operación activa</p>
+                <p className="text-sm text-muted-foreground mb-5">Para gestoras que quieren competir en serio</p>
                 <div className="mb-5">
                   <span className="text-4xl font-bold text-sage-900">$49.900</span>
                   <span className="text-muted-foreground text-sm">/mes CLP</span>
@@ -788,14 +788,14 @@ export default function Home() {
                   </li>
                 </ul>
                 <Link href="/register" className="block">
-                  <Button className="w-full">Probar 14 días gratis</Button>
+                  <Button className="w-full">Digitalizar mi gestora ahora</Button>
                 </Link>
               </div>
 
               {/* Business */}
               <div className="rounded-xl border bg-card p-7 card-hover">
                 <h3 className="font-serif text-xl font-bold text-sage-800 mb-1">Business</h3>
-                <p className="text-sm text-muted-foreground mb-5">Para gestoras con alto volumen</p>
+                <p className="text-sm text-muted-foreground mb-5">Para gestoras que ya dominan su mercado</p>
                 <div className="mb-5">
                   <span className="text-4xl font-bold text-sage-900">$99.900</span>
                   <span className="text-muted-foreground text-sm">/mes CLP</span>
@@ -827,7 +827,7 @@ export default function Home() {
                   </li>
                 </ul>
                 <Link href="/register" className="block">
-                  <Button variant="outline" className="w-full">Probar 14 días gratis</Button>
+                  <Button variant="outline" className="w-full">Escalar mi operación</Button>
                 </Link>
               </div>
             </div>
@@ -847,15 +847,16 @@ export default function Home() {
           <ScrollFadeIn className="container mx-auto px-6 relative z-10">
             <div className="mx-auto max-w-3xl text-center">
               <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white mb-4">
-                Tu gestora no puede seguir con Excel
+                Cada día con Excel es un día que tu competencia te saca ventaja
               </h2>
               <p className="text-sage-300 mb-10 max-w-xl mx-auto leading-relaxed">
-                Las metas suben, las auditorías llegan, y tus clientes corporativos van a exigir certificados con respaldo.
-                Empieza hoy — 14 días gratis, sin tarjeta de crédito.
+                Las metas REP suben. Las auditorías llegan. Tus clientes corporativos ya están comparando certificados.
+                La gestora que se digitalice primero se queda con el mercado. La que no... bueno, ya sabes.
               </p>
+              <p className="text-sage-400 text-sm mb-6">2 minutos de setup. 14 días gratis. Sin tarjeta.</p>
               <Link href="/register" className="w-full sm:w-auto">
                 <Button size="lg" className="w-full sm:w-auto text-base px-10 py-6 bg-white text-sage-800 hover:bg-sand-100 btn-scale font-semibold">
-                  Crear cuenta gratis
+                  Empezar mi prueba gratis ahora
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Planes y Precios — CertiRecicla | Certificados de Reciclaje",
+  title: "Planes y Precios — Certificados de Reciclaje",
   description:
     "Conoce los planes y precios de CertiRecicla, la plataforma de gestión de residuos y certificados de reciclaje para gestoras en Chile. Desde $19.900 CLP/mes. Prueba gratis 14 días, sin tarjeta de crédito.",
   keywords: [
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "https://certirecicla.cl/precios" },
   openGraph: {
-    title: "Planes y Precios — CertiRecicla | Certificados de Reciclaje",
+    title: "Planes y Precios — Certificados de Reciclaje | CertiRecicla",
     description:
       "Planes desde $19.900 CLP/mes. Certificados de reciclaje con CO₂ verificable, gestión de clientes y exportación SINADER. Prueba gratis 14 días.",
     url: "https://certirecicla.cl/precios",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Planes y Precios — CertiRecicla | Certificados de Reciclaje",
+    title: "Planes y Precios — Certificados de Reciclaje | CertiRecicla",
     description:
       "Planes desde $19.900 CLP/mes. Certificados de reciclaje con CO₂ verificable, gestión de clientes y exportación SINADER. Prueba gratis 14 días.",
   },

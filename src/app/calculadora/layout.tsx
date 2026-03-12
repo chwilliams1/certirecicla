@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 const url = "https://certirecicla.cl/calculadora";
 
 export const metadata: Metadata = {
-  title: "Calculadora de CO₂ Evitado por Reciclaje — Gratis, por Material | CertiRecicla",
+  title: "Calculadora de CO₂ Evitado por Reciclaje — Gratis, por Material",
   description:
     "Calcula cuánto CO₂ evitas al reciclar plástico, cartón, vidrio y aluminio. Tabla de factores de emisión por material, ecoequivalencias (árboles, km, agua ahorrada) y metodología EPA WARM + DEFRA. Gratis, sin registro. Ideal para gestoras, Ley REP y reportes de sustentabilidad en Chile.",
   keywords: [

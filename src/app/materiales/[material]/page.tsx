@@ -11,12 +11,15 @@ import {
   Recycle,
   CheckCircle2,
   Leaf,
+  BookOpen,
 } from "lucide-react";
 import {
   MATERIALS,
   getMaterialBySlug,
   getRelatedMaterials,
+  type MaterialCategory,
 } from "@/lib/materials-data";
+import { blogArticles } from "@/lib/blog/articles";
 
 interface Props {
   params: { material: string };
@@ -31,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!material) return {};
 
   const url = `https://certirecicla.cl/materiales/${material.slug}`;
-  const title = `Reciclaje de ${material.name} en Chile — Guia Completa | CertiRecicla`;
+  const title = `Reciclaje de ${material.name} en Chile — Guía Completa`;
   const description = `${material.description} Evita ${material.co2Factor} kg de CO2 y ahorra ${material.waterFactor} litros de agua por cada kg reciclado.`;
 
   return {
@@ -119,11 +122,59 @@ function ImpactTable({
   );
 }
 
+const CATEGORY_BLOG_SLUGS: Record<MaterialCategory, string[]> = {
+  Plastico: [
+    "co2-evitado-reciclaje-tabla-materiales",
+    "que-es-certificado-de-reciclaje",
+    "reciclaje-retail-supermercados-chile",
+    "ley-rep-chile-guia-completa",
+  ],
+  "Papel y Carton": [
+    "co2-evitado-reciclaje-tabla-materiales",
+    "reciclaje-retail-supermercados-chile",
+    "que-es-certificado-de-reciclaje",
+    "economia-circular-chile-impacto-empresas",
+  ],
+  Vidrio: [
+    "co2-evitado-reciclaje-tabla-materiales",
+    "reciclaje-retail-supermercados-chile",
+    "que-es-certificado-de-reciclaje",
+    "ley-rep-chile-guia-completa",
+  ],
+  Metal: [
+    "co2-evitado-reciclaje-tabla-materiales",
+    "reciclaje-industria-minera-chile",
+    "que-es-certificado-de-reciclaje",
+    "clasificacion-residuos-industriales-chile",
+  ],
+  Organico: [
+    "reciclaje-industria-alimentaria-chile",
+    "economia-circular-chile-impacto-empresas",
+    "co2-evitado-reciclaje-tabla-materiales",
+    "plan-gestion-residuos-empresa",
+  ],
+  Especial: [
+    "clasificacion-residuos-industriales-chile",
+    "reciclaje-industria-minera-chile",
+    "trazabilidad-residuos-digital-chile",
+    "ley-rep-chile-guia-completa",
+  ],
+};
+
+function getRelatedBlogPosts(category: MaterialCategory) {
+  const slugs = CATEGORY_BLOG_SLUGS[category] ?? [];
+  return slugs
+    .map((slug) => blogArticles.find((a) => a.slug === slug))
+    .filter(Boolean)
+    .slice(0, 3);
+}
+
 export default function MaterialPage({ params }: Props) {
   const material = getMaterialBySlug(params.material);
   if (!material) notFound();
 
   const related = getRelatedMaterials(material.slug, 3);
+  const relatedPosts = getRelatedBlogPosts(material.category);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -384,6 +435,32 @@ export default function MaterialPage({ params }: Props) {
                         {faq.answer}
                       </p>
                     </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Related blog posts */}
+            {relatedPosts.length > 0 && (
+              <section className="mb-8">
+                <h2 className="text-xl font-serif text-sage-800 mb-4 flex items-center gap-2">
+                  <BookOpen className="h-5 w-5 text-sage-500" />
+                  Artículos relacionados
+                </h2>
+                <div className="space-y-3">
+                  {relatedPosts.map((post) => (
+                    <Link
+                      key={post!.slug}
+                      href={`/blog/${post!.slug}`}
+                      className="group block bg-white border border-border/50 rounded-xl p-4 hover:border-sage-300 transition-all"
+                    >
+                      <span className="text-xs text-sage-600 font-medium">
+                        {post!.category} · {post!.readingTime} min lectura
+                      </span>
+                      <h3 className="text-sm font-serif text-sage-800 group-hover:text-sage-600 transition-colors mt-1">
+                        {post!.title}
+                      </h3>
+                    </Link>
                   ))}
                 </div>
               </section>
