@@ -23,7 +23,7 @@ function BlurredStatCard({
   );
 }
 
-export default function DemoImpactStats() {
+export default function DemoImpactStats({ href }: { href: string }) {
   return (
     <div className="relative">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pointer-events-none">
@@ -33,10 +33,10 @@ export default function DemoImpactStats() {
         <BlurredStatCard icon={Droplets} label="Litros de agua ahorrados" />
       </div>
       <div className="absolute inset-0 flex items-center justify-center">
-        <Link href="/calculadora" onClick={() => analytics.ctaClick("demo_unlock_equivalencies")}>
+        <Link href={href} onClick={() => analytics.ctaClick("demo_unlock_equivalencies")}>
           <Button variant="secondary" size="sm" className="gap-2 shadow-md">
             <Lock className="h-3.5 w-3.5" />
-            Desbloquear equivalencias
+            Ver equivalencias
           </Button>
         </Link>
       </div>

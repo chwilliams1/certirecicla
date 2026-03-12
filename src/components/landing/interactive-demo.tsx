@@ -50,6 +50,13 @@ export default function InteractiveDemo() {
     return { materials, totalKg, totalCo2 };
   }, [entries]);
 
+  const calculatorUrl = useMemo(() => {
+    const validEntries = entries.filter((e) => e.material && e.kg > 0);
+    if (validEntries.length === 0) return "/calculadora";
+    const m = validEntries.map((e) => `${encodeURIComponent(e.material)}:${e.kg}`).join(",");
+    return `/calculadora?m=${m}`;
+  }, [entries]);
+
   const updateEntry = (id: string, field: "material" | "kg", value: string | number) => {
     setEntries((prev) =>
       prev.map((e) => (e.id === id ? { ...e, [field]: value } : e))
@@ -156,7 +163,7 @@ export default function InteractiveDemo() {
           )}
 
           {/* Impact stats (gated) */}
-          <DemoImpactStats />
+          <DemoImpactStats href={calculatorUrl} />
         </div>
 
         {/* Right: Certificate preview */}
@@ -167,22 +174,19 @@ export default function InteractiveDemo() {
             totalCo2={calculations.totalCo2}
           />
 
-          {/* Gate CTA */}
+          {/* CTA — carry materials to full calculator */}
           <div className="space-y-3">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link href="/calculadora" className="flex-1" onClick={() => analytics.ctaClick("demo_calculadora")}>
-                <Button className="w-full gap-2">
-                  Probar calculadora completa
-                </Button>
-              </Link>
-              <Link href="/register?ref=demo" className="flex-1" onClick={() => analytics.ctaClick("demo_register")}>
-                <Button variant="outline" className="w-full gap-2">
-                  Crear cuenta gratis
-                </Button>
-              </Link>
-            </div>
+            <Link
+              href={calculatorUrl}
+              className="block"
+              onClick={() => analytics.ctaClick("demo_ver_reporte")}
+            >
+              <Button className="w-full gap-2" size="lg">
+                Ver mi reporte completo
+              </Button>
+            </Link>
             <p className="text-xs text-center text-muted-foreground">
-              Calcula tu impacto con más detalle o empieza a generar certificados — 14 días sin costo
+              Recibe equivalencias ambientales y certificado por email
             </p>
           </div>
         </div>
