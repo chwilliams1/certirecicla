@@ -14,8 +14,6 @@ import {
 } from "@/components/ui/select";
 import {
   calculateCo2,
-  calculateEquivalencies,
-  calculateWaterSaved,
   VALID_MATERIALS,
 } from "@/lib/co2-calculator";
 import DemoImpactStats from "./demo-impact-stats";
@@ -49,9 +47,7 @@ export default function InteractiveDemo() {
       }));
     const totalKg = materials.reduce((sum, m) => sum + m.kg, 0);
     const totalCo2 = materials.reduce((sum, m) => sum + m.co2, 0);
-    const equivalencies = calculateEquivalencies(totalCo2);
-    const waterSaved = calculateWaterSaved(materials);
-    return { materials, totalKg, totalCo2, equivalencies, waterSaved };
+    return { materials, totalKg, totalCo2 };
   }, [entries]);
 
   const updateEntry = (id: string, field: "material" | "kg", value: string | number) => {
@@ -159,8 +155,8 @@ export default function InteractiveDemo() {
             </Button>
           )}
 
-          {/* Impact stats */}
-          <DemoImpactStats equivalencies={calculations.equivalencies} waterSaved={calculations.waterSaved} />
+          {/* Impact stats (gated) */}
+          <DemoImpactStats />
         </div>
 
         {/* Right: Certificate preview */}
@@ -169,8 +165,6 @@ export default function InteractiveDemo() {
             materials={calculations.materials}
             totalKg={calculations.totalKg}
             totalCo2={calculations.totalCo2}
-            equivalencies={calculations.equivalencies}
-            waterSaved={calculations.waterSaved}
           />
 
           {/* Gate CTA */}

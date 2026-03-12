@@ -18,21 +18,35 @@ import {
 } from "lucide-react";
 import { calculateEquivalencies, calculateWaterSaved } from "@/lib/co2-calculator";
 
+interface DemoMaterial {
+  material: string;
+  kg: number;
+  co2: number;
+}
+
+function decodePayload(d: string | null): { code: string; name: string; materials: DemoMaterial[]; totalKg: number; totalCo2: number } {
+  const empty = { code: "DEMO-000000", name: "", materials: [] as DemoMaterial[], totalKg: 0, totalCo2: 0 };
+  if (!d) return empty;
+  try {
+    const json = JSON.parse(atob(d.replace(/-/g, "+").replace(/_/g, "/")));
+    return {
+      code: json.c || "DEMO-000000",
+      name: json.n || "",
+      materials: (json.m || []).map((m: [string, number, number]): DemoMaterial => ({ material: m[0], kg: m[1], co2: m[2] })),
+      totalKg: json.k || 0,
+      totalCo2: json.co || 0,
+    };
+  } catch {
+    return empty;
+  }
+}
+
 function DemoContent() {
   const searchParams = useSearchParams();
-  const code = searchParams.get("code") || "DEMO-000000";
-  const name = searchParams.get("name") || "";
-  const materialsParam = searchParams.get("materials"); // JSON string
-  const totalKg = Number(searchParams.get("totalKg")) || 0;
-  const totalCo2 = Number(searchParams.get("totalCo2")) || 0;
-
-  let materials: { material: string; kg: number; co2: number }[] = [];
-  try {
-    if (materialsParam) materials = JSON.parse(materialsParam);
-  } catch { /* ignore */ }
+  const { code, name, materials, totalKg, totalCo2 } = decodePayload(searchParams.get("d"));
 
   const eq = calculateEquivalencies(totalCo2);
-  const waterMaterials = materials.map((m) => ({ material: m.material, kg: m.kg }));
+  const waterMaterials = materials.map((m: { material: string; kg: number }) => ({ material: m.material, kg: m.kg }));
   const waterSaved = calculateWaterSaved(waterMaterials);
 
   return (

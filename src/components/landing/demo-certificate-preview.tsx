@@ -3,25 +3,15 @@
 import { TreePine, Car, Smartphone, Droplets } from "lucide-react";
 
 type MaterialRow = { material: string; kg: number; co2: number };
-type Equivalencies = {
-  trees: number;
-  kmNotDriven: number;
-  smartphonesCharged: number;
-  homesEnergized: number;
-};
 
 export default function DemoCertificatePreview({
   materials,
   totalKg,
   totalCo2,
-  equivalencies,
-  waterSaved,
 }: {
   materials: MaterialRow[];
   totalKg: number;
   totalCo2: number;
-  equivalencies: Equivalencies;
-  waterSaved: number;
 }) {
   const today = new Date();
   const month = today.toLocaleDateString("es-CL", { month: "long" });
@@ -115,39 +105,30 @@ export default function DemoCertificatePreview({
           </div>
         </div>
 
-        {/* Equivalencies */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
-          {[
-            {
-              icon: TreePine,
-              val: equivalencies.trees,
-              label: "Arboles",
-            },
-            {
-              icon: Car,
-              val: equivalencies.kmNotDriven,
-              label: "Km evitados",
-            },
-            {
-              icon: Smartphone,
-              val: equivalencies.smartphonesCharged,
-              label: "Cargas",
-            },
-            {
-              icon: Droplets,
-              val: waterSaved,
-              label: "Lt agua",
-            },
-          ].map(({ icon: Icon, val, label }) => (
-            <div
-              key={label}
-              className="rounded-lg border bg-white p-2"
-            >
-              <Icon className="mx-auto h-4 w-4 text-sage-500 mb-1" />
-              <p className="font-bold text-sage-700">{val.toLocaleString("es-CL")}</p>
-              <p className="text-muted-foreground">{label}</p>
-            </div>
-          ))}
+        {/* Equivalencies (blurred) */}
+        <div className="relative">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs blur-sm pointer-events-none select-none">
+            {[
+              { icon: TreePine, label: "Árboles" },
+              { icon: Car, label: "Km evitados" },
+              { icon: Smartphone, label: "Cargas" },
+              { icon: Droplets, label: "Lt agua" },
+            ].map(({ icon: Icon, label }) => (
+              <div
+                key={label}
+                className="rounded-lg border bg-white p-2"
+              >
+                <Icon className="mx-auto h-4 w-4 text-sage-500 mb-1" />
+                <p className="font-bold text-sage-700">123</p>
+                <p className="text-muted-foreground">{label}</p>
+              </div>
+            ))}
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <p className="text-xs font-medium text-sage-600 bg-white/80 px-3 py-1 rounded-full border">
+              Disponible en calculadora completa
+            </p>
+          </div>
         </div>
 
         {/* Footer */}

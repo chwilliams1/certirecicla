@@ -1,94 +1,45 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { TreePine, Car, Smartphone, Droplets } from "lucide-react";
+import Link from "next/link";
+import { TreePine, Car, Smartphone, Droplets, Lock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { analytics } from "@/lib/analytics";
 
-type Equivalencies = {
-  trees: number;
-  kmNotDriven: number;
-  smartphonesCharged: number;
-  homesEnergized: number;
-};
-
-function useCountUp(target: number, duration = 500) {
-  const [value, setValue] = useState(0);
-  const rafRef = useRef<number>(0);
-  const startRef = useRef<number>(0);
-  const prevTarget = useRef(target);
-
-  useEffect(() => {
-    const from = prevTarget.current !== target ? 0 : value;
-    prevTarget.current = target;
-    startRef.current = performance.now();
-
-    const animate = (now: number) => {
-      const elapsed = now - startRef.current;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
-      setValue(Math.round(from + (target - from) * eased));
-      if (progress < 1) {
-        rafRef.current = requestAnimationFrame(animate);
-      }
-    };
-
-    rafRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(rafRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [target, duration]);
-
-  return value;
-}
-
-function StatCard({
+function BlurredStatCard({
   icon: Icon,
-  value,
   label,
 }: {
   icon: typeof TreePine;
-  value: number;
   label: string;
 }) {
-  const animated = useCountUp(value);
   return (
-    <div className="rounded-xl border bg-card p-4 text-center card-hover">
-      <Icon className="mx-auto mb-2 h-6 w-6 text-sage-500" />
-      <p className="text-2xl font-bold text-sage-800">
-        {animated.toLocaleString("es-CL")}
+    <div className="rounded-xl border bg-card p-4 text-center">
+      <Icon className="mx-auto mb-2 h-6 w-6 text-sage-500/40" />
+      <p className="text-2xl font-bold text-sage-800 blur-sm select-none">
+        123
       </p>
       <p className="text-xs text-muted-foreground mt-1">{label}</p>
     </div>
   );
 }
 
-export default function DemoImpactStats({
-  equivalencies,
-  waterSaved,
-}: {
-  equivalencies: Equivalencies;
-  waterSaved: number;
-}) {
+export default function DemoImpactStats() {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-      <StatCard
-        icon={TreePine}
-        value={equivalencies.trees}
-        label="Arboles equivalentes"
-      />
-      <StatCard
-        icon={Car}
-        value={equivalencies.kmNotDriven}
-        label="Km no recorridos"
-      />
-      <StatCard
-        icon={Smartphone}
-        value={equivalencies.smartphonesCharged}
-        label="Smartphones cargados"
-      />
-      <StatCard
-        icon={Droplets}
-        value={waterSaved}
-        label="Litros de agua ahorrados"
-      />
+    <div className="relative">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pointer-events-none">
+        <BlurredStatCard icon={TreePine} label="Árboles equivalentes" />
+        <BlurredStatCard icon={Car} label="Km no recorridos" />
+        <BlurredStatCard icon={Smartphone} label="Smartphones cargados" />
+        <BlurredStatCard icon={Droplets} label="Litros de agua ahorrados" />
+      </div>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <Link href="/calculadora" onClick={() => analytics.ctaClick("demo_unlock_equivalencies")}>
+          <Button variant="secondary" size="sm" className="gap-2 shadow-md">
+            <Lock className="h-3.5 w-3.5" />
+            Desbloquear equivalencias
+          </Button>
+        </Link>
+      </div>
     </div>
   );
 }
