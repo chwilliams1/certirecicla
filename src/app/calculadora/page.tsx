@@ -825,6 +825,75 @@ export default function CalculadoraPage() {
             </div>
           </div>
 
+          {/* Why factors differ between sources */}
+          <div className="bg-white border border-border/50 rounded-xl p-5 sm:p-6 md:p-8 space-y-5">
+            <h3 className="font-serif text-lg sm:text-xl text-sage-800">¿Por qué los factores de emisión varían entre fuentes?</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Es normal que EPA WARM y DEFRA reporten valores distintos para el mismo material. Las diferencias no significan
+              que una fuente sea incorrecta &mdash; reflejan decisiones metodológicas legítimas:
+            </p>
+            <div className="space-y-4">
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-sage-100 flex items-center justify-center text-sage-600 font-bold text-sm">1</div>
+                <div>
+                  <p className="text-sm font-medium text-sage-800">Alcance del cálculo</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    EPA WARM mide el ciclo completo: extracción evitada + manufactura evitada + emisiones de relleno sanitario evitadas.
+                    DEFRA solo mide manufactura evitada (no incluye relleno). Por eso EPA tiende a dar valores más altos.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-sage-100 flex items-center justify-center text-sage-600 font-bold text-sm">2</div>
+                <div>
+                  <p className="text-sm font-medium text-sage-800">Mix energético del país</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Los factores dependen de cuánto carbón, gas o energía renovable usa cada país para producir electricidad.
+                    DEFRA usa el grid del Reino Unido, EPA el de EE.UU. &mdash; ambos distintos al de Chile.
+                    Un país con más renovables tiene factores menores porque su producción industrial genera menos CO&#x2082;.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-sage-100 flex items-center justify-center text-sage-600 font-bold text-sm">3</div>
+                <div>
+                  <p className="text-sm font-medium text-sage-800">Tecnología de reciclaje asumida</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    La eficiencia del proceso varía: reciclaje mecánico vs. químico, tasas de merma y calidad del material recuperado.
+                    Cada fuente asume tecnologías y rendimientos distintos, lo que cambia el factor final.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-sage-100 flex items-center justify-center text-sage-600 font-bold text-sm">4</div>
+                <div>
+                  <p className="text-sm font-medium text-sage-800">Definición del material</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    &ldquo;Plástico PET&rdquo; en EPA puede incluir botellas + envases termoformados, mientras DEFRA puede considerar solo botellas.
+                    La composición promedio asumida cambia el factor. Lo mismo ocurre con &ldquo;cartón&rdquo; (corrugado vs. plegable) y &ldquo;papel&rdquo; (oficina vs. periódico).
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-sage-100 flex items-center justify-center text-sage-600 font-bold text-sm">5</div>
+                <div>
+                  <p className="text-sm font-medium text-sage-800">Año de publicación</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    DEFRA se actualiza anualmente, EPA WARM cada 2&ndash;3 años. Los factores evolucionan con los avances tecnológicos
+                    y cambios en las matrices energéticas. Usamos siempre la versión más reciente de cada fuente.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-sage-50 rounded-lg p-4 mt-2">
+              <p className="text-xs text-sage-700 leading-relaxed">
+                <strong>Nuestra decisión:</strong> Ante estas diferencias, aplicamos el valor más conservador o un promedio intermedio
+                que excluye los créditos más debatidos (como los créditos forestales de EPA para papel y cartón). Así nos aseguramos
+                de que los datos que entregamos resistan cualquier auditoría sin riesgo de sobreestimación.
+              </p>
+            </div>
+          </div>
+
           {/* Complete emission factors table */}
           <div className="bg-white border border-border/50 rounded-xl overflow-hidden">
             <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-border/50">
