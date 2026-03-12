@@ -32,6 +32,7 @@ import {
   VALID_MATERIALS,
   DEFAULT_CO2_FACTORS,
 } from "@/lib/co2-calculator";
+import { analytics } from "@/lib/analytics";
 
 type MaterialEntry = { id: string; material: string; kg: number };
 
@@ -604,6 +605,7 @@ export default function CalculadoraPage() {
                               }),
                             });
                             if (!res.ok) throw new Error();
+                            analytics.calculatorLead(totalCo2);
                             setLeadStep("done");
                           } catch {
                             setLeadError("No pudimos enviar el correo. Intenta de nuevo.");

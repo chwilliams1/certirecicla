@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Check, X, ArrowRight } from "lucide-react";
 import { PLANS, type PlanType } from "@/lib/plans";
+import { TrackPricingView } from "@/components/track-page-view";
 
 const planOrder: PlanType[] = ["starter", "profesional", "business"];
 
@@ -124,6 +125,7 @@ const jsonLd = {
 export default function PreciosPage() {
   return (
     <div className="min-h-screen bg-sand-50">
+      <TrackPricingView />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
