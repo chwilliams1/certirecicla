@@ -178,6 +178,46 @@ const jsonLdGraph = [
           text: "El ahorro de agua varía por material: reciclar 1 tonelada de papel ahorra aproximadamente 26.000 litros de agua, 1 tonelada de plástico ahorra 20.000 litros, y 1 tonelada de vidrio ahorra 4.000 litros. La calculadora estima automáticamente el agua total ahorrada según los materiales y cantidades que ingreses.",
         },
       },
+      {
+        "@type": "Question",
+        name: "¿Cuántos árboles equivale reciclar 1 tonelada de cartón?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Reciclar 1 tonelada de cartón evita 900 kg de CO₂, lo que equivale a 15 árboles urbanos absorbiendo CO₂ durante un año completo (cada árbol absorbe ~60 kg CO₂/año según la EPA). Además, se ahorran aproximadamente 26.000 litros de agua y se evita la tala de 17 árboles para producir cartón virgen.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "¿Cuánto CO₂ se ahorra al reciclar una tonelada de aluminio?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Reciclar 1 tonelada de aluminio evita 9.100 kg de CO₂ equivalente — es el material con mayor impacto por kilogramo. Esto equivale a 152 árboles absorbiendo CO₂ por un año o 37.295 km no recorridos en auto. El aluminio puede reciclarse infinitamente sin perder propiedades, lo que lo convierte en el material más valioso para la economía circular.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "¿Por qué los factores de emisión de EPA WARM y DEFRA son diferentes?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Las diferencias se deben a cinco razones principales: (1) Alcance del cálculo — EPA incluye emisiones de relleno sanitario evitadas, DEFRA no. (2) Mix energético — cada país usa distinta proporción de carbón, gas y renovables. (3) Tecnología de reciclaje asumida — mecánico vs. químico. (4) Definición del material — composición promedio distinta. (5) Año de publicación — los factores se actualizan periódicamente. En CertiRecicla usamos el valor más conservador entre ambas fuentes para no sobreestimar el impacto.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "¿Cómo se calculan las ecoequivalencias de árboles y kilómetros?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Las ecoequivalencias provienen del EPA GHG Equivalencies Calculator (Nov 2024). Un árbol urbano absorbe 60 kg CO₂/año (basado en 36,4 lbs C/árbol/año). Un kilómetro en auto promedio emite 0,244 kg CO₂ (basado en vehículo de 22,8 mpg). Un smartphone cargado equivale a 0,0124 kg CO₂. El agua ahorrada se calcula por material usando datos de Water Footprint Network y EPA.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "¿Se puede usar esta calculadora para reportar emisiones Alcance 3 evitadas?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Sí. El CO₂ evitado por reciclaje se clasifica como emisiones Alcance 3 evitadas según el GHG Protocol Corporate Value Chain Standard. La calculadora usa factores EPA WARM v16 y DEFRA 2025, las mismas fuentes aceptadas por programas como HuellaChile del MMA. Para reportes formales (NCG 519, ISO 14001, memorias anuales), debes indicar la metodología, período y cantidades — datos que el reporte por email de CertiRecicla incluye automáticamente.",
+        },
+      },
     ],
   },
 ];
@@ -413,8 +453,10 @@ export default function CalculadoraPage() {
             Calculadora de CO&#x2082; evitado por reciclaje
           </h1>
           <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
-            Ingresa los materiales que recicla tu empresa y calcula al instante tu <strong className="text-sage-700">huella de carbono</strong> e <strong className="text-sage-700">impacto
-            ambiental</strong>. Basada en factores <strong className="text-sage-700">GHG Protocol</strong> e <strong className="text-sage-700">IPCC</strong>. 100% gratis, sin registro.
+            Calcula cuánto CO&#x2082; evitas al reciclar plástico, cartón, vidrio, aluminio y más.
+            Tabla de <strong className="text-sage-700">factores de emisión por material</strong>,{" "}
+            <strong className="text-sage-700">ecoequivalencias</strong> (árboles, km, agua ahorrada) y metodología{" "}
+            <strong className="text-sage-700">EPA WARM + DEFRA</strong>. 100% gratis, sin registro.
           </p>
         </div>
 
@@ -1080,6 +1122,38 @@ export default function CalculadoraPage() {
                 El CO&#x2082; evitado se reporta como emisiones Alcance 3 evitadas según el <strong>GHG Protocol</strong>.
                 Para cumplir formalmente con la <strong>Ley REP</strong>, necesitas acreditar la valorización en <strong>SINADER</strong> y <strong>RETC</strong> con
                 documentación tributaria, algo que CertiRecicla automatiza.
+              </p>
+            </div>
+
+            <div>
+              <h2>¿Cuántos árboles equivale reciclar 1 tonelada de cartón?</h2>
+              <p>
+                Reciclar <strong>1 tonelada de cartón</strong> evita 900 kg de CO&#x2082;, lo que equivale a
+                <strong> 15 árboles urbanos absorbiendo CO&#x2082; durante un año</strong> completo (cada árbol absorbe ~60 kg CO&#x2082;/año
+                según la EPA). Además, se ahorran aproximadamente <strong>26.000 litros de agua</strong> y se evita la tala de 17 árboles
+                para producir cartón virgen.
+              </p>
+            </div>
+
+            <div>
+              <h2>¿Cuánto CO&#x2082; se ahorra al reciclar una tonelada de aluminio?</h2>
+              <p>
+                Reciclar <strong>1 tonelada de aluminio</strong> evita <strong>9.100 kg de CO&#x2082; equivalente</strong> &mdash; es el material
+                con mayor impacto por kilogramo. Esto equivale a 152 árboles absorbiendo CO&#x2082; por un año o 37.295 km no recorridos
+                en auto. El aluminio puede reciclarse infinitamente sin perder propiedades, lo que lo convierte en el material más
+                valioso para la <strong>economía circular</strong>.
+              </p>
+            </div>
+
+            <div>
+              <h2>¿Se puede usar esta calculadora para reportar emisiones Alcance 3?</h2>
+              <p>
+                Sí. El <strong>CO&#x2082; evitado por reciclaje</strong> se clasifica como <strong>emisiones Alcance 3 evitadas</strong> según
+                el GHG Protocol Corporate Value Chain Standard. La calculadora usa factores <strong>EPA WARM v16</strong> y{" "}
+                <strong>DEFRA 2025</strong>, las mismas fuentes aceptadas por programas como <strong>HuellaChile</strong> del Ministerio
+                del Medio Ambiente. Para reportes formales (<strong>NCG 519</strong>, <strong>ISO 14001</strong>, memorias anuales),
+                debes indicar la metodología, período y cantidades &mdash; datos que el reporte por email de CertiRecicla incluye
+                automáticamente.
               </p>
             </div>
 
