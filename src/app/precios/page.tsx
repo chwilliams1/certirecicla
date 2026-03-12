@@ -147,18 +147,11 @@ export default function PreciosPage() {
             </span>
           </Link>
           <nav className="flex items-center gap-4">
-            <Link
-              href="/blog"
-              className="text-sm text-muted-foreground hover:text-sage-600 transition-colors hidden sm:inline"
-            >
-              Blog
-            </Link>
-            <Link
-              href="/register"
-              className="text-sm bg-sage-500 text-white px-4 py-2 rounded-lg hover:bg-sage-600 transition-colors"
-            >
-              Prueba gratis
-            </Link>
+            <Link href="/calculadora" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors hidden sm:inline">Calculadora</Link>
+            <Link href="/materiales" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors hidden sm:inline">Materiales</Link>
+            <Link href="/blog" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors hidden sm:inline">Blog</Link>
+            <Link href="/precios" className="text-sm text-sage-700 font-medium hidden sm:inline">Precios</Link>
+            <Link href="/register" className="text-sm bg-sage-500 text-white px-4 py-2 rounded-lg hover:bg-sage-600 transition-colors">Prueba gratis</Link>
           </nav>
         </div>
       </header>

@@ -31,6 +31,13 @@ export const metadata: Metadata = {
     "cómo declarar residuos SINADER",
     "plan gestión residuos empresa",
     "CO2 evitado por reciclar",
+    // Nuevos pilares
+    "multas ley REP Chile",
+    "sanciones ambientales Chile",
+    "reciclaje minería Chile",
+    "reciclaje retail Chile",
+    "reciclaje industria alimentaria Chile",
+    "software gestión residuos Chile",
   ],
   alternates: { canonical: "https://certirecicla.cl/blog" },
   openGraph: {

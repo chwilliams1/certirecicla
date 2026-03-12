@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Clock, Calendar } from "lucide-react";
+import { ArrowLeft, Clock, Calendar, RefreshCw, List, Download } from "lucide-react";
 import { blogArticles, getArticleBySlug } from "@/lib/blog/articles";
 import { getArticleContent } from "@/lib/blog/content";
 
@@ -31,6 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url,
       type: "article",
       publishedTime: article.date,
+      modifiedTime: article.updatedDate ?? article.date,
       authors: ["CertiRecicla"],
       tags: article.keywords,
       images: [{ url: "/og-image.png", width: 1200, height: 630, alt: article.title }],
@@ -43,6 +44,38 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+// ---------------------------------------------------------------------------
+// TOC helpers
+// ---------------------------------------------------------------------------
+function extractHeadings(html: string): { id: string; text: string }[] {
+  const headings: { id: string; text: string }[] = [];
+  const regex = /<h2[^>]*>(.*?)<\/h2>/gi;
+  let match;
+  while ((match = regex.exec(html)) !== null) {
+    const text = match[1].replace(/<[^>]+>/g, "").trim();
+    const id = text
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+    headings.push({ id, text });
+  }
+  return headings;
+}
+
+function injectHeadingIds(html: string, headings: { id: string; text: string }[]): string {
+  let idx = 0;
+  return html.replace(/<h2([^>]*)>/gi, (full, attrs) => {
+    const heading = headings[idx++];
+    if (!heading) return full;
+    return `<h2${attrs} id="${heading.id}">`;
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Contextual CTA
+// ---------------------------------------------------------------------------
 function getContextualCta(slug: string, category: string): {
   title: string;
   description: string;
@@ -94,6 +127,24 @@ function getContextualCta(slug: string, category: string): {
       buttonText: "Prueba gratis 14 días",
     };
   }
+  // Industria / vertical
+  if (slug.includes("minera") || slug.includes("retail") || slug.includes("alimentaria")) {
+    return {
+      title: "Certificados de reciclaje para tu industria",
+      description: "CertiRecicla genera certificados con CO\u2082 verificable adaptados a los requisitos de tu sector.",
+      href: "/register",
+      buttonText: "Prueba gratis 14 días",
+    };
+  }
+  // BOFU / producto
+  if (slug.includes("certirecicla") || slug.includes("automatiza")) {
+    return {
+      title: "Empieza gratis hoy",
+      description: "14 días de prueba sin tarjeta de crédito. Configura tu cuenta en 5 minutos.",
+      href: "/register",
+      buttonText: "Crear cuenta gratis",
+    };
+  }
   // Default
   return {
     title: "Digitaliza tus certificados de reciclaje",
@@ -107,8 +158,11 @@ export default function BlogArticlePage({ params }: Props) {
   const article = getArticleBySlug(params.slug);
   if (!article) notFound();
 
-  const content = getArticleContent(params.slug);
-  if (!content) notFound();
+  const rawContent = getArticleContent(params.slug);
+  if (!rawContent) notFound();
+
+  const headings = extractHeadings(rawContent);
+  const content = injectHeadingIds(rawContent, headings);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -118,7 +172,7 @@ export default function BlogArticlePage({ params }: Props) {
         headline: article.title,
         description: article.description,
         datePublished: article.date,
-        dateModified: article.date,
+        dateModified: article.updatedDate ?? article.date,
         author: {
           "@type": "Organization",
           name: "CertiRecicla",
@@ -178,18 +232,11 @@ export default function BlogArticlePage({ params }: Props) {
             <span className="font-serif text-sage-800 font-bold">CertiRecicla</span>
           </Link>
           <nav className="flex items-center gap-4">
-            <Link href="/precios" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors hidden sm:inline">
-              Precios
-            </Link>
-            <Link href="/blog" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors">
-              Blog
-            </Link>
-            <Link
-              href="/register"
-              className="text-sm bg-sage-500 text-white px-4 py-2 rounded-lg hover:bg-sage-600 transition-colors"
-            >
-              Prueba gratis
-            </Link>
+            <Link href="/calculadora" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors hidden sm:inline">Calculadora</Link>
+            <Link href="/materiales" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors hidden sm:inline">Materiales</Link>
+            <Link href="/blog" className="text-sm text-sage-700 font-medium hidden sm:inline">Blog</Link>
+            <Link href="/precios" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors hidden sm:inline">Precios</Link>
+            <Link href="/register" className="text-sm bg-sage-500 text-white px-4 py-2 rounded-lg hover:bg-sage-600 transition-colors">Prueba gratis</Link>
           </nav>
         </div>
       </header>
@@ -215,23 +262,81 @@ export default function BlogArticlePage({ params }: Props) {
                 <span className="hidden sm:inline">{new Date(article.date).toLocaleDateString("es-CL", { year: "numeric", month: "long", day: "numeric" })}</span>
                 <span className="sm:hidden">{new Date(article.date).toLocaleDateString("es-CL", { day: "numeric", month: "short", year: "numeric" })}</span>
               </span>
+              {article.updatedDate && article.updatedDate !== article.date && (
+                <span className="flex items-center gap-1 text-sage-600">
+                  <RefreshCw className="h-3 w-3" />
+                  <span className="hidden sm:inline">
+                    Actualizado {new Date(article.updatedDate).toLocaleDateString("es-CL", { year: "numeric", month: "long", day: "numeric" })}
+                  </span>
+                  <span className="sm:hidden">
+                    Act. {new Date(article.updatedDate).toLocaleDateString("es-CL", { day: "numeric", month: "short", year: "numeric" })}
+                  </span>
+                </span>
+              )}
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif text-sage-800 leading-tight">
               {article.title}
             </h1>
           </header>
 
+          {/* Table of Contents */}
+          {headings.length >= 3 && (
+            <nav className="bg-white border border-border/50 rounded-xl p-5 mb-8">
+              <div className="flex items-center gap-2 text-sm font-medium text-sage-800 mb-3">
+                <List className="h-4 w-4" />
+                Contenido del artículo
+              </div>
+              <ol className="space-y-1.5">
+                {headings.map((h, i) => (
+                  <li key={h.id}>
+                    <a
+                      href={`#${h.id}`}
+                      className="text-sm text-muted-foreground hover:text-sage-600 transition-colors flex items-baseline gap-2"
+                    >
+                      <span className="text-sage-400 text-xs font-mono w-4 shrink-0">{i + 1}.</span>
+                      {h.text}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          )}
+
           <div
-            className="prose prose-sage max-w-none prose-headings:font-serif prose-headings:text-sage-800 prose-p:text-muted-foreground prose-p:leading-relaxed prose-li:text-muted-foreground prose-strong:text-sage-800 prose-a:text-sage-600 prose-a:no-underline hover:prose-a:underline prose-table:text-sm prose-th:bg-sage-50 prose-th:text-sage-800 prose-td:border-border/50"
+            className="prose prose-sage max-w-none prose-headings:font-serif prose-headings:text-sage-800 prose-p:text-muted-foreground prose-p:leading-relaxed prose-li:text-muted-foreground prose-strong:text-sage-800 prose-a:text-sage-600 prose-a:no-underline hover:prose-a:underline prose-table:text-sm prose-th:bg-sage-50 prose-th:text-sage-800 prose-td:border-border/50 prose-headings:scroll-mt-20"
             dangerouslySetInnerHTML={{ __html: content }}
           />
         </article>
+
+        {/* Lead Magnet */}
+        <div className="mt-10 bg-gradient-to-br from-sage-50 to-sand-100 border border-sage-200 rounded-xl p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="bg-sage-500 rounded-lg p-3 shrink-0">
+              <Download className="h-6 w-6 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-serif text-sage-800 mb-1">
+                Checklist gratuito: 10 pasos para cumplir la Ley REP
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Descarga la guía práctica con los 10 pasos esenciales que toda empresa en Chile debe seguir para cumplir con la Ley REP. Incluye plazos 2026, checklist de documentos y errores comunes.
+              </p>
+            </div>
+            <Link
+              href="/register?lead=checklist-ley-rep"
+              className="inline-flex items-center gap-2 bg-sage-500 text-white font-medium px-5 py-2.5 rounded-lg hover:bg-sage-600 transition-colors text-sm shrink-0"
+            >
+              <Download className="h-4 w-4" />
+              Descargar PDF
+            </Link>
+          </div>
+        </div>
 
         {/* CTA */}
         {(() => {
           const cta = getContextualCta(article.slug, article.category);
           return (
-            <div className="mt-12 bg-sage-500 rounded-xl p-6 sm:p-8 text-center text-white">
+            <div className="mt-8 bg-sage-500 rounded-xl p-6 sm:p-8 text-center text-white">
               <h2 className="text-xl font-serif mb-2">{cta.title}</h2>
               <p className="text-sage-100 text-sm mb-5">{cta.description}</p>
               <Link
