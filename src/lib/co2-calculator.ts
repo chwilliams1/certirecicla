@@ -115,6 +115,7 @@ export const DEFAULT_CO2_FACTORS: Record<string, number> = {
 export const VALID_MATERIALS = Object.keys(DEFAULT_CO2_FACTORS);
 
 export function calculateCo2(material: string, quantityKg: number, customFactors?: Record<string, number>): number {
+  if (quantityKg < 0) return 0;
   const factors = customFactors || DEFAULT_CO2_FACTORS;
   const factor = factors[material] || 0;
   return quantityKg * factor;

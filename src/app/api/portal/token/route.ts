@@ -13,7 +13,7 @@ function generatePortalSlug(companyName: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "")
     .slice(0, 30);
-  const code = crypto.randomBytes(4).toString("base64url");
+  const code = crypto.randomBytes(16).toString("base64url");
   return `${slug}-${code}`;
 }
 

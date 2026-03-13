@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { getSubscription, getReveniuPlanKey, REVENIU_PLAN_MAP } from "@/lib/reveniu";
 import { getPlanConfig } from "@/lib/plans";
@@ -18,14 +19,14 @@ async function getCompanyAdminEmails(companyId: string): Promise<string[]> {
 }
 
 export async function POST(req: NextRequest) {
-  const secretKey = req.headers.get("Reveniu-Secret-Key");
-  if (!secretKey || secretKey !== process.env.REVENIU_SECRET_KEY) {
-    console.error("Webhook auth failed");
+  const secretKey = req.headers.get("Reveniu-Secret-Key") || "";
+  const expected = process.env.REVENIU_SECRET_KEY || "";
+  const isValid = expected.length > 0 && secretKey.length === expected.length && crypto.timingSafeEqual(Buffer.from(secretKey), Buffer.from(expected));
+  if (!isValid) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const body = await req.json();
-  console.log("Webhook received:", JSON.stringify(body));
   const { event, subscription_id } = body;
 
   if (!subscription_id) {
@@ -38,7 +39,6 @@ export async function POST(req: NextRequest) {
   });
 
   if (!company) {
-    console.error(`Webhook: no company found for subscription ${subscription_id}`);
     return NextResponse.json({ error: "Company not found" }, { status: 404 });
   }
 
@@ -151,7 +151,7 @@ export async function POST(req: NextRequest) {
     }
 
     default:
-      console.log(`Webhook: unhandled event ${event}`);
+      break;
   }
 
   return NextResponse.json({ ok: true });

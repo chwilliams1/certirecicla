@@ -15,10 +15,10 @@ const envSchema = z.object({
   ANTHROPIC_API_KEY: z.string().optional(),
 
   // Cron jobs
-  CRON_SECRET: z.string().optional(),
+  CRON_SECRET: z.string().min(16, "CRON_SECRET must be at least 16 chars"),
 
   // Reveniu (payments)
-  REVENIU_SECRET_KEY: z.string().optional(),
+  REVENIU_SECRET_KEY: z.string().min(8, "REVENIU_SECRET_KEY is required"),
   REVENIU_PLAN_STARTER: z.string().optional(),
   REVENIU_PLAN_PROFESIONAL: z.string().optional(),
   REVENIU_PLAN_BUSINESS: z.string().optional(),

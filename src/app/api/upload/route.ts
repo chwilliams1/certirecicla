@@ -198,11 +198,9 @@ export async function POST(req: NextRequest) {
       recordsCreated = recordsBatch.length;
     }
   }, { timeout: 30000 });
-  } catch (err) {
-    console.error("[upload] Import transaction failed:", err);
-    const message = err instanceof Error ? err.message : "Error desconocido";
+  } catch {
     return NextResponse.json(
-      { error: `Error al importar: ${message}` },
+      { error: "Error al importar los datos" },
       { status: 500 }
     );
   }

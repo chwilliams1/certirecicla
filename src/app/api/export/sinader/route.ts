@@ -115,7 +115,10 @@ export async function GET(req: NextRequest) {
 
   const csvContent = [
     headers.join(","),
-    ...rows.map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(",")),
+    ...rows.map((row) => row.map((cell) => {
+      const safe = /^[=+\-@|\t\r]/.test(cell) ? `'${cell}` : cell;
+      return `"${safe.replace(/"/g, '""')}"`;
+    }).join(",")),
   ].join("\n");
 
   const filename = month

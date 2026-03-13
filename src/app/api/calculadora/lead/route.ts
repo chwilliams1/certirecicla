@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { sendTransactionalEmail } from "@/lib/email/send-email";
 import { prisma } from "@/lib/prisma";
 import { randomBytes } from "crypto";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 interface MaterialData {
   material: string;
@@ -29,6 +30,8 @@ function buildCertificateEmailHtml(data: {
   verifyUrl: string;
 }): string {
   const { name, code, materials, totalKg, totalCo2, equivalencies, waterSaved, verifyUrl } = data;
+  const escapeHtml = (str: string) => str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const safeName = escapeHtml(name.trim());
   const today = new Date().toLocaleDateString("es-CL", { day: "numeric", month: "long", year: "numeric" });
 
   const materialsRows = materials
@@ -77,7 +80,7 @@ function buildCertificateEmailHtml(data: {
         <tr>
           <td>
             <p style="margin: 0; font-size: 10px; color: #7c9a82; text-transform: uppercase; letter-spacing: 0.5px;">Destinatario</p>
-            <p style="margin: 4px 0 0; font-size: 16px; color: #2d3a2e; font-weight: bold;">${name.trim()}</p>
+            <p style="margin: 4px 0 0; font-size: 16px; color: #2d3a2e; font-weight: bold;">${safeName}</p>
           </td>
           <td style="text-align: right;">
             <p style="margin: 0; font-size: 10px; color: #7c9a82; text-transform: uppercase; letter-spacing: 0.5px;">Fecha</p>
@@ -206,8 +209,14 @@ function buildCertificateEmailHtml(data: {
 </html>`;
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    const rl = rateLimit(`calc-lead:${ip}`, { limit: 5, windowSeconds: 900 });
+    if (!rl.success) {
+      return NextResponse.json({ error: "Demasiadas solicitudes, intenta en unos minutos" }, { status: 429 });
+    }
+
     const body = await req.json();
     const { name, email, materials, totalKg, totalCo2, equivalencies, waterSaved } = body as {
       name: string;
@@ -263,7 +272,6 @@ export async function POST(req: Request) {
     });
 
     if (!result.success) {
-      console.error("Error sending calculator lead email:", result.error);
       return NextResponse.json({ error: "Error al enviar el email" }, { status: 500 });
     }
 
@@ -283,8 +291,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (err) {
-    console.error("Error in calculator lead endpoint:", err);
+  } catch {
     return NextResponse.json({ error: "Error interno" }, { status: 500 });
   }
 }

@@ -177,8 +177,7 @@ NOTAS:
     }
 
     return NextResponse.json(analysis);
-  } catch (error) {
-    console.error("AI analysis error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Error al analizar con IA. Intenta de nuevo." },
       { status: 500 }

@@ -17,6 +17,14 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { certificateId, to, cc, subject, body: emailBody, publish } = body;
 
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  if (to && !EMAIL_REGEX.test(to)) {
+    return NextResponse.json({ error: "Email destinatario inválido" }, { status: 400 });
+  }
+  if (cc && !EMAIL_REGEX.test(cc)) {
+    return NextResponse.json({ error: "Email CC inválido" }, { status: 400 });
+  }
+
   if (!certificateId) {
     return NextResponse.json({ error: "certificateId es requerido" }, { status: 400 });
   }

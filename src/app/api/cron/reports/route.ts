@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { generateReportPdfBuffer } from "@/lib/pdf/generate-report-pdf";
 import { formatClientName } from "@/lib/format-client-name";
@@ -11,8 +12,9 @@ import { MONTH_NAMES_FULL } from "@/lib/constants";
 
 export async function GET(req: NextRequest) {
   // Verify cron secret
-  const authHeader = req.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const authHeader = req.headers.get("authorization") || "";
+  const expected = `Bearer ${process.env.CRON_SECRET}`;
+  if (!process.env.CRON_SECRET || authHeader.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(authHeader), Buffer.from(expected))) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 

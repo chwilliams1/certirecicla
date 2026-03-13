@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function GET(
   _req: NextRequest,
   { params }: { params: { code: string } }
 ) {
+  const ip = getClientIp(_req);
+  const rl = rateLimit(`verify:${ip}`, { limit: 30, windowSeconds: 60 });
+  if (!rl.success) {
+    return NextResponse.json({ error: "Demasiadas solicitudes" }, { status: 429 });
+  }
+
   const certificate = await prisma.certificate.findUnique({
     where: { uniqueCode: params.code },
     include: {

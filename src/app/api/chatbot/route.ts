@@ -12,6 +12,7 @@ import {
 } from "@/lib/chatbot/wizard-engine";
 import { processWithAI } from "@/lib/chatbot/ai-handler";
 import { hasPermission } from "@/lib/roles";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -20,6 +21,11 @@ export async function POST(req: NextRequest) {
   }
   if (!hasPermission(session.user.role, "chatbot:use")) {
     return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
+  }
+
+  const rl = rateLimit(`chatbot:${session.user.id}`, { limit: 30, windowSeconds: 900 });
+  if (!rl.success) {
+    return NextResponse.json({ error: "Límite de mensajes alcanzado, espera unos minutos" }, { status: 429 });
   }
 
   const companyId = session.user.companyId;

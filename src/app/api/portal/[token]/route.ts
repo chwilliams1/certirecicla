@@ -2,11 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { calculateEquivalencies, calculateWaterSaved } from "@/lib/co2-calculator";
 import { checkFeatureAccess } from "@/lib/plans";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function GET(
   req: NextRequest,
   { params }: { params: { token: string } }
 ) {
+  const ip = getClientIp(req);
+  const rl = rateLimit(`portal:${ip}`, { limit: 20, windowSeconds: 60 });
+  if (!rl.success) {
+    return NextResponse.json({ error: "Demasiadas solicitudes" }, { status: 429 });
+  }
+
   const portalToken = await prisma.clientPortalToken.findUnique({
     where: { token: params.token },
     include: {
