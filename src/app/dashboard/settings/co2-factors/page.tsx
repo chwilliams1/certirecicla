@@ -86,24 +86,42 @@ export default function Co2FactorsPage() {
         <p className="text-sm text-sage-800/40">Kilogramos de CO₂ evitados por cada kilogramo de material reciclado</p>
       </div>
 
-      <div className="bg-emerald-50/60 border border-emerald-200 rounded-lg p-3 flex gap-2">
-        <Info className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-        <p className="text-xs text-emerald-800">
-          Los valores predeterminados provienen de{" "}
-          <a href="https://www.epa.gov/warm" target="_blank" rel="noopener noreferrer" className="underline font-medium inline-flex items-center gap-0.5">
-            EPA WARM v16
-            <ExternalLink className="h-3 w-3" />
-          </a>,{" "}
-          <a href="https://feve.org" target="_blank" rel="noopener noreferrer" className="underline font-medium inline-flex items-center gap-0.5">
-            FEVE
-            <ExternalLink className="h-3 w-3" />
-          </a>{" "}y{" "}
-          <a href="https://ghgprotocol.org/Third-Party-Databases/Defra" target="_blank" rel="noopener noreferrer" className="underline font-medium inline-flex items-center gap-0.5">
-            DEFRA
-            <ExternalLink className="h-3 w-3" />
-          </a>.
-          Recomendamos usar estos valores salvo que tu organización requiera factores locales específicos.
-        </p>
+      <div className="bg-emerald-50/60 border border-emerald-200 rounded-lg p-4 space-y-3">
+        <div className="flex gap-2">
+          <Info className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+          <div className="space-y-2">
+            <p className="text-xs text-emerald-800 font-medium">Metodología de cálculo</p>
+            <p className="text-xs text-emerald-800">
+              Cada factor representa los <strong>kg de CO₂ equivalente evitados</strong> por cada kg de material reciclado,
+              comparado con producirlo desde materia prima virgen y/o enviarlo a relleno sanitario.
+            </p>
+            <p className="text-xs text-emerald-800">
+              Los valores predeterminados se obtienen cruzando dos fuentes internacionales. Cuando difieren,
+              aplicamos el <strong>valor más conservador</strong> para evitar sobreestimaciones en certificados y auditorías:
+            </p>
+            <ul className="text-xs text-emerald-800 space-y-1 pl-4 list-disc">
+              <li>
+                <a href="https://www.epa.gov/warm" target="_blank" rel="noopener noreferrer" className="underline font-medium inline-flex items-center gap-0.5">
+                  EPA WARM v16 <ExternalLink className="h-3 w-3" />
+                </a>{" "}(Dic 2023) — Waste Reduction Model de la EPA de EE.UU. Cubre extracción evitada + manufactura + relleno sanitario.
+              </li>
+              <li>
+                <a href="https://ghgprotocol.org/Third-Party-Databases/Defra" target="_blank" rel="noopener noreferrer" className="underline font-medium inline-flex items-center gap-0.5">
+                  DEFRA/DESNZ 2025 <ExternalLink className="h-3 w-3" />
+                </a>{" "}— GHG Conversion Factors del Reino Unido. Basado en CarbonWARM2 de WRAP.
+              </li>
+              <li>
+                <a href="https://feve.org" target="_blank" rel="noopener noreferrer" className="underline font-medium inline-flex items-center gap-0.5">
+                  FEVE <ExternalLink className="h-3 w-3" />
+                </a>{" "}— Para vidrio, basado en análisis de ciclo de vida de la industria europea.
+              </li>
+            </ul>
+            <p className="text-xs text-emerald-700">
+              Si tu organización requiere factores locales específicos o auditados por un tercero, puedes modificar los valores a continuación.
+              Los valores originales siempre se pueden restablecer.
+            </p>
+          </div>
+        </div>
       </div>
 
       {hasModified && (

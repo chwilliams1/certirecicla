@@ -26,9 +26,9 @@ export const contentPart2: Record<string, string> = {
   Los factores que presentamos a continuación son valores de referencia utilizados en la industria chilena, alineados con las metodologías GHG Protocol e IPCC. Es importante mencionar que estos valores pueden variar según la fuente específica, la tecnología de reciclaje y las condiciones locales, pero representan una buena aproximación para cálculos corporativos.
 </p>
 
-<h2>Tabla de factores de emisión de CO₂ evitado por material</h2>
+<h2>Factores de emisión de CO₂ evitado: ejemplos por material</h2>
 <p>
-  A continuación, se presenta la tabla con los <strong>factores de emisión de CO₂ evitado</strong> para los materiales más comunes en el reciclaje empresarial en Chile:
+  Cada material reciclado tiene un <strong>factor de emisión</strong> específico, expresado en kg de CO₂ equivalente evitado por cada kg reciclado. A continuación, tres ejemplos representativos:
 </p>
 <table>
   <thead>
@@ -45,59 +45,27 @@ export const contentPart2: Record<string, string> = {
       <td>Incluye cartón corrugado y cartón gris</td>
     </tr>
     <tr>
-      <td><a href="/materiales/papel">Papel</a></td>
-      <td>1,0</td>
-      <td>Papel blanco, papel mixto, papel periódico</td>
-    </tr>
-    <tr>
       <td><a href="/materiales/plastico-pet">Plástico PET</a></td>
       <td>1,5</td>
       <td>Botellas, envases transparentes (resina #1)</td>
     </tr>
     <tr>
-      <td><a href="/materiales/plastico-hdpe">Plástico HDPE</a></td>
-      <td>1,4</td>
-      <td>Envases opacos, bidones, tapas (resina #2)</td>
-    </tr>
-    <tr>
-      <td><a href="/materiales/vidrio">Vidrio</a></td>
-      <td>0,3</td>
-      <td>Botellas, frascos, vidrio plano</td>
-    </tr>
-    <tr>
       <td><a href="/materiales/aluminio">Aluminio</a></td>
       <td>9,1</td>
-      <td>Latas, perfiles; alta intensidad energética en producción primaria</td>
-    </tr>
-    <tr>
-      <td><a href="/materiales/acero">Chatarra (acero)</a></td>
-      <td>1,5</td>
-      <td>Acero, fierro, hojalata</td>
-    </tr>
-    <tr>
-      <td><a href="/materiales/madera">Madera</a></td>
-      <td>0,4</td>
-      <td>Pallets, madera de embalaje, restos de poda industrial</td>
-    </tr>
-    <tr>
-      <td><a href="/materiales/textil">Textil</a></td>
-      <td>3,2</td>
-      <td>Fibras naturales y sintéticas; evita producción y vertedero</td>
-    </tr>
-    <tr>
-      <td><a href="/materiales/organico">Orgánico (compost)</a></td>
-      <td>0,2</td>
-      <td>Residuos de alimentos y jardín compostados; evita metano en relleno</td>
+      <td>Alta intensidad energética en producción primaria</td>
     </tr>
   </tbody>
 </table>
 <p>
-  <strong>Nota:</strong> Los factores están expresados en kilogramos de CO₂ equivalente por cada kilogramo de material reciclado. Estos valores consideran las emisiones evitadas tanto por la reducción en la extracción de materia prima virgen como por la disminución de residuos en rellenos sanitarios.
+  <strong>Nota:</strong> Los factores provienen de fuentes como <strong>EPA WARM v16</strong>, <strong>DEFRA 2025</strong> y <strong>FEVE</strong>, aplicando el valor más conservador cuando las fuentes difieren. CertiRecicla incluye factores verificados para más de 20 materiales dentro de la plataforma, donde además puedes personalizarlos según las necesidades de tu organización.
+</p>
+<p>
+  <a href="/calculadora">Prueba la calculadora gratuita</a> para estimar el CO₂ evitado de tu operación, o <a href="/register">crea tu cuenta</a> para acceder a la tabla completa de factores y ecoequivalencias.
 </p>
 
 <h3>¿Por qué el aluminio tiene un factor tan alto?</h3>
 <p>
-  El aluminio destaca con un factor de <strong>9,1 kg CO₂eq/kg</strong> porque su producción primaria (desde bauxita) es extremadamente intensiva en energía. Reciclar aluminio consume apenas un 5% de la energía necesaria para producirlo desde cero. Por eso, cada kilogramo de aluminio reciclado tiene un impacto desproporcionadamente positivo en la reducción de emisiones.
+  El aluminio destaca con un factor de <strong>9,1 kg CO₂eq/kg</strong> porque su producción primaria (desde bauxita) es extremadamente intensiva en energía. Reciclar aluminio consume apenas un 5% de la energía necesaria para producirlo desde cero.
 </p>
 
 <h2>¿Cómo calcular el CO₂ evitado total de tu empresa?</h2>

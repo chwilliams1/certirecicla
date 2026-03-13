@@ -86,16 +86,30 @@ export default function EcoEquivalenciasPage() {
         <p className="text-sm text-sage-800/40">Factores para convertir kg de CO₂ en equivalencias comprensibles</p>
       </div>
 
-      <div className="bg-emerald-50/60 border border-emerald-200 rounded-lg p-3 flex gap-2">
-        <Info className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-        <p className="text-xs text-emerald-800">
-          Los valores predeterminados provienen del{" "}
-          <a href="https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator" target="_blank" rel="noopener noreferrer" className="underline font-medium inline-flex items-center gap-0.5">
-            EPA GHG Equivalencies Calculator
-            <ExternalLink className="h-3 w-3" />
-          </a>.
-          Recomendamos usar estos valores salvo que tu organización requiera factores locales específicos.
-        </p>
+      <div className="bg-emerald-50/60 border border-emerald-200 rounded-lg p-4 space-y-3">
+        <div className="flex gap-2">
+          <Info className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+          <div className="space-y-2">
+            <p className="text-xs text-emerald-800 font-medium">Metodología de eco-equivalencias</p>
+            <p className="text-xs text-emerald-800">
+              Las eco-equivalencias traducen el CO₂ evitado a magnitudes comprensibles para reportes de sustentabilidad
+              y certificados de reciclaje. Los valores predeterminados provienen del{" "}
+              <a href="https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator" target="_blank" rel="noopener noreferrer" className="underline font-medium inline-flex items-center gap-0.5">
+                EPA GHG Equivalencies Calculator <ExternalLink className="h-3 w-3" />
+              </a>{" "}(actualizado Nov 2024).
+            </p>
+            <ul className="text-xs text-emerald-800 space-y-1 pl-4 list-disc">
+              <li><strong>Árboles:</strong> basado en absorción de un árbol urbano de crecimiento medio durante 10 años (36,4 lbs C/árbol/año).</li>
+              <li><strong>Kilómetros:</strong> emisiones de un vehículo promedio (22,8 mpg), convertido de millas a km.</li>
+              <li><strong>Hogares:</strong> consumo eléctrico promedio de un hogar estadounidense (7,27 MTCO₂e/año).</li>
+              <li><strong>Smartphones:</strong> energía por carga completa (28,4 Wh) aplicando el factor eléctrico EPA.</li>
+            </ul>
+            <p className="text-xs text-emerald-700">
+              Si necesitas usar factores localizados (ej: grid eléctrico chileno), puedes ajustar los valores a continuación.
+              Los valores originales siempre se pueden restablecer.
+            </p>
+          </div>
+        </div>
       </div>
 
       {hasModified && (

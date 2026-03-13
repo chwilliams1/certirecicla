@@ -30,7 +30,6 @@ import {
   calculateEquivalencies,
   calculateWaterSaved,
   VALID_MATERIALS,
-  DEFAULT_CO2_FACTORS,
 } from "@/lib/co2-calculator";
 import { analytics } from "@/lib/analytics";
 
@@ -506,9 +505,6 @@ export default function CalculadoraPage() {
                       {co2 > 0 && (
                         <p className="text-xs text-sage-600 pl-1">
                           = {co2.toLocaleString("es-CL", { maximumFractionDigits: 1 })} kg CO&#x2082; evitado
-                          <span className="text-muted-foreground ml-1">
-                            (factor: {DEFAULT_CO2_FACTORS[entry.material]} kg CO&#x2082;/kg)
-                          </span>
                         </p>
                       )}
                     </div>
@@ -742,7 +738,6 @@ export default function CalculadoraPage() {
                         <tr className="bg-sage-50 text-sage-700">
                           <th className="text-left px-3 sm:px-5 py-2.5 font-medium">Material</th>
                           <th className="text-right px-3 sm:px-5 py-2.5 font-medium">Kg</th>
-                          <th className="text-right px-3 sm:px-5 py-2.5 font-medium hidden sm:table-cell">Factor</th>
                           <th className="text-right px-3 sm:px-5 py-2.5 font-medium">CO&#x2082;</th>
                           <th className="text-right px-3 sm:px-5 py-2.5 font-medium">%</th>
                         </tr>
@@ -752,9 +747,6 @@ export default function CalculadoraPage() {
                           <tr key={m.material} className={i % 2 === 0 ? "bg-white" : "bg-sage-50/30"}>
                             <td className="px-3 sm:px-5 py-2.5 text-sage-700">{m.material}</td>
                             <td className="px-3 sm:px-5 py-2.5 text-right">{m.kg.toLocaleString("es-CL")}</td>
-                            <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">
-                              {DEFAULT_CO2_FACTORS[m.material]} kg/kg
-                            </td>
                             <td className="px-3 sm:px-5 py-2.5 text-right font-medium text-sage-800">
                               {m.co2.toLocaleString("es-CL", { maximumFractionDigits: 1 })} kg
                             </td>
@@ -768,7 +760,6 @@ export default function CalculadoraPage() {
                         <tr className="border-t border-sage-200 bg-sage-50 font-medium text-sage-800">
                           <td className="px-3 sm:px-5 py-2.5">Total</td>
                           <td className="px-3 sm:px-5 py-2.5 text-right">{totalKg.toLocaleString("es-CL")}</td>
-                          <td className="px-3 sm:px-5 py-2.5 hidden sm:table-cell"></td>
                           <td className="px-3 sm:px-5 py-2.5 text-right">
                             {totalCo2.toLocaleString("es-CL", { maximumFractionDigits: 1 })} kg
                           </td>
@@ -931,150 +922,27 @@ export default function CalculadoraPage() {
             </div>
           </div>
 
-          {/* Complete emission factors table */}
-          <div className="bg-white border border-border/50 rounded-xl overflow-hidden">
-            <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-border/50">
-              <h3 className="font-serif text-lg sm:text-xl text-sage-800">Tabla completa de factores de emisión</h3>
-              <p className="text-xs text-muted-foreground mt-1">kg CO&#x2082;e evitado por kg de material reciclado &mdash; valor usado y fuente primaria</p>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-sage-50 text-sage-700 text-xs">
-                    <th className="text-left px-3 sm:px-5 py-3 font-medium">Material</th>
-                    <th className="text-right px-3 sm:px-5 py-3 font-medium">Factor usado</th>
-                    <th className="text-right px-3 sm:px-5 py-3 font-medium hidden sm:table-cell">EPA WARM v16</th>
-                    <th className="text-right px-3 sm:px-5 py-3 font-medium hidden sm:table-cell">DEFRA 2025</th>
-                    <th className="text-left px-3 sm:px-5 py-3 font-medium hidden md:table-cell">Fuente adicional</th>
-                  </tr>
-                </thead>
-                <tbody className="text-xs">
-                  <tr className="border-t border-border/30">
-                    <td className="px-3 sm:px-5 py-2.5 text-sage-700 font-medium">Plástico PET</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right font-bold text-sage-800">1,3 kg/kg</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">1,25 kg/kg</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,65 kg/kg</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-muted-foreground hidden md:table-cell">&mdash;</td>
-                  </tr>
-                  <tr className="border-t border-border/30 bg-sage-50/30">
-                    <td className="px-3 sm:px-5 py-2.5 text-sage-700 font-medium">Plástico HDPE</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right font-bold text-sage-800">1,0 kg/kg</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,97 kg/kg</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,49 kg/kg</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-muted-foreground hidden md:table-cell">&mdash;</td>
-                  </tr>
-                  <tr className="border-t border-border/30">
-                    <td className="px-3 sm:px-5 py-2.5 text-sage-700 font-medium">Cartón</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right font-bold text-sage-800">0,9 kg/kg</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">3,14 kg/kg*</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,70 kg/kg</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-muted-foreground hidden md:table-cell">*Incluye crédito forestal</td>
-                  </tr>
-                  <tr className="border-t border-border/30 bg-sage-50/30">
-                    <td className="px-3 sm:px-5 py-2.5 text-sage-700 font-medium">Papel</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right font-bold text-sage-800">1,0 kg/kg</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">2,72 kg/kg*</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,73 kg/kg</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-muted-foreground hidden md:table-cell">*Incluye crédito forestal</td>
-                  </tr>
-                  <tr className="border-t border-border/30">
-                    <td className="px-3 sm:px-5 py-2.5 text-sage-700 font-medium">Vidrio</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right font-bold text-sage-800">0,31 kg/kg</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,31 kg/kg</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,33 kg/kg</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-muted-foreground hidden md:table-cell">FEVE Glass LCA</td>
-                  </tr>
-                  <tr className="border-t border-border/30 bg-sage-50/30">
-                    <td className="px-3 sm:px-5 py-2.5 text-sage-700 font-medium">Aluminio</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right font-bold text-sage-800">9,1 kg/kg</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">9,71 kg/kg</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">&mdash;</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-muted-foreground hidden md:table-cell">BIR CO&#x2082; Report</td>
-                  </tr>
-                  <tr className="border-t border-border/30">
-                    <td className="px-3 sm:px-5 py-2.5 text-sage-700 font-medium">Acero</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right font-bold text-sage-800">1,8 kg/kg</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">2,00 kg/kg</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">&mdash;</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-muted-foreground hidden md:table-cell">BIR CO&#x2082; Report</td>
-                  </tr>
-                  <tr className="border-t border-border/30 bg-sage-50/30">
-                    <td className="px-3 sm:px-5 py-2.5 text-sage-700 font-medium">Tetra Pak</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right font-bold text-sage-800">0,55 kg/kg</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">&mdash;</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">&mdash;</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-muted-foreground hidden md:table-cell">Tetra Pak LCA / ACE UK</td>
-                  </tr>
-                  <tr className="border-t border-border/30">
-                    <td className="px-3 sm:px-5 py-2.5 text-sage-700 font-medium">Orgánico</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right font-bold text-sage-800">0,25 kg/kg</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">0,2&ndash;0,3 kg/kg</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-right text-muted-foreground hidden sm:table-cell">&mdash;</td>
-                    <td className="px-3 sm:px-5 py-2.5 text-muted-foreground hidden md:table-cell">Compostaje, metano evitado</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div className="px-6 py-3 bg-sage-50/50 border-t border-border/50 text-xs text-muted-foreground">
-              Conversión EPA WARM: MTCO&#x2082;E/short ton &times; 1.000 &divide; 907,185 = kg CO&#x2082;e/kg.
-              Cuando EPA &gt; DEFRA, usamos un valor intermedio conservador. Todos los factores representan emisiones netas evitadas.
-            </div>
-          </div>
-
-          {/* Eco-equivalencies methodology */}
+          {/* Factors & equivalencies — platform CTA */}
           <div className="bg-white border border-border/50 rounded-xl p-6 md:p-8 space-y-5">
-            <h3 className="font-serif text-xl text-sage-800">Eco-equivalencias: de dónde salen los números</h3>
+            <h3 className="font-serif text-lg sm:text-xl text-sage-800">Factores de emisión y eco-equivalencias</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Las eco-equivalencias provienen del <strong className="text-sage-800">EPA Greenhouse Gas Equivalencies Calculator</strong>,
-              actualizado en noviembre de 2024 por la Agencia de Protección Ambiental de EE.UU. Cada factor tiene una
-              fórmula verificable:
+              Los factores de emisión que utiliza esta calculadora provienen de <strong className="text-sage-800">EPA WARM v16</strong> (Dic 2023) y
+              <strong className="text-sage-800"> DEFRA/DESNZ 2025</strong> (UK). Cuando ambas fuentes difieren, aplicamos el valor más conservador
+              para garantizar que ningún cálculo sobrestime el impacto ambiental.
             </p>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div className="bg-sand-50 rounded-lg p-4 space-y-1.5">
-                <div className="flex items-center gap-2">
-                  <TreePine className="h-4 w-4 text-sage-600" />
-                  <p className="text-sm font-medium text-sage-800">Árboles</p>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  1 árbol urbano absorbe <strong className="text-sage-700">60 kg CO&#x2082;/año</strong> (0,060 MTCO&#x2082;e).
-                  Basado en 36,4 lbs C/árbol/año para un árbol de crecimiento medio plantado en zona urbana, período de 10 años.
-                </p>
-                <p className="text-xs text-sage-500">EPA, Cálculo: 36,4 lbs C &times; 44/12 &times; 1/2.204,6</p>
-              </div>
-              <div className="bg-sand-50 rounded-lg p-4 space-y-1.5">
-                <div className="flex items-center gap-2">
-                  <Car className="h-4 w-4 text-sage-600" />
-                  <p className="text-sm font-medium text-sage-800">Kilómetros en auto</p>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  1 km en auto promedio emite <strong className="text-sage-700">0,244 kg CO&#x2082;</strong>.
-                  Basado en 3,93&times;10&#x207B;&#x2074; MTCO&#x2082;e/milla, vehículo de 22,8 mpg, 10.917 VMT/año.
-                </p>
-                <p className="text-xs text-sage-500">EPA, convertido: MTCO&#x2082;e/mi &divide; 1,609 km/mi</p>
-              </div>
-              <div className="bg-sand-50 rounded-lg p-4 space-y-1.5">
-                <div className="flex items-center gap-2">
-                  <Smartphone className="h-4 w-4 text-sage-600" />
-                  <p className="text-sm font-medium text-sage-800">Smartphones cargados</p>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  1 carga completa = <strong className="text-sage-700">0,0124 kg CO&#x2082;</strong> (1,24&times;10&#x207B;&#x2075; MTCO&#x2082;e).
-                  Energía por carga: 28,446 Wh menos consumo standby.
-                </p>
-                <p className="text-xs text-sage-500">EPA, factor eléctrico: 3,94&times;10&#x207B;&#x2074; MTCO&#x2082;/kWh</p>
-              </div>
-              <div className="bg-sand-50 rounded-lg p-4 space-y-1.5">
-                <div className="flex items-center gap-2">
-                  <Droplets className="h-4 w-4 text-sage-600" />
-                  <p className="text-sm font-medium text-sage-800">Agua ahorrada</p>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Papel: <strong className="text-sage-700">26 L/kg</strong> (EPA: 7.000 gal/short ton).
-                  Plástico PET: 17 L/kg (Water Footprint Network).
-                  Aluminio: 40 L/kg (IAI LCA).
-                </p>
-                <p className="text-xs text-sage-500">EPA, Water Footprint Network, FEVE LCA</p>
-              </div>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Las eco-equivalencias (árboles, kilómetros, smartphones, agua) se calculan con los factores del
+              <strong className="text-sage-800"> EPA GHG Equivalencies Calculator</strong> (Nov 2024).
+            </p>
+            <div className="bg-sage-50 rounded-lg p-4">
+              <p className="text-xs text-sage-700 leading-relaxed">
+                <strong>La tabla completa de factores por material y los valores de eco-equivalencias</strong> están disponibles
+                dentro de la plataforma CertiRecicla, donde además puedes personalizarlos según los requerimientos de tu organización.
+              </p>
+              <Link href="/register" className="inline-flex items-center gap-1 text-xs text-sage-600 font-medium hover:text-sage-800 transition-colors mt-2">
+                Crear cuenta gratis para ver todos los factores
+                <ArrowRight className="h-3 w-3" />
+              </Link>
             </div>
           </div>
 
