@@ -74,6 +74,56 @@ function injectHeadingIds(html: string, headings: { id: string; text: string }[]
 }
 
 // ---------------------------------------------------------------------------
+// Contextual lead magnet
+// ---------------------------------------------------------------------------
+type LeadMagnet = {
+  title: string;
+  description: string;
+  type: string; // matches /api/lead-magnets/[type]
+};
+
+function getLeadMagnet(_slug: string, category: string): LeadMagnet {
+  switch (category) {
+    case "Regulación":
+      return {
+        title: "Checklist: 10 pasos para cumplir la Ley REP",
+        description:
+          "Descarga la guía práctica con los 10 pasos esenciales, plazos 2026, checklist de documentos y errores que cuestan multas.",
+        type: "checklist-ley-rep",
+      };
+    case "Industria":
+      return {
+        title: "Guía: Clasificación de residuos industriales en Chile",
+        description:
+          "Tabla de categorías, características DS 148, árbol de decisión y requisitos de almacenamiento para clasificar correctamente tus residuos.",
+        type: "guia-clasificacion-residuos",
+      };
+    case "Sustentabilidad":
+      return {
+        title: "Checklist: Preparar una auditoría ambiental ISO 14001",
+        description:
+          "Los 12 puntos que el auditor revisará, documentos que pedirá y los 5 errores más comunes que debes evitar.",
+        type: "checklist-auditoria-ambiental",
+      };
+    case "Gestión":
+      return {
+        title: "Guía: 7 estrategias para reducir costos en residuos",
+        description:
+          "Estrategias con ROI estimado, costos comparativos por material y quick wins que ahorran desde el día 1.",
+        type: "guia-reducir-costos-residuos",
+      };
+    // Huella de carbono, Tecnología, Certificados, Producto, and default
+    default:
+      return {
+        title: "Tabla completa: Factores de CO₂ por material reciclado",
+        description:
+          "Factores EPA WARM, DEFRA y CertiRecicla para 13 materiales, eco-equivalencias y guía de uso en reportes de sustentabilidad.",
+        type: "tabla-factores-co2",
+      };
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Contextual CTA
 // ---------------------------------------------------------------------------
 function getContextualCta(slug: string, category: string): {
@@ -309,28 +359,34 @@ export default function BlogArticlePage({ params }: Props) {
         </article>
 
         {/* Lead Magnet */}
-        <div className="mt-10 bg-gradient-to-br from-sage-50 to-sand-100 border border-sage-200 rounded-xl p-6 sm:p-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <div className="bg-sage-500 rounded-lg p-3 shrink-0">
-              <Download className="h-6 w-6 text-white" />
+        {(() => {
+          const lm = getLeadMagnet(article.slug, article.category);
+          return (
+            <div className="mt-10 bg-gradient-to-br from-sage-50 to-sand-100 border border-sage-200 rounded-xl p-6 sm:p-8">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className="bg-sage-500 rounded-lg p-3 shrink-0">
+                  <Download className="h-6 w-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-serif text-sage-800 mb-1">
+                    {lm.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {lm.description}
+                  </p>
+                </div>
+                <a
+                  href={`/api/lead-magnets/${lm.type}`}
+                  download
+                  className="inline-flex items-center gap-2 bg-sage-500 text-white font-medium px-5 py-2.5 rounded-lg hover:bg-sage-600 transition-colors text-sm shrink-0"
+                >
+                  <Download className="h-4 w-4" />
+                  Descargar PDF
+                </a>
+              </div>
             </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-serif text-sage-800 mb-1">
-                Checklist gratuito: 10 pasos para cumplir la Ley REP
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Descarga la guía práctica con los 10 pasos esenciales que toda empresa en Chile debe seguir para cumplir con la Ley REP. Incluye plazos 2026, checklist de documentos y errores comunes.
-              </p>
-            </div>
-            <Link
-              href="/register?lead=checklist-ley-rep"
-              className="inline-flex items-center gap-2 bg-sage-500 text-white font-medium px-5 py-2.5 rounded-lg hover:bg-sage-600 transition-colors text-sm shrink-0"
-            >
-              <Download className="h-4 w-4" />
-              Descargar PDF
-            </Link>
-          </div>
-        </div>
+          );
+        })()}
 
         {/* CTA */}
         {(() => {
