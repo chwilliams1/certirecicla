@@ -337,7 +337,7 @@ export default function MaterialPage({ params }: Props) {
             <section className="mb-8">
               <h2 className="text-xl font-serif text-sage-800 mb-3 flex items-center gap-2">
                 <Recycle className="h-5 w-5 text-sage-500" />
-                Como se recicla el {material.name.toLowerCase()}?
+                ¿Cómo se recicla el {material.name.toLowerCase()}?
               </h2>
               <p className="text-muted-foreground leading-relaxed">
                 {material.recyclingProcess}
@@ -384,7 +384,7 @@ export default function MaterialPage({ params }: Props) {
                 Calcula el impacto de reciclar {material.name.toLowerCase()}
               </h2>
               <p className="text-sm text-muted-foreground mb-4">
-                Asi se traduce el reciclaje de {material.name.toLowerCase()} en
+                Así se traduce el reciclaje de {material.name.toLowerCase()} en
                 impacto ambiental concreto:
               </p>
               <ImpactTable
@@ -498,13 +498,13 @@ export default function MaterialPage({ params }: Props) {
                   Gestiona tu reciclaje
                 </p>
                 <p className="text-xs text-sage-100 mb-3">
-                  Certificados digitales con calculo de CO&#x2082; verificable.
+                  Certificados digitales con cálculo de CO&#x2082; verificable.
                 </p>
                 <Link
                   href="/register"
                   className="inline-flex items-center gap-1 bg-white text-sage-700 font-medium px-4 py-2 rounded-lg hover:bg-sage-50 transition-colors text-xs"
                 >
-                  Prueba gratis 14 dias
+                  Prueba gratis 14 días
                   <ArrowRight className="h-3 w-3" />
                 </Link>
               </div>

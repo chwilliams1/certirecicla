@@ -19,6 +19,10 @@ import {
   FileSpreadsheet,
   Calculator,
   X,
+  TreePine,
+  Car,
+  Smartphone,
+  Droplets,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import InteractiveDemo from "@/components/landing/interactive-demo";
@@ -295,8 +299,9 @@ export default function Home() {
                 <FileCheck className="mb-4 h-9 w-9 text-sage-500" />
                 <h3 className="mb-2 font-serif text-base font-bold">Certificados que impresionan, no que avergüenzan</h3>
                 <p className="text-sm text-muted-foreground">
-                  PDF profesional con tu logo, CO&#x2082; automático y código QR.
-                  El certificado que tus clientes esperan recibir — no un Word con números pegados.
+                  PDF profesional con tu logo, CO&#x2082; automático, ecoequivalencias
+                  (árboles, km, smartphones, agua) y código QR verificable.
+                  El certificado que tus clientes esperan recibir.
                 </p>
               </div>
               <div className="rounded-xl border bg-card p-6 card-hover">
@@ -403,7 +408,7 @@ export default function Home() {
                   {/* Mini table */}
                   <div className="rounded-lg border overflow-hidden">
                     <div className="bg-sage-50 px-4 py-2 border-b">
-                      <p className="text-xs font-medium text-sage-700">Ultimos certificados</p>
+                      <p className="text-xs font-medium text-sage-700">Últimos certificados</p>
                     </div>
                     <div className="divide-y text-xs">
                       {[
@@ -458,6 +463,43 @@ export default function Home() {
               <p className="text-sm text-muted-foreground">
                 Envía los certificados por email directo. Cada uno tiene un código único con página de verificación pública.
               </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Eco-equivalencias */}
+        <section className="bg-sand-50 border-y border-border/50 py-16 md:py-20">
+          <div className="container mx-auto px-6">
+            <ScrollFadeIn className="mx-auto max-w-3xl text-center mb-10">
+              <h2 className="font-serif text-3xl font-bold text-sage-900 mb-4">
+                CO&#x2082; evitado, traducido a impacto real
+              </h2>
+              <p className="text-muted-foreground">
+                Cada certificado incluye ecoequivalencias verificadas (EPA, nov 2024) que transforman
+                toneladas de CO&#x2082; en algo que tu cliente entiende y puede mostrar a su directorio.
+              </p>
+            </ScrollFadeIn>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-4xl mx-auto">
+              <div className="rounded-xl border bg-card p-5 text-center">
+                <TreePine className="mx-auto mb-3 h-8 w-8 text-green-600" />
+                <p className="font-serif font-bold text-sage-900 text-sm">Árboles equivalentes</p>
+                <p className="text-xs text-muted-foreground mt-1">Absorción anual de CO&#x2082; por árbol urbano</p>
+              </div>
+              <div className="rounded-xl border bg-card p-5 text-center">
+                <Car className="mx-auto mb-3 h-8 w-8 text-blue-600" />
+                <p className="font-serif font-bold text-sage-900 text-sm">Km no recorridos</p>
+                <p className="text-xs text-muted-foreground mt-1">Distancia equivalente que un auto deja de contaminar</p>
+              </div>
+              <div className="rounded-xl border bg-card p-5 text-center">
+                <Smartphone className="mx-auto mb-3 h-8 w-8 text-purple-600" />
+                <p className="font-serif font-bold text-sage-900 text-sm">Smartphones cargados</p>
+                <p className="text-xs text-muted-foreground mt-1">Energía equivalente ahorrada en cargas completas</p>
+              </div>
+              <div className="rounded-xl border bg-card p-5 text-center">
+                <Droplets className="mx-auto mb-3 h-8 w-8 text-cyan-600" />
+                <p className="font-serif font-bold text-sage-900 text-sm">Litros de agua ahorrados</p>
+                <p className="text-xs text-muted-foreground mt-1">Agua que no se usa al reciclar vs. producir virgen</p>
+              </div>
             </div>
           </div>
         </section>
@@ -616,7 +658,7 @@ export default function Home() {
                 <h3 className="font-serif font-bold mb-2">SISREP</h3>
                 <p className="text-sm text-muted-foreground">
                   Desde enero 2025, reporte mensual obligatorio dentro de los
-                  primeros 10 dias de cada mes.
+                  primeros 10 días de cada mes.
                 </p>
               </div>
               <div className="rounded-xl bg-sage-50/50 border border-sage-200/50 p-5">
@@ -663,7 +705,7 @@ export default function Home() {
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">No es para ti si</p>
                   <div className="space-y-2.5">
                     {[
-                      "Eres generador buscando donde reciclar",
+                      "Eres generador buscando dónde reciclar",
                       "Necesitas un marketplace",
                       "Buscas un ERP con facturación",
                       "Operas fuera de Chile",

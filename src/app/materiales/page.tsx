@@ -26,7 +26,7 @@ export default function MaterialesPage() {
         "@type": "ItemList",
         name: "Materiales Reciclables en Chile",
         description:
-          "Guia completa de materiales reciclables: como reciclarlos, impacto ambiental y tips practicos.",
+          "Guía completa de materiales reciclables: cómo reciclarlos, impacto ambiental y tips prácticos.",
         numberOfItems: MATERIALS.length,
         itemListElement: MATERIALS.map((m, i) => ({
           "@type": "ListItem",
@@ -69,11 +69,11 @@ export default function MaterialesPage() {
         {/* Hero */}
         <div className="text-center mb-12">
           <h1 className="text-3xl md:text-4xl font-serif text-sage-800 leading-tight mb-4">
-            Guia de Materiales Reciclables
+            Guía de Materiales Reciclables
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Conoce el impacto ambiental de reciclar cada material: CO&#x2082; evitado,
-            agua ahorrada, proceso de reciclaje y tips practicos para empresas y hogares
+            agua ahorrada, proceso de reciclaje y tips prácticos para empresas y hogares
             en Chile.
           </p>
         </div>
@@ -114,7 +114,7 @@ export default function MaterialesPage() {
                     </div>
 
                     <span className="text-xs text-sage-600 font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
-                      Ver guia completa
+                      Ver guía completa
                       <ArrowRight className="h-3 w-3" />
                     </span>
                   </div>

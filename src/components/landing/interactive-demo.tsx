@@ -83,7 +83,7 @@ export default function InteractiveDemo() {
           Calcula tu impacto ahora
         </h2>
         <p className="text-muted-foreground">
-          Ingresa los materiales que reciclas y ve en tiempo real cuanto CO&#x2082;
+          Ingresa los materiales que reciclas y ve en tiempo real cuánto CO&#x2082;
           evitas. Sin cuenta, sin compromiso.
         </p>
       </div>

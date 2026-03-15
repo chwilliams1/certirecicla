@@ -85,7 +85,7 @@ export default function LoginPage() {
             </Button>
           </form>
           <p className="mt-4 text-center text-sm text-muted-foreground">
-            No tienes cuenta?{" "}
+            ¿No tienes cuenta?{" "}
             <Link href="/register" className="text-sage-600 hover:underline font-medium py-2 inline-block">
               Crea una gratis
             </Link>
