@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Materiales Reciclables en Chile — Guía Completa",
+  title: "Materiales Reciclables en Chile |Guía Completa",
   description:
     "Guia completa de materiales reciclables en Chile: plastico PET, carton, vidrio, aluminio, papel, textil, electronicos y mas. Aprende como reciclar cada material, su impacto ambiental y donde llevarlos.",
   keywords: [
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     canonical: "https://certirecicla.cl/materiales",
   },
   openGraph: {
-    title: "Materiales Reciclables en Chile — Guia Completa",
+    title: "Materiales Reciclables en Chile |Guia Completa",
     description:
       "Descubre como reciclar cada material: CO2 evitado, agua ahorrada, proceso de reciclaje y tips practicos para empresas y hogares.",
     url: "https://certirecicla.cl/materiales",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Materiales Reciclables en Chile — Guia Completa",
+    title: "Materiales Reciclables en Chile |Guia Completa",
     description:
       "Descubre como reciclar cada material: CO2 evitado, agua ahorrada, proceso de reciclaje y tips practicos.",
   },

@@ -9,7 +9,7 @@ const SITE_URL = "https://certirecicla.cl";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "CertiRecicla — Certificados de reciclaje con CO₂ verificable",
+    default: "CertiRecicla |Certificados de reciclaje con CO₂ verificable",
     template: "%s | CertiRecicla",
   },
   description:
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     locale: "es_CL",
     url: SITE_URL,
     siteName: "CertiRecicla",
-    title: "CertiRecicla — Certificados de reciclaje con CO₂ verificable",
+    title: "CertiRecicla |Certificados de reciclaje con CO₂ verificable",
     description:
       "Genera certificados de valorización con cálculo de CO₂ verificable. Hecho para gestoras de reciclaje en Chile.",
     images: [
@@ -41,13 +41,13 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "CertiRecicla — Plataforma de certificados de reciclaje",
+        alt: "CertiRecicla |Plataforma de certificados de reciclaje",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "CertiRecicla — Certificados de reciclaje con CO₂ verificable",
+    title: "CertiRecicla |Certificados de reciclaje con CO₂ verificable",
     description:
       "Genera certificados de valorización con cálculo de CO₂ verificable. Hecho para gestoras de reciclaje en Chile.",
     images: ["/og-image.png"],

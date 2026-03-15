@@ -41,16 +41,16 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "https://certirecicla.cl/blog" },
   openGraph: {
-    title: "Blog de Reciclaje y Gestión de Residuos — CertiRecicla",
+    title: "Blog de Reciclaje y Gestión de Residuos |CertiRecicla",
     description:
       "Guías prácticas sobre reciclaje, Ley REP, SINADER, economía circular y sustentabilidad para empresas en Chile.",
     url: "https://certirecicla.cl/blog",
     type: "website",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Blog CertiRecicla — Reciclaje y gestión de residuos" }],
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Blog CertiRecicla |Reciclaje y gestión de residuos" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Blog de Reciclaje y Gestión de Residuos — CertiRecicla",
+    title: "Blog de Reciclaje y Gestión de Residuos |CertiRecicla",
     description:
       "Guías prácticas sobre reciclaje, Ley REP, SINADER, economía circular y sustentabilidad para empresas en Chile.",
   },

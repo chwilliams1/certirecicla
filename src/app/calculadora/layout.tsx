@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 const url = "https://certirecicla.cl/calculadora";
 
 export const metadata: Metadata = {
-  title: "Calculadora de CO₂ Evitado por Reciclaje — Gratis, por Material",
+  title: "Calculadora de CO₂ Evitado por Reciclaje |Gratis, por Material",
   description:
     "Calcula cuánto CO₂ evitas al reciclar plástico, cartón, vidrio y aluminio. Tabla de factores de emisión por material, ecoequivalencias (árboles, km, agua ahorrada) y metodología EPA WARM + DEFRA. Gratis, sin registro. Ideal para gestoras, Ley REP y reportes de sustentabilidad en Chile.",
   keywords: [
@@ -88,16 +88,16 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: url },
   openGraph: {
-    title: "Calculadora de CO₂ Evitado por Reciclaje — Gratis, por Material",
+    title: "Calculadora de CO₂ Evitado por Reciclaje |Gratis, por Material",
     description:
       "Calcula cuánto CO₂ evitas al reciclar plástico, cartón, vidrio y aluminio. Factores EPA WARM + DEFRA verificados. Ecoequivalencias y agua ahorrada. Gratis, sin registro.",
     url,
     type: "website",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Calculadora de reciclaje y CO₂ evitado — CertiRecicla" }],
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Calculadora de reciclaje y CO₂ evitado |CertiRecicla" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Calculadora de CO₂ Evitado por Reciclaje — Gratis, por Material",
+    title: "Calculadora de CO₂ Evitado por Reciclaje |Gratis, por Material",
     description:
       "Calcula cuánto CO₂ evitas al reciclar plástico, cartón, vidrio y aluminio. Ecoequivalencias, agua ahorrada y factores verificados.",
   },
