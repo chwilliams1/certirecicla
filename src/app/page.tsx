@@ -771,7 +771,7 @@ export default function Home() {
                   </li>
                 </ul>
                 <Link href="/register" className="block">
-                  <Button variant="outline" className="w-full">Empezar gratis</Button>
+                  <Button variant="outline" className="w-full">Comenzar prueba gratis</Button>
                 </Link>
               </div>
 
@@ -809,7 +809,7 @@ export default function Home() {
                   </li>
                 </ul>
                 <Link href="/register" className="block">
-                  <Button className="w-full">Digitalizar mi gestora ahora</Button>
+                  <Button className="w-full">Comenzar prueba gratis</Button>
                 </Link>
               </div>
 
@@ -848,7 +848,7 @@ export default function Home() {
                   </li>
                 </ul>
                 <Link href="/register" className="block">
-                  <Button variant="outline" className="w-full">Escalar mi operación</Button>
+                  <Button variant="outline" className="w-full">Comenzar prueba gratis</Button>
                 </Link>
               </div>
             </div>

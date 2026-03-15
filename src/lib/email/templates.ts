@@ -2,10 +2,11 @@ import { buildEmailHtml } from "./email-template";
 
 const PLATFORM_NAME = "CertiRecicla";
 
-export function welcomeEmail({ userName, trialDays }: { userName: string; trialDays: number }): { subject: string; html: string } {
+export function welcomeEmail({ userName, trialDays, planName }: { userName: string; trialDays: number; planName?: string }): { subject: string; html: string } {
+  const planLabel = planName ? ` con acceso <strong>${planName}</strong>` : "";
   const body = `Hola <strong>${userName}</strong>,
 
-Bienvenido/a a CertiRecicla. Tu cuenta está lista y tienes <strong>${trialDays} días de prueba gratuita</strong> para explorar toda la plataforma.
+Bienvenido/a a CertiRecicla. Tu cuenta está lista y tienes <strong>${trialDays} días de prueba gratuita</strong>${planLabel} para explorar toda la plataforma.
 
 <div style="background: #f4f7f4; padding: 20px; border-radius: 8px; margin: 20px 0;">
 <p style="margin: 0; font-weight: 600;">Para empezar:</p>

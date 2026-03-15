@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
 
   // Fire-and-forget: send welcome + verification emails
   try {
-    const welcome = welcomeEmail({ userName: name, trialDays: 14 });
+    const welcome = welcomeEmail({ userName: name, trialDays: 14, planName: "Profesional" });
     sendTransactionalEmail({ to: email, subject: welcome.subject, html: welcome.html });
 
     const verifyUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${verificationToken}`;

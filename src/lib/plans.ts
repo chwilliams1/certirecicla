@@ -21,16 +21,16 @@ export const PLANS: Record<PlanType, PlanConfig> = {
     name: "trial",
     displayName: "Trial",
     priceClp: 0,
-    maxClients: 10,
-    maxCertificatesPerMonth: 15,
-    maxUsers: 1,
-    multiUser: false,
+    maxClients: 60,
+    maxCertificatesPerMonth: -1,
+    maxUsers: 5,
+    multiUser: true,
     subClients: true,
-    clientPortal: false,
-    fullReports: false,
+    clientPortal: true,
+    fullReports: true,
     sinaderExport: false,
     customBranding: false,
-    description: "Prueba gratuita para conocer la plataforma",
+    description: "Prueba gratuita de 14 días con acceso Profesional",
   },
   starter: {
     name: "starter",
@@ -79,7 +79,7 @@ export const PLANS: Record<PlanType, PlanConfig> = {
   },
 };
 
-export const TRIAL_DURATION_DAYS = 30;
+export const TRIAL_DURATION_DAYS = 14;
 
 export function getPlanConfig(plan: string): PlanConfig {
   return PLANS[plan as PlanType] || PLANS.trial;

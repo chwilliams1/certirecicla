@@ -51,10 +51,10 @@ const PLAN_SEEDS: PlanSeed[] = [
     plan: "trial",
     companyName: "Trial Reciclaje Ltda",
     rut: "76.100.100-1",
-    email: "trial@reciclaia.cl",
+    email: "trial@certirecicla.cl",
     userName: "Usuario Trial",
-    maxClients: 10,
-    maxCertificatesPerMonth: 15,
+    maxClients: 60,
+    maxCertificatesPerMonth: -1,
     subscriptionStatus: "none",
     clients: [
       { name: "Minimarket Don Pedro", rut: "76.200.100-1", email: "pedro@minimarket.cl", contactName: "Pedro Gómez", address: "Calle Los Aromos 123, Ñuñoa" },
@@ -66,7 +66,7 @@ const PLAN_SEEDS: PlanSeed[] = [
     plan: "starter",
     companyName: "Starter Eco Gestora SpA",
     rut: "76.100.200-2",
-    email: "starter@reciclaia.cl",
+    email: "starter@certirecicla.cl",
     userName: "Usuario Starter",
     maxClients: 15,
     maxCertificatesPerMonth: 30,
@@ -83,7 +83,7 @@ const PLAN_SEEDS: PlanSeed[] = [
     plan: "profesional",
     companyName: "Profesional Verde Gestora SpA",
     rut: "76.100.300-3",
-    email: "profesional@reciclaia.cl",
+    email: "profesional@certirecicla.cl",
     userName: "Usuario Profesional",
     maxClients: 60,
     maxCertificatesPerMonth: -1,
@@ -103,7 +103,7 @@ const PLAN_SEEDS: PlanSeed[] = [
     plan: "business",
     companyName: "Business Total Reciclaje S.A.",
     rut: "76.100.400-4",
-    email: "business@reciclaia.cl",
+    email: "business@certirecicla.cl",
     userName: "Usuario Business",
     maxClients: 200,
     maxCertificatesPerMonth: -1,
@@ -214,7 +214,7 @@ async function main() {
 
   const hashedPassword = await hash("Test1234", 12);
   const trialEndsAt = new Date();
-  trialEndsAt.setDate(trialEndsAt.getDate() + 30);
+  trialEndsAt.setDate(trialEndsAt.getDate() + 14);
 
   console.log("\n🌱 Creando cuentas de prueba por plan...\n");
 
