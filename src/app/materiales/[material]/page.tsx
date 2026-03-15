@@ -20,6 +20,7 @@ import {
   getRelatedMaterials,
   type MaterialCategory,
 } from "@/lib/materials-data";
+import { calculateEquivalencies } from "@/lib/co2-calculator";
 import { blogArticles } from "@/lib/blog/articles";
 
 interface Props {
@@ -75,49 +76,82 @@ function ImpactTable({
   waterFactor: number;
 }) {
   const quantities = [100, 500, 1000];
+  const refCo2 = 1000 * co2Factor;
+  const eq = calculateEquivalencies(refCo2);
+
   return (
-    <div className="bg-white border border-border/50 rounded-xl overflow-hidden">
-      <div className="bg-sage-50 px-5 py-3 border-b border-border/50">
-        <h3 className="font-serif text-sage-800 text-sm">
-          Impacto al reciclar {name}
-        </h3>
-      </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border/50 text-left text-muted-foreground">
-              <th className="px-5 py-2.5 font-medium">Cantidad (kg)</th>
-              <th className="px-5 py-2.5 font-medium">
-                CO&#x2082; evitado (kg)
-              </th>
-              <th className="px-5 py-2.5 font-medium">Agua ahorrada (L)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {quantities.map((qty) => (
-              <tr
-                key={qty}
-                className="border-b border-border/50 last:border-0"
-              >
-                <td className="px-5 py-2.5 font-medium text-sage-800">
-                  {qty.toLocaleString("es-CL")} kg
-                </td>
-                <td className="px-5 py-2.5 text-sage-600">
-                  {(qty * co2Factor).toLocaleString("es-CL", {
-                    maximumFractionDigits: 1,
-                  })}{" "}
-                  kg
-                </td>
-                <td className="px-5 py-2.5 text-blue-600">
-                  {(qty * waterFactor).toLocaleString("es-CL", {
-                    maximumFractionDigits: 0,
-                  })}{" "}
-                  L
-                </td>
+    <div className="space-y-4">
+      <div className="bg-white border border-border/50 rounded-xl overflow-hidden">
+        <div className="bg-sage-50 px-5 py-3 border-b border-border/50">
+          <h3 className="font-serif text-sage-800 text-sm">
+            Impacto al reciclar {name}
+          </h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border/50 text-left text-muted-foreground">
+                <th className="px-5 py-2.5 font-medium">Cantidad (kg)</th>
+                <th className="px-5 py-2.5 font-medium">
+                  CO&#x2082; evitado (kg)
+                </th>
+                <th className="px-5 py-2.5 font-medium">Agua ahorrada (L)</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {quantities.map((qty) => (
+                <tr
+                  key={qty}
+                  className="border-b border-border/50 last:border-0"
+                >
+                  <td className="px-5 py-2.5 font-medium text-sage-800">
+                    {qty.toLocaleString("es-CL")} kg
+                  </td>
+                  <td className="px-5 py-2.5 text-sage-600">
+                    {(qty * co2Factor).toLocaleString("es-CL", {
+                      maximumFractionDigits: 1,
+                    })}{" "}
+                    kg
+                  </td>
+                  <td className="px-5 py-2.5 text-blue-600">
+                    {(qty * waterFactor).toLocaleString("es-CL", {
+                      maximumFractionDigits: 0,
+                    })}{" "}
+                    L
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Ecoequivalencias */}
+      <div className="bg-white border border-border/50 rounded-xl p-5">
+        <h3 className="font-serif text-sage-800 text-sm mb-3">
+          Ecoequivalencias al reciclar 1 tonelada de {name}
+        </h3>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-green-50 rounded-lg p-3 text-center">
+            <p className="text-lg font-bold text-green-700">{eq.trees.toLocaleString("es-CL")}</p>
+            <p className="text-xs text-green-600">árboles equivalentes</p>
+          </div>
+          <div className="bg-blue-50 rounded-lg p-3 text-center">
+            <p className="text-lg font-bold text-blue-700">{eq.kmNotDriven.toLocaleString("es-CL")}</p>
+            <p className="text-xs text-blue-600">km no recorridos en auto</p>
+          </div>
+          <div className="bg-purple-50 rounded-lg p-3 text-center">
+            <p className="text-lg font-bold text-purple-700">{eq.smartphonesCharged.toLocaleString("es-CL")}</p>
+            <p className="text-xs text-purple-600">smartphones cargados</p>
+          </div>
+          <div className="bg-cyan-50 rounded-lg p-3 text-center">
+            <p className="text-lg font-bold text-cyan-700">{(1000 * waterFactor).toLocaleString("es-CL")}</p>
+            <p className="text-xs text-cyan-600">litros de agua ahorrados</p>
+          </div>
+        </div>
+        <p className="text-[10px] text-muted-foreground mt-2">
+          Fuentes: EPA GHG Equivalencies Calculator (nov 2024), DEFRA 2025.
+        </p>
       </div>
     </div>
   );

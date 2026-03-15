@@ -29,9 +29,9 @@ export const MATERIALS: MaterialData[] = [
   {
     slug: "plastico-pet",
     name: "Plástico PET",
-    materialKey: "Plastico PET",
-    co2Factor: DEFAULT_CO2_FACTORS["Plastico PET"],
-    waterFactor: DEFAULT_WATER_FACTORS["Plastico PET"],
+    materialKey: "Plástico PET",
+    co2Factor: DEFAULT_CO2_FACTORS["Plástico PET"],
+    waterFactor: DEFAULT_WATER_FACTORS["Plástico PET"],
     description:
       "El PET (polietileno tereftalato) es el plástico más reciclado en Chile. Se encuentra en botellas de bebidas, envases de alimentos y fibras textiles. Su reciclaje es fundamental para reducir la contaminación por plásticos en vertederos y océanos.",
     recyclingProcess:
@@ -79,9 +79,9 @@ export const MATERIALS: MaterialData[] = [
   {
     slug: "carton",
     name: "Cartón",
-    materialKey: "Carton",
-    co2Factor: DEFAULT_CO2_FACTORS["Carton"],
-    waterFactor: DEFAULT_WATER_FACTORS["Carton"],
+    materialKey: "Cartón",
+    co2Factor: DEFAULT_CO2_FACTORS["Cartón"],
+    waterFactor: DEFAULT_WATER_FACTORS["Cartón"],
     description:
       "El cartón corrugado es uno de los materiales más reciclados en la industria chilena. Se usa masivamente en embalajes, cajas de envío y packaging de productos. Su reciclaje ahorra árboles, agua y energía.",
     recyclingProcess:
@@ -415,9 +415,9 @@ export const MATERIALS: MaterialData[] = [
   {
     slug: "electronicos",
     name: "Electrónicos (RAEE)",
-    materialKey: "Electronicos",
-    co2Factor: DEFAULT_CO2_FACTORS["Electronicos"],
-    waterFactor: DEFAULT_WATER_FACTORS["Electronicos"],
+    materialKey: "Electrónicos",
+    co2Factor: DEFAULT_CO2_FACTORS["Electrónicos"],
+    waterFactor: DEFAULT_WATER_FACTORS["Electrónicos"],
     description:
       "Los residuos de aparatos eléctricos y electrónicos (RAEE) contienen metales valiosos como oro, plata, cobre y tierras raras, pero también sustancias tóxicas. Su correcto reciclaje es obligatorio en Chile bajo la Ley REP.",
     recyclingProcess:
@@ -505,9 +505,9 @@ export const MATERIALS: MaterialData[] = [
   {
     slug: "plastico-hdpe",
     name: "Plástico HDPE",
-    materialKey: "Plastico HDPE",
-    co2Factor: DEFAULT_CO2_FACTORS["Plastico HDPE"],
-    waterFactor: DEFAULT_WATER_FACTORS["Plastico HDPE"],
+    materialKey: "Plástico HDPE",
+    co2Factor: DEFAULT_CO2_FACTORS["Plástico HDPE"],
+    waterFactor: DEFAULT_WATER_FACTORS["Plástico HDPE"],
     description:
       "El HDPE (polietileno de alta densidad) se encuentra en envases de detergente, shampoo, leche y bolsas plásticas gruesas. Es el plástico número 2 y uno de los más fáciles de reciclar.",
     recyclingProcess:
@@ -542,9 +542,9 @@ export const MATERIALS: MaterialData[] = [
   {
     slug: "plastico-ldpe",
     name: "Plástico LDPE",
-    materialKey: "Plastico LDPE",
-    co2Factor: DEFAULT_CO2_FACTORS["Plastico LDPE"],
-    waterFactor: DEFAULT_WATER_FACTORS["Plastico LDPE"],
+    materialKey: "Plástico LDPE",
+    co2Factor: DEFAULT_CO2_FACTORS["Plástico LDPE"],
+    waterFactor: DEFAULT_WATER_FACTORS["Plástico LDPE"],
     description:
       "El LDPE (polietileno de baja densidad) se usa en bolsas plásticas flexibles, film de embalaje y envolturas. Es el plástico número 4 y su reciclaje es menos común pero igualmente importante.",
     recyclingProcess:
@@ -579,9 +579,9 @@ export const MATERIALS: MaterialData[] = [
   {
     slug: "plastico-pp",
     name: "Plástico PP",
-    materialKey: "Plastico PP",
-    co2Factor: DEFAULT_CO2_FACTORS["Plastico PP"],
-    waterFactor: DEFAULT_WATER_FACTORS["Plastico PP"],
+    materialKey: "Plástico PP",
+    co2Factor: DEFAULT_CO2_FACTORS["Plástico PP"],
+    waterFactor: DEFAULT_WATER_FACTORS["Plástico PP"],
     description:
       "El polipropileno (PP) es el plástico número 5, presente en tapas de botellas, envases de yogur, tuppers y pajitas. Es resistente al calor y cada vez más reciclado en Chile.",
     recyclingProcess:
@@ -616,9 +616,9 @@ export const MATERIALS: MaterialData[] = [
   {
     slug: "plastico-ps",
     name: "Plástico PS",
-    materialKey: "Plastico PS",
-    co2Factor: DEFAULT_CO2_FACTORS["Plastico PS"],
-    waterFactor: DEFAULT_WATER_FACTORS["Plastico PS"],
+    materialKey: "Plástico PS",
+    co2Factor: DEFAULT_CO2_FACTORS["Plástico PS"],
+    waterFactor: DEFAULT_WATER_FACTORS["Plástico PS"],
     description:
       "El poliestireno (PS), incluyendo el plumavit (EPS), es el plástico número 6. Se usa en vasos desechables, bandejas de carne y embalaje. Es más difícil de reciclar pero no imposible.",
     recyclingProcess:
@@ -690,9 +690,9 @@ export const MATERIALS: MaterialData[] = [
   {
     slug: "organico",
     name: "Residuos Orgánicos",
-    materialKey: "Organico",
-    co2Factor: DEFAULT_CO2_FACTORS["Organico"],
-    waterFactor: DEFAULT_WATER_FACTORS["Organico"],
+    materialKey: "Orgánico",
+    co2Factor: DEFAULT_CO2_FACTORS["Orgánico"],
+    waterFactor: DEFAULT_WATER_FACTORS["Orgánico"],
     description:
       "Los residuos orgánicos representan más del 50% de la basura domiciliaria en Chile. El compostaje y biodigestión evitan emisiones de metano en vertederos y generan abono natural para la agricultura.",
     recyclingProcess:
@@ -727,9 +727,9 @@ export const MATERIALS: MaterialData[] = [
   {
     slug: "neumaticos",
     name: "Neumáticos",
-    materialKey: "Neumaticos",
-    co2Factor: DEFAULT_CO2_FACTORS["Neumaticos"],
-    waterFactor: DEFAULT_WATER_FACTORS["Neumaticos"],
+    materialKey: "Neumáticos",
+    co2Factor: DEFAULT_CO2_FACTORS["Neumáticos"],
+    waterFactor: DEFAULT_WATER_FACTORS["Neumáticos"],
     description:
       "Los neumáticos fuera de uso (NFU) son un residuo problemático en Chile. No se biodegradan y ocupan mucho espacio en vertederos. Su reciclaje produce caucho granulado para canchas, pavimentos y energía.",
     recyclingProcess:
@@ -764,9 +764,9 @@ export const MATERIALS: MaterialData[] = [
   {
     slug: "baterias",
     name: "Baterías",
-    materialKey: "Baterias",
-    co2Factor: DEFAULT_CO2_FACTORS["Baterias"],
-    waterFactor: DEFAULT_WATER_FACTORS["Baterias"],
+    materialKey: "Baterías",
+    co2Factor: DEFAULT_CO2_FACTORS["Baterías"],
+    waterFactor: DEFAULT_WATER_FACTORS["Baterías"],
     description:
       "Las baterías contienen metales pesados como plomo, cadmio y litio que son altamente contaminantes. Su reciclaje es obligatorio en Chile y permite recuperar materiales valiosos de forma segura.",
     recyclingProcess:
