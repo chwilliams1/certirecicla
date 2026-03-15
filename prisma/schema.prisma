@@ -85,6 +85,7 @@ model Client {
   address        String?
   contactName    String?
   notes          String?
+  idEstablecimientoVU String? /// ID de establecimiento del generador en Ventanilla Única del RETC. Solo aplica a clientes que generan más de 12 ton/año y están registrados obligatoriamente.
   active         Boolean           @default(true)
   company        Company           @relation(fields: [companyId], references: [id])
   companyId      String
@@ -111,11 +112,13 @@ model RecyclingRecord {
   company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId  String
   material   String
-  quantityKg Float
-  co2Saved   Float
-  pickupDate DateTime
-  location   String?
-  batchId    String?
+  quantityKg      Float
+  co2Saved        Float
+  pickupDate      DateTime
+  location        String?
+  batchId         String?
+  rutTransportista String?
+  patente          String?
   createdAt  DateTime @default(now())
 
   @@index([companyId])

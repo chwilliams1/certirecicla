@@ -126,16 +126,15 @@ const MONTHS = MONTH_NAMES_FULL;
 
 
 const SINADER_MONTHS = [
-  { value: "", label: "Todo el año" },
-  { value: "1", label: "Enero" },
-  { value: "2", label: "Febrero" },
-  { value: "3", label: "Marzo" },
-  { value: "4", label: "Abril" },
-  { value: "5", label: "Mayo" },
-  { value: "6", label: "Junio" },
-  { value: "7", label: "Julio" },
-  { value: "8", label: "Agosto" },
-  { value: "9", label: "Septiembre" },
+  { value: "01", label: "Enero" },
+  { value: "02", label: "Febrero" },
+  { value: "03", label: "Marzo" },
+  { value: "04", label: "Abril" },
+  { value: "05", label: "Mayo" },
+  { value: "06", label: "Junio" },
+  { value: "07", label: "Julio" },
+  { value: "08", label: "Agosto" },
+  { value: "09", label: "Septiembre" },
   { value: "10", label: "Octubre" },
   { value: "11", label: "Noviembre" },
   { value: "12", label: "Diciembre" },
@@ -236,69 +235,49 @@ function ChangeIndicator({ change }: { change: number | null | undefined }) {
 /* ─── SINADER Tab ─── */
 function SinaderTab({ planData }: { planData: PlanData | null }) {
   const currentYear = new Date().getFullYear();
+  const currentMonth = String(new Date().getMonth() + 1).padStart(2, "0");
   const years = [currentYear, currentYear - 1, currentYear - 2];
 
   const [year, setYear] = useState(String(currentYear));
-  const [month, setMonth] = useState("");
-  const [clientId, setClientId] = useState("");
-  const [clients, setClients] = useState<{ id: string; name: string; parentClient?: { name: string } | null }[]>([]);
-  const [recordCount, setRecordCount] = useState<number | null>(null);
+  const [month, setMonth] = useState(currentMonth);
+  const [tipo, setTipo] = useState<"mensual" | "anual">("mensual");
   const [loading, setLoading] = useState(false);
-  const [loadingCount, setLoadingCount] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<{ rows: number; manual: number } | null>(null);
 
-  useEffect(() => {
-    fetch("/api/clients")
-      .then((r) => r.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setClients(
-            data
-              .filter((c: { branches?: unknown[] }) => !c.branches || c.branches.length === 0)
-              .map((c: { id: string; name: string; parentClient?: { name: string } | null }) => ({ id: c.id, name: c.name, parentClient: c.parentClient }))
-          );
-        }
-      })
-      .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    setLoadingCount(true);
-    const params = new URLSearchParams({ year });
-    if (month) params.set("month", month);
-    if (clientId) params.set("clientId", clientId);
-
-    fetch(`/api/pickups?${params.toString()}&countOnly=true`)
-      .then((r) => r.json())
-      .then((data) => {
-        setRecordCount(typeof data.count === "number" ? data.count : null);
-      })
-      .catch(() => setRecordCount(null))
-      .finally(() => setLoadingCount(false));
-  }, [year, month, clientId]);
+  const periodo = `${year}-${month}`;
+  const mesLabel = SINADER_MONTHS.find((m) => m.value === month)?.label || month;
 
   async function handleDownload() {
     setLoading(true);
+    setError(null);
+    setResult(null);
     try {
-      const params = new URLSearchParams({ year });
-      if (month) params.set("month", month);
-      if (clientId) params.set("clientId", clientId);
+      const response = await fetch(`/api/export/sinader?periodo=${periodo}&tipo=${tipo}`);
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.error || "Error al exportar");
+      }
 
-      const response = await fetch(`/api/export/sinader?${params.toString()}`);
-      if (!response.ok) throw new Error("Error al exportar");
+      const sinaderRows = parseInt(response.headers.get("X-Sinader-Rows") || "0");
+      const manualRows = parseInt(response.headers.get("X-Sinader-Manual") || "0");
+      setResult({ rows: sinaderRows, manual: manualRows });
 
       const blob = await response.blob();
+      const disposition = response.headers.get("Content-Disposition");
+      const filenameMatch = disposition?.match(/filename="(.+)"/);
+      const filename = filenameMatch?.[1] || `SINADER_${tipo.toUpperCase()}_${periodo}.xlsx`;
+
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = month
-        ? `sinader_${year}_${month.padStart(2, "0")}.csv`
-        : `sinader_${year}.csv`;
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-    } catch {
-      // Error silencioso
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al exportar");
     } finally {
       setLoading(false);
     }
@@ -311,7 +290,7 @@ function SinaderTab({ planData }: { planData: PlanData | null }) {
         <div>
           <p className="text-sm font-medium text-amber-800">Exportación SINADER no disponible</p>
           <p className="text-xs text-amber-700 mt-1">
-            La exportación en formato SINADER está disponible en el plan Business.
+            La exportación para carga masiva SINADER está disponible en el plan Business.
           </p>
           <a href="/dashboard/billing" className="inline-block mt-2 text-xs font-medium text-amber-700 underline hover:text-amber-900">
             Ver planes
@@ -326,69 +305,102 @@ function SinaderTab({ planData }: { planData: PlanData | null }) {
       <div className="bg-sand-50 border border-sand-300 rounded-[14px] p-6 space-y-5">
         <div className="space-y-2">
           <label className="flex items-center gap-1.5 text-sm font-medium text-sage-800">
-            <Calendar className="h-3.5 w-3.5 text-sage-500" strokeWidth={1.5} />
-            Año
+            <FileSpreadsheet className="h-3.5 w-3.5 text-sage-500" strokeWidth={1.5} />
+            Tipo de declaración
           </label>
-          <Select value={year} onValueChange={setYear}>
-            <SelectTrigger className="w-48">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {years.map((y) => (
-                <SelectItem key={y} value={String(y)}>{y}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => setTipo("mensual")}
+              className={`flex-1 rounded-lg border px-4 py-3 text-left transition-colors ${
+                tipo === "mensual"
+                  ? "border-sage-500 bg-sage-50 ring-1 ring-sage-200"
+                  : "border-gray-200 hover:border-gray-300"
+              }`}
+            >
+              <p className={`text-sm font-medium ${tipo === "mensual" ? "text-sage-800" : "text-gray-700"}`}>Mensual</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">9 columnas — una fila por retiro con fecha, transportista y patente</p>
+            </button>
+            <button
+              type="button"
+              onClick={() => setTipo("anual")}
+              className={`flex-1 rounded-lg border px-4 py-3 text-left transition-colors ${
+                tipo === "anual"
+                  ? "border-sage-500 bg-sage-50 ring-1 ring-sage-200"
+                  : "border-gray-200 hover:border-gray-300"
+              }`}
+            >
+              <p className={`text-sm font-medium ${tipo === "anual" ? "text-sage-800" : "text-gray-700"}`}>Anual</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">6 columnas — agrupado por cliente y material</p>
+            </button>
+          </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="flex items-center gap-1.5 text-sm font-medium text-sage-800">
-            <Calendar className="h-3.5 w-3.5 text-sage-500" strokeWidth={1.5} />
-            Mes (opcional)
-          </label>
-          <Select value={month} onValueChange={setMonth}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Todo el año" />
-            </SelectTrigger>
-            <SelectContent>
-              {SINADER_MONTHS.map((m) => (
-                <SelectItem key={m.value || "all"} value={m.value || "all"}>{m.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="space-y-2 flex-1">
+            <label className="flex items-center gap-1.5 text-sm font-medium text-sage-800">
+              <Calendar className="h-3.5 w-3.5 text-sage-500" strokeWidth={1.5} />
+              Año
+            </label>
+            <Select value={year} onValueChange={setYear}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {years.map((y) => (
+                  <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2 flex-1">
+            <label className="flex items-center gap-1.5 text-sm font-medium text-sage-800">
+              <Calendar className="h-3.5 w-3.5 text-sage-500" strokeWidth={1.5} />
+              Mes
+            </label>
+            <Select value={month} onValueChange={setMonth}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {SINADER_MONTHS.map((m) => (
+                  <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="flex items-center gap-1.5 text-sm font-medium text-sage-800">
-            <Filter className="h-3.5 w-3.5 text-sage-500" strokeWidth={1.5} />
-            Cliente (opcional)
-          </label>
-          <Select value={clientId} onValueChange={setClientId}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Todos los clientes" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos los clientes</SelectItem>
-              {clients.map((c) => (
-                <SelectItem key={c.id} value={c.id}>
-                  {c.parentClient ? `${c.parentClient.name} - ${c.name}` : c.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="bg-sand-100 border border-sand-200 rounded-lg px-4 py-3 flex items-center justify-between">
-          <span className="text-sm text-sage-800/60">Registros a exportar</span>
-          {loadingCount ? (
-            <Loader2 className="h-4 w-4 animate-spin text-sage-500" />
-          ) : (
-            <Badge variant="secondary" className="bg-sage-500/10 text-sage-600 border-sage-500/20">
-              {recordCount !== null ? recordCount : "—"}
-            </Badge>
-          )}
+        <div className="bg-sand-100 border border-sand-200 rounded-lg px-4 py-3">
+          <p className="text-sm text-sage-800/70">
+            Se generará el archivo de carga masiva <span className="font-medium text-sage-800">{tipo}</span> para{" "}
+            <span className="font-medium text-sage-800">{mesLabel} {year}</span>
+            {tipo === "anual"
+              ? ", agrupando retiros por cliente y material."
+              : ", con una fila por cada retiro individual."}
+          </p>
         </div>
       </div>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+          <p className="text-sm text-red-700">{error}</p>
+        </div>
+      )}
+
+      {result && (
+        <div className="bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-3 space-y-1">
+          <p className="text-sm text-emerald-700">
+            Archivo descargado: <span className="font-medium">{result.rows} filas</span> en hoja de carga masiva.
+          </p>
+          {result.manual > 0 && (
+            <p className="text-sm text-amber-700">
+              {result.manual} registro{result.manual !== 1 ? "s" : ""} sin ID de Establecimiento VU — incluidos en hoja «Declarar Manualmente».
+            </p>
+          )}
+        </div>
+      )}
 
       <Button onClick={handleDownload} disabled={loading} className="w-full">
         {loading ? (
@@ -396,16 +408,20 @@ function SinaderTab({ planData }: { planData: PlanData | null }) {
         ) : (
           <Download className="h-4 w-4 mr-1" />
         )}
-        Descargar CSV para SINADER
+        Exportar Hoja SINADER
       </Button>
 
+      <div className="bg-amber-50/60 border border-amber-200 rounded-lg p-3 space-y-1.5">
+        <p className="text-xs font-medium text-amber-700">Sobre el ID de Establecimiento</p>
+        <p className="text-[11px] text-amber-600/70 leading-relaxed">
+          El ID de Establecimiento en Ventanilla Única del RETC solo aplica a clientes que generan más de 12 toneladas anuales de residuos y están registrados obligatoriamente. Puedes agregarlo en la ficha del cliente. Los clientes sin este ID aparecerán en la hoja «Declarar Manualmente» con instrucciones para declararlos usando RUT 0-0 en SINADER.
+        </p>
+      </div>
+
       <div className="bg-emerald-50/60 border border-emerald-200 rounded-lg p-3 space-y-1.5">
-        <p className="text-xs font-medium text-emerald-700">Sobre el formato SINADER</p>
+        <p className="text-xs font-medium text-emerald-700">Cómo usar este archivo</p>
         <p className="text-[11px] text-emerald-600/70 leading-relaxed">
-          El archivo CSV generado incluye las columnas requeridas por SINADER: fecha, RUT del
-          generador, tipo de residuo con código LER, cantidad en kg, tratamiento aplicado y datos
-          del gestor. Revisa los datos antes de subir al portal oficial del Ministerio del Medio
-          Ambiente.
+          Sube el archivo Excel directamente en SINADER usando la opción «Carga Masiva Residuos». Las cantidades están en toneladas con 3 decimales, los RUT sin puntos, y los códigos LER con el formato que SINADER espera.
         </p>
       </div>
     </div>
