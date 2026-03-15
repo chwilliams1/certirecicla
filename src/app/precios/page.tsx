@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Check, X, ArrowRight } from "lucide-react";
+import PublicHeader from "@/components/public-header";
 import { PLANS, type PlanType } from "@/lib/plans";
 import { TrackPricingView } from "@/components/track-page-view";
 
@@ -131,30 +132,7 @@ export default function PreciosPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Header */}
-      <header className="border-b border-border/50 bg-white/80 backdrop-blur-sm sticky top-0 z-40">
-        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/logo.png"
-              alt="CertiRecicla"
-              width={36}
-              height={36}
-              className="animate-breathe"
-            />
-            <span className="font-serif text-sage-800 font-bold">
-              CertiRecicla
-            </span>
-          </Link>
-          <nav className="flex items-center gap-4">
-            <Link href="/calculadora" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors hidden sm:inline">Calculadora</Link>
-            <Link href="/materiales" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors hidden sm:inline">Materiales</Link>
-            <Link href="/blog" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors hidden sm:inline">Blog</Link>
-            <Link href="/precios" className="text-sm text-sage-700 font-medium hidden sm:inline">Precios</Link>
-            <Link href="/register" className="text-sm bg-sage-500 text-white px-4 py-2 rounded-lg hover:bg-sage-600 transition-colors">Prueba gratis</Link>
-          </nav>
-        </div>
-      </header>
+      <PublicHeader activePage="Precios" />
 
       <main className="container mx-auto px-6 py-10 md:py-14 max-w-6xl">
         {/* Breadcrumb + Hero */}

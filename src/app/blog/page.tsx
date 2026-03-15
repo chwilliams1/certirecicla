@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Clock, ArrowLeft } from "lucide-react";
+import PublicHeader from "@/components/public-header";
 import { blogArticles } from "@/lib/blog/articles";
 
 const blogJsonLd = {
@@ -35,22 +36,7 @@ export default function BlogPage() {
     <div className="min-h-screen bg-sand-50">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(blogJsonLd) }} />
 
-      {/* Header */}
-      <header className="border-b border-border/50 bg-white/80 backdrop-blur-sm sticky top-0 z-40">
-        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group">
-            <Image src="/logo.png" alt="CertiRecicla" width={36} height={36} className="animate-breathe" />
-            <span className="font-serif text-sage-800 font-bold">CertiRecicla</span>
-          </Link>
-          <nav className="flex items-center gap-4">
-            <Link href="/calculadora" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors hidden sm:inline">Calculadora</Link>
-            <Link href="/materiales" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors hidden sm:inline">Materiales</Link>
-            <Link href="/blog" className="text-sm text-sage-700 font-medium hidden sm:inline">Blog</Link>
-            <Link href="/precios" className="text-sm text-muted-foreground hover:text-sage-600 transition-colors hidden sm:inline">Precios</Link>
-            <Link href="/register" className="text-sm bg-sage-500 text-white px-4 py-2 rounded-lg hover:bg-sage-600 transition-colors">Prueba gratis</Link>
-          </nav>
-        </div>
-      </header>
+      <PublicHeader activePage="Blog" />
 
       <main className="container mx-auto px-6 py-12 md:py-16 max-w-4xl">
         <div className="mb-10">

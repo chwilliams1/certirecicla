@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import InteractiveDemo from "@/components/landing/interactive-demo";
 import FaqSection from "@/components/landing/faq-section";
 import ScrollFadeIn from "@/components/landing/scroll-fade-in";
+import PublicHeader from "@/components/public-header";
 
 export const metadata: Metadata = {
   title: "CertiRecicla — Certificados de reciclaje con CO₂ verificable para gestoras en Chile",
@@ -123,29 +124,7 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      {/* Header */}
-      <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-2">
-            <Image src="/logo.png" alt="CertiRecicla" width={36} height={36} className="animate-breathe" />
-            <span className="font-serif text-xl font-bold text-sage-800">CertiRecicla</span>
-          </div>
-          <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-            <Link href="/calculadora" className="hover:text-sage-600 transition-colors">Calculadora</Link>
-            <Link href="/materiales" className="hover:text-sage-600 transition-colors">Materiales</Link>
-            <Link href="/blog" className="hover:text-sage-600 transition-colors">Blog</Link>
-            <Link href="/precios" className="hover:text-sage-600 transition-colors">Precios</Link>
-          </nav>
-          <div className="flex items-center gap-3">
-            <Link href="/login">
-              <Button variant="ghost" size="sm" className="hidden sm:inline-flex">Iniciar sesión</Button>
-            </Link>
-            <Link href="/register">
-              <Button size="sm">Prueba gratis</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <PublicHeader />
 
       <main>
         {/* Hero */}
